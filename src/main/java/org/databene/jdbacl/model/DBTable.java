@@ -30,7 +30,7 @@ import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.bean.ArrayPropertyExtractor;
 import org.databene.commons.collection.OrderedNameMap;
-import org.databene.commons.db.DBUtil;
+import org.databene.jdbacl.DBUtil;
 import org.databene.commons.depend.Dependent;
 
 import java.sql.Connection;

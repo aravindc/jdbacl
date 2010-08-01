@@ -26,7 +26,7 @@
 
 package org.databene.jdbacl;
 
-import org.databene.commons.db.DBUtil;
+import org.databene.jdbacl.DBUtil;
 import org.databene.commons.HeavyweightIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

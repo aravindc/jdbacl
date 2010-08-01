@@ -35,7 +35,7 @@ import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.Level;
 import org.databene.commons.collection.OrderedNameMap;
-import org.databene.commons.db.DBUtil;
+import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBColumnType;

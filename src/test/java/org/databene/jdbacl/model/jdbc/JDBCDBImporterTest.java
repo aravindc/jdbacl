@@ -30,8 +30,8 @@ import java.sql.Connection;
 import java.util.List;
 
 import org.databene.commons.ErrorHandler;
-import org.databene.commons.db.DBUtil;
-import org.databene.commons.db.hsql.HSQLUtil;
+import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.hsql.HSQLUtil;
 import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBNonUniqueIndex;
 import org.databene.jdbacl.model.DBSchema;
