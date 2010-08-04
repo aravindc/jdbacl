@@ -257,8 +257,42 @@ public class DBTable implements Dependent<DBTable>{
 
     // row operations --------------------------------------------------------------------------------------------------
 
-    public Iterator<DBRow> rowIterator(Connection connection) throws SQLException {
-        return new DBRowIterator(this, connection);
+    public Iterator<DBRow> allRows(Connection connection) throws SQLException {
+        return new DBRowIterator(this, connection, null);
     }
     
+    public DBRow queryById(Object[] idParts, Connection connection) throws SQLException {
+    	DBColumn[] pkColumns = primaryKeyConstraint.getColumns();
+    	if (pkColumns.length == 0)
+    		throw new ObjectNotFoundException("Table " + name + " has no primary key");
+		String whereClause = DBUtil.renderWhereClause(pkColumns, idParts);
+        DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
+        if (!iterator.hasNext())
+        	throw new ObjectNotFoundException("No " + name + " row with id " + idParts); // TODO handle arrays
+		return iterator.next();
+    }
+    
+    public DBRowIterator queryByColumnValues(DBColumn[] columns, Object[] values, Connection connection) throws SQLException {
+		String whereClause = DBUtil.renderWhereClause(columns, values);
+        return new DBRowIterator(this, connection, whereClause);
+    }
+    
+	public String renderIdTuple(Object id) {
+    	DBColumn[] pkColumns = primaryKeyConstraint.getColumns();
+    	if (pkColumns.length == 0)
+    		throw new ObjectNotFoundException("Table " + name + " has no primary key");
+    	if (pkColumns.length == 1)
+    		return String.valueOf(id);
+    	else {
+    		Object[] idValues = (Object[]) id;
+    		StringBuilder builder = new StringBuilder("(");
+    		for (int i = 0; i < pkColumns.length; i++) {
+    			if (i > 0)
+    				builder.append(", ");
+    			builder.append(idValues[i]);
+    		}
+    		return builder.append(')').toString();
+    	}
+    }
+
 }
