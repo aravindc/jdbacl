@@ -1,0 +1,68 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+    
+        <!-- license files and release notes -->
+        <fileSet>
+            <directory></directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>license.txt</include>
+            </includes>
+        </fileSet>
+
+        <!-- main -->
+        <fileSet>
+            <directory>src/main/java</directory>
+            <outputDirectory>src</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>src</outputDirectory>
+        </fileSet>
+
+        <!-- tests -->
+        <fileSet>
+            <directory>src/test/java</directory>
+            <outputDirectory>test</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/test/resources</directory>
+            <outputDirectory>test</outputDirectory>
+        </fileSet>
+
+        <!-- doc -->
+        <fileSet>
+            <directory>target/site/apidocs</directory>
+            <outputDirectory>doc/api</outputDirectory>
+        </fileSet>
+	    <fileSet>
+			<directory>target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<excludes>
+				<exclude>*-sources.jar</exclude>
+			</excludes>
+	    </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+            <scope>compile</scope>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
+            <includes>
+                <include>org.databene:databene-commons:jar</include>
+                <include>org.slf4j:slf4j-api:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>
