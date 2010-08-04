@@ -102,5 +102,12 @@ public class DBForeignKeyConstraint extends DBConstraint {
     	}
         return builder.append(")").toString();
     }
+
+	public DBColumn[] getRefereeColumns() {
+		DBColumn[] result = new DBColumn[foreignKeyColumns.size()];
+		for (int i = 0; i < foreignKeyColumns.size(); i++)
+			result[i] = foreignKeyColumns.get(i).getTargetColumn();
+		return result;
+    }
     
 }
