@@ -47,9 +47,11 @@ public class DBRowIterator implements Iterator<DBRow> {
     private ResultSetMetaData resultSetMetaData;
     private ResultSetIterator resultSetIterator;
 
-	public DBRowIterator(DBTable table, Connection connection) throws SQLException {
+	public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {
 		this.table = table;
-	    String sql = "select * from " + table.getName();
+	    String sql = "SELECT * FROM " + table.getName();
+	    if (whereClause != null)
+	    	sql += " WHERE " + whereClause;
         if (SQL_LOGGER.isDebugEnabled())
             SQL_LOGGER.debug(sql);
         Statement statement = connection.createStatement(
