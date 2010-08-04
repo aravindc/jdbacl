@@ -47,6 +47,10 @@ public class DBRow {
 	    return cells.get(columnName);
     }
 
+	public DBTable getTable() {
+    	return table;
+    }
+
 	public Object[] getPKValues() {
 		String[] columnNames = table.getPKColumnNames();
 	    return getColumnValues(columnNames);
