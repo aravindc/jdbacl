@@ -40,6 +40,8 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.converter.AnyConverter;
 import org.databene.commons.converter.ToStringConverter;
+import org.databene.jdbacl.model.DBColumn;
+import org.databene.jdbacl.model.DBTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -410,6 +412,28 @@ public class DBUtil {
         } catch (SQLException e) {
         	logger.error("Failed to fetch metadata from connection " + connection);
         }
+    }
+
+    public static String renderQuery(DBTable table, DBColumn[] columns, Object[] values) {
+		StringBuilder builder = new StringBuilder("SELECT * FROM ").append(table.getName());
+		builder.append(" WHERE ").append(renderWhereClause(columns, values));
+		return builder.toString();
+    }
+    
+    public static String renderWhereClause(DBColumn[] columns, Object[] values) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < columns.length; i++) {
+			if (i > 0)
+				builder.append(" AND ");
+			builder.append(columns[i].getName()).append(" = ").append(renderValue(values[i]));
+		}
+		return builder.toString();
+    }
+    
+    public static String renderValue(Object value) {
+	    if (value instanceof String || value instanceof Character)
+	    	return "'" + value + "'";
+	    return String.valueOf(value);
     }
 
 	private static boolean mutates(String sql) {
