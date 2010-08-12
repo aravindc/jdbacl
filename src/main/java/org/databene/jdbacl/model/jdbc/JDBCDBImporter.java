@@ -72,12 +72,15 @@ public final class JDBCDBImporter implements DBImporter {
     
     private String  catalogName;
     private String  schemaName;
-    private Pattern tablePattern;
+    private Pattern includeTables;
+    private Pattern excludeTables;
     private boolean importingIndexes;
 
     private String productName;
     private Escalator escalator = new LoggerEscalator();
     private ErrorHandler errorHandler;
+
+	private boolean importingUKs = true;
 
     public JDBCDBImporter(String url, String driverClassname, String user, String password) throws ConnectFailedException {
         this(url, driverClassname, user, password, null, ".*", true);
@@ -89,16 +92,41 @@ public final class JDBCDBImporter implements DBImporter {
     }
 
     public JDBCDBImporter(Connection connection, String user, 
-    		String schemaName, String tablePattern, boolean importingIndexes) {
+    		String schemaName, String includeTables, boolean importingIndexes) {
     	this.connection = connection;
         this.user = user;
         this.schemaName = schemaName;
-        this.tablePattern = Pattern.compile(tablePattern != null ? tablePattern : ".*");
+        this.includeTables = Pattern.compile(includeTables != null ? includeTables : ".*");
         this.importingIndexes = importingIndexes;
         this.errorHandler = new ErrorHandler(getClass());
     }
 
-    public Database importDatabase() throws ImportFailedException {
+    @Deprecated
+	public void setTablePattern(Pattern tablePattern) {
+    	setIncludeTables(tablePattern);
+    }
+
+	public void setIncludeTables(Pattern includeTables) {
+    	this.includeTables = includeTables;
+    }
+
+	public void setExcludeTables(Pattern excludeTables) {
+    	this.excludeTables = excludeTables;
+    }
+
+	public boolean isImportingIndexes() {
+    	return importingIndexes;
+    }
+
+	public void setImportingIndexes(boolean importingIndexes) {
+    	this.importingIndexes = importingIndexes;
+    }
+
+	public void setImportingUKs(boolean importingUKs) {
+		this.importingUKs  = importingUKs;
+    }
+
+	public Database importDatabase() throws ImportFailedException {
         logger.info("Importing database metadata. Be patient, this may take some time...");
         long startTime = System.currentTimeMillis();
         try {
@@ -112,7 +140,7 @@ public final class JDBCDBImporter implements DBImporter {
             importTables(database, metaData);
             importColumns(database, metaData);
             importPrimaryKeys(database, metaData);
-            if (importingIndexes)
+            if (importingIndexes || importingUKs)
                 importIndexes(database, metaData);
             importImportedKeys(database, metaData);
             return database;
@@ -175,7 +203,7 @@ public final class JDBCDBImporter implements DBImporter {
                                 "execute 'PURGE RECYCLEBIN;')", this, tableName);
                 continue;
             }
-            if (ignoreTable(tableName)) {
+            if (!tableSupported(tableName)) {
                 if (logger.isDebugEnabled())
                     logger.debug("ignoring table: " + tCatalogName + ", " + tSchemaName + ", " + tableName);
             	continue;
@@ -231,7 +259,7 @@ public final class JDBCDBImporter implements DBImporter {
 	                    logger.debug("ignoring column: " + catalogName + ", " + schemaName + ", " + tableName);
 	                continue;
 	            }
-	            if (ignoreTable(tableName))
+	            if (!tableSupported(tableName))
 	            	continue;
 	            String columnName = columnSet.getString(4);
 	            int sqlType = columnSet.getInt(5);
@@ -300,7 +328,7 @@ public final class JDBCDBImporter implements DBImporter {
         DBSchema schema = database.getSchema(schemaName);
         if (schema != null)
             for (DBTable table : schema.getTables()) {
-                if (ignoreTable(table.getName()))
+                if (!tableSupported(table.getName()))
                 	continue;
                 importPrimaryKeys(metaData, table);
                 count++;
@@ -310,7 +338,7 @@ public final class JDBCDBImporter implements DBImporter {
         DBCatalog catalog = database.getCatalog(catalogName);
         if (catalog != null)
             for (DBTable table : catalog.getTables()) {
-                if (ignoreTable(table.getName()))
+                if (!tableSupported(table.getName()))
                 	continue;
                 importPrimaryKeys(metaData, table);
             }
@@ -336,12 +364,13 @@ public final class JDBCDBImporter implements DBImporter {
 	            if (logger.isDebugEnabled())
 	                logger.debug("found pk column " + column + ", " + keySeq + ", " + pkName);
 	        }
-	        DBColumn[] columnArray = new DBColumn[pkComponents.size()];
-	        columnArray = pkComponents.values().toArray(columnArray);
-	        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(pkName, columnArray);
-	        table.setPrimaryKeyConstraint(constraint);
-	        for (DBColumn column : columnArray)
-	            column.addUkConstraint(constraint);
+	        if (pkComponents.size() > 0) {
+		        DBColumn[] columnArray = pkComponents.values().toArray(new DBColumn[pkComponents.size()]);
+		        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(pkName, columnArray);
+		        table.setPrimaryKeyConstraint(constraint);
+		        for (DBColumn column : columnArray)
+		            column.addUkConstraint(constraint);
+	        }
         } catch (SQLException e) {
         	errorHandler.handleError("Error importing primary key of table " + table.getName());
         } finally {
@@ -362,13 +391,13 @@ public final class JDBCDBImporter implements DBImporter {
 
 	private void importIndexes(Database database, DBCatalog catalog, DatabaseMetaData metaData) throws SQLException {
 	    for (DBTable table : catalog.getTables()) {
-	    	if (ignoreTable(table.getName()))
+	    	if (!tableSupported(table.getName()))
 	    		continue;
 	        logger.debug("Importing indexes for table '" + table.getName() + "'");
 	        OrderedNameMap<DBIndexInfo> tableIndexes = new OrderedNameMap<DBIndexInfo>();
 	        ResultSet indexSet = null;
 	        try {
-		        indexSet = metaData.getIndexInfo(catalog.getName(), null, table.getName(), false, false);
+		        indexSet = metaData.getIndexInfo(catalog.getName(), null, table.getName(), !importingIndexes, false);
 		        //DBUtil.print(indexSet);
 		        while (indexSet.next()) {
 		            String indexName = null;
@@ -442,7 +471,7 @@ public final class JDBCDBImporter implements DBImporter {
         int count = 0;
         for (DBSchema schema : database.getSchemas())
             for (DBTable table : schema.getTables()) {
-                if (ignoreTable(table.getName()))
+                if (!tableSupported(table.getName()))
                 	continue;
                 importImportedKeys(table.getCatalog(), table.getSchema(), table, metaData);
                 count++;
@@ -451,7 +480,7 @@ public final class JDBCDBImporter implements DBImporter {
             return;
         for (DBCatalog catalog : database.getCatalogs())
             for (DBTable table : catalog.getTables()) {
-                if (ignoreTable(table.getName()))
+                if (!tableSupported(table.getName()))
                 	continue;
                 importImportedKeys(table.getCatalog(), table.getSchema(), table, metaData);
                 count++;
@@ -498,8 +527,10 @@ public final class JDBCDBImporter implements DBImporter {
         }
      }
 
-	private boolean ignoreTable(String tableName) {
-	    return tableName.contains("$") || !tablePattern.matcher(tableName).matches();
+	private boolean tableSupported(String tableName) {
+		if (tableName.contains("$") || (excludeTables != null && excludeTables.matcher(tableName).matches()))
+			return false;
+	    return includeTables.matcher(tableName).matches();
     }
 
     private static String removeBrackets(String defaultValue) {
@@ -520,4 +551,5 @@ public final class JDBCDBImporter implements DBImporter {
     public void setFaultTolerant(boolean faultTolerant) {
     	this.errorHandler = new ErrorHandler(getClass().getName(), (faultTolerant ? Level.warn : Level.error));
     }
+
 }
