@@ -37,7 +37,7 @@ import org.databene.jdbacl.dialect.UnknownDialect;
  */
 public class DatabaseDialectManager {
 
-    private static final String FILENAME = "org/databene/platform/db/databene.db_dialect.properties";
+    private static final String FILENAME = "org/databene/jdbacl/databene.db_dialect.properties";
 
     public static DatabaseDialect getDialectForProduct(String productName) { 
         String normalizedProductName = productName.toLowerCase().replace(' ', '_');
