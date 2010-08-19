@@ -27,8 +27,6 @@
 package org.databene.jdbacl.model.jdbc;
 
 import org.databene.jdbacl.model.DBCatalog;
-import org.databene.jdbacl.model.DBColumn;
-import org.databene.jdbacl.model.DBForeignKeyColumn;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBTable;
 import org.slf4j.Logger;
@@ -116,14 +114,20 @@ class ImportedKey {
      */
     public short deferrablibity;
 
-    private List<DBForeignKeyColumn> foreignKeyColumns = new ArrayList<DBForeignKeyColumn>();
+    private List<String> foreignKeyColumnNames = new ArrayList<String>();
+    private List<String> refereeColumnNames = new ArrayList<String>();
 
-    public void addForeignKeyColumn(DBColumn foreignKeyColumn, DBColumn targetColumn) {
-        foreignKeyColumns.add(new DBForeignKeyColumn(foreignKeyColumn, targetColumn));
+    public void addForeignKeyColumn(String foreignKeyColumnName, String targetColumnName) {
+        foreignKeyColumnNames.add(foreignKeyColumnName);
+        refereeColumnNames.add(targetColumnName);
     }
 
-    public List<DBForeignKeyColumn> getForeignKeyColumns() {
-        return foreignKeyColumns;
+    public List<String> getForeignKeyColumnNames() {
+        return foreignKeyColumnNames;
+    }
+
+    public List<String> getRefereeColumnNames() {
+        return refereeColumnNames;
     }
 
     public static ImportedKey parse(ResultSet resultSet, DBCatalog catalog, DBSchema schema, DBTable fkTable) throws SQLException {
@@ -155,14 +159,12 @@ class ImportedKey {
         if (!key.fktable_name.equalsIgnoreCase(fkTable.getName()))	// Failover for Firebird:  
         	return null;											// When querying X, it returns the foreign keys of XY to
 
-        DBColumn fkColumn = fkTable.getColumn(key.fkcolumn_name);
         key.pkTable = null;
         if (catalog != null)
         	key.pkTable = catalog.getTable(key.pktable_name);
         else
         	key.pkTable = schema.getTable(key.pktable_name);    
-        DBColumn pkColumn = key.pkTable.getColumn(key.pkcolumn_name);
-        key.addForeignKeyColumn(fkColumn, pkColumn);
+        key.addForeignKeyColumn(key.fkcolumn_name, key.pkcolumn_name);
         return key;
     }
     

@@ -26,8 +26,7 @@
 
 package org.databene.jdbacl.model.jdbc;
 
-import java.util.List;
-import java.util.ArrayList;
+import org.databene.commons.ArrayUtil;
 
 /**
  * Represents a database index.<br/><br/>
@@ -35,6 +34,7 @@ import java.util.ArrayList;
  * @author Volker Bergmann
  */
 class DBIndexInfo {
+	
     public String name;
     public boolean unique;
     public String catalogName;
@@ -44,7 +44,7 @@ class DBIndexInfo {
     public int pages;
     public String filterCondition;
 
-    public List<String> columnNames;
+    public String[] columnNames;
 
     public DBIndexInfo(String name, short type, String catalogName, boolean unique, short ordinalPosition, String columnName, Boolean ascending, int cardinality, int pages, String filterCondition) {
         this.name = name;
@@ -55,17 +55,17 @@ class DBIndexInfo {
         this.cardinality = cardinality;
         this.pages = pages;
         this.filterCondition = filterCondition;
-        this.columnNames = new ArrayList<String>();
+        this.columnNames = new String[] { columnName };
         if (ordinalPosition != 1)
             throw new IllegalArgumentException("ordinalPosition is expected to be 1, found: " + ordinalPosition);
-        columnNames.add(columnName);
     }
 
     public void addColumn(short ordinalPosition, String columnName) {
-        int expectedPosition = columnNames.size() + 1;
+        int expectedPosition = columnNames.length + 1;
         if (ordinalPosition != expectedPosition)
             throw new IllegalArgumentException("ordinalPosition is expected to be " + expectedPosition + ", " +
                     "found: " + ordinalPosition);
-        columnNames.add(columnName);
+        columnNames = ArrayUtil.append(columnNames, columnName);
     }
+    
 }
