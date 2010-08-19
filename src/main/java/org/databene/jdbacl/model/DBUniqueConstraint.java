@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,8 +26,7 @@
 
 package org.databene.jdbacl.model;
 
-import java.util.List;
-import java.util.Arrays;
+import org.databene.commons.ArrayUtil;
 
 /**
  * Represents a unique constraint on one or the combination of several columns of one table.<br/>
@@ -37,33 +36,30 @@ import java.util.Arrays;
  */
 public class DBUniqueConstraint extends DBConstraint {
 
-    private List<DBColumn> columns;
+    private static final long serialVersionUID = -8241121848879185421L;
+    
+	private String[] columnNames;
 
     /**
      * @param name the constraint name - it may be null
-     * @param columns the DBColumns to which the constraint is applied
+     * @param columnNames the names of the columns to which the constraint applies
      */
-    public DBUniqueConstraint(String name, DBColumn ... columns) {
-        super(name);
-        this.columns = Arrays.asList(columns);
+    public DBUniqueConstraint(DBTable owner, String name, String... columnNames) {
+        super(owner, name);
+        this.columnNames = columnNames;
     }
 
     @Override
-    public DBTable getOwner() {
-        return columns.get(0).getTable();
+    public String[] getColumnNames() {
+        return columnNames;
     }
 
-    @Override
-    public DBColumn[] getColumns() {
-        DBColumn[] array = new DBColumn[columns.size()];
-        return columns.toArray(array);
+    public void addColumn(String columnName) {
+        columnNames = ArrayUtil.append(columnNames, columnName);
     }
 
-    public void addColumn(DBColumn column) {
-        columns.add(column);
+    public void removeColumn(String columnName) {
+    	columnNames = ArrayUtil.removeElement(columnNames, columnName);
     }
-
-    public void removeColumn(DBColumn column) {
-        columns.remove(column);
-    }
+    
 }

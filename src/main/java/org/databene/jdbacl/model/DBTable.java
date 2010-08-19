@@ -26,273 +26,43 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.ObjectNotFoundException;
-import org.databene.commons.SystemInfo;
-import org.databene.commons.bean.ArrayPropertyExtractor;
-import org.databene.commons.collection.OrderedNameMap;
-import org.databene.jdbacl.DBUtil;
+import org.databene.commons.Named;
 import org.databene.commons.depend.Dependent;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Represents a database table.<br/><br/>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public class DBTable implements Dependent<DBTable>{
+public interface DBTable extends Dependent<DBTable>, Named, Serializable {
 
-    private DBCatalog catalog;
-    private DBSchema schema;
-    private String name;
-    private String doc;
-    private OrderedNameMap<DBColumn> columns;
-    private DBPrimaryKeyConstraint primaryKeyConstraint;
-    private List<DBUniqueConstraint> uniqueConstraints;
-    private List<DBForeignKeyConstraint> foreignKeyConstraints;
-    private OrderedNameMap<DBIndex> indexes;
+    public String getName();
+    public String getDoc();
+    public DBCatalog getCatalog();
+    public DBSchema getSchema();
+    public DBPrimaryKeyConstraint getPrimaryKeyConstraint();
 
-    // constructors ----------------------------------------------------------------------------------------------------
+    public List<DBColumn> getColumns();
+    public DBColumn[] getColumns(List<String> columnNames);
+    public DBColumn getColumn(String columnName);
+    public List<DBIndex> getIndexes();
+    public DBIndex getIndex(String indexName);
 
-    public DBTable() {
-        this(null);
-    }
-
-    public DBTable(String name) {
-        this(null, name);
-    }
-
-    public DBTable(DBCatalog catalog, String name) {
-        this.name = name;
-        this.catalog = catalog;
-        this.columns = new OrderedNameMap<DBColumn>();
-        this.primaryKeyConstraint = null;
-        this.doc = null;
-        this.schema = null;
-        this.indexes = new OrderedNameMap<DBIndex>();
-        this.uniqueConstraints = new ArrayList<DBUniqueConstraint>();
-        this.foreignKeyConstraints = new ArrayList<DBForeignKeyConstraint>();
-    }
-
-    // properties ------------------------------------------------------------------------------------------------------
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDoc() {
-        return doc;
-    }
-
-    public void setDoc(String doc) {
-        this.doc = doc;
-    }
-
-    public DBCatalog getCatalog() {
-        return catalog;
-    }
-
-    public void setCatalog(DBCatalog catalog) {
-        this.catalog = catalog;
-    }
-
-    public DBSchema getSchema() {
-        return schema;
-    }
-
-    public void setSchema(DBSchema schema) {
-        this.schema = schema;
-    }
-
-    public void setPrimaryKeyConstraint(DBPrimaryKeyConstraint constraint) {
-        this.primaryKeyConstraint = constraint;
-    }
-
-    public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
-        return primaryKeyConstraint;
-    }
-
-    // column operations -----------------------------------------------------------------------------------------------
-
-    public List<DBColumn> getColumns() {
-        return columns.values();
-    }
-
-    public DBColumn[] getColumns(List<String> columnNames) {
-        List<DBColumn> list = new ArrayList<DBColumn>(columnNames.size());
-        for (String columnName : columnNames) {
-            DBColumn column = getColumn(columnName);
-            if (column == null)
-                throw new IllegalArgumentException("Table '" + name + "' does not have a column '" + columnName + "'");
-            list.add(column);
-        }
-        DBColumn[] array = new DBColumn[columnNames.size()];
-        return list.toArray(array);
-    }
-
-    public DBColumn getColumn(String columnName) {
-        DBColumn column = columns.get(columnName.toUpperCase());
-        if (column == null)
-            throw new ObjectNotFoundException("Column '" + columnName + 
-                    "' not found in table '" + this.getName() + "'");
-        return column;
-    }
-
-    public void addColumn(DBColumn column) {
-        column.setTable(this);
-        columns.put(column.getName().toUpperCase(), column);
-    }
-
-    // index operations ------------------------------------------------------------------------------------------------
-
-    public List<DBIndex> getIndexes() {
-        return indexes.values();
-    }
-
-    public DBIndex getIndex(String indexName) {
-        return indexes.get(indexName);
-    }
-
-    public void addIndex(DBIndex index) {
-        indexes.put(index.getName(), index);
-    }
-
-    public void removeIndex(DBIndex index) {
-        indexes.remove(index.getName());
-    }
-
-    // uniqueConstraint operations -------------------------------------------------------------------------------------
-
-    public List<DBUniqueConstraint> getUniqueConstraints() {
-        return uniqueConstraints;
-    }
-
-    public void addUniqueConstraint(DBUniqueConstraint constraint) {
-        uniqueConstraints.add(constraint);
-    }
-
-    public void removeUniqueConstraint(DBUniqueConstraint constraint) {
-        uniqueConstraints.remove(constraint);
-    }
-
-    // ForeignKeyConstraint operations ---------------------------------------------------------------------------------
-
-    public List<DBForeignKeyConstraint> getForeignKeyConstraints() {
-        return foreignKeyConstraints;
-    }
-
-    public void addForeignKeyConstraint(DBForeignKeyConstraint constraint) {
-        foreignKeyConstraints.add(constraint);
-    }
-
-    public void removeForeignKeyConstraint(DBForeignKeyConstraint constraint) {
-        foreignKeyConstraints.remove(constraint);
-    }
-
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final DBTable that = (DBTable) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
-
-    public int countProviders() {
-        return foreignKeyConstraints.size();
-    }
-
-    public DBTable getProvider(int index) {
-        return foreignKeyConstraints.get(index).getForeignTable();
-    }
-
-    public boolean requiresProvider(int index) {
-        return !foreignKeyConstraints.get(index).getForeignKeyColumns().get(0).getForeignKeyColumn().isNullable();
-    }
-
-	public String[] getPKColumnNames() {
-		DBPrimaryKeyConstraint pkConstraint = getPrimaryKeyConstraint();
-        DBColumn[] columns = pkConstraint.getColumns();
-        String[] pkColumnNames = ArrayPropertyExtractor.convert(columns, "name", String.class);
-		return pkColumnNames;
-	}
-
-	public long getRowCount(Connection connection) {
-		Object result = DBUtil.queryScalar("select count(*) from " + name, connection);
-		return ((Number) result).longValue();
-	}
-
-	public String renderFKInfo() {
-	    String lineSeparator = SystemInfo.getLineSeparator();
-		StringBuilder builder = new StringBuilder(name);
-		if (foreignKeyConstraints.size() > 0) {
-			builder.append("(").append(lineSeparator);
-	    	for (DBForeignKeyConstraint fkc : foreignKeyConstraints)
-	    		builder.append(fkc).append(lineSeparator);
-	    	builder.append(")");
-		}
-	    return builder.toString();
-    }
-
-    // row operations --------------------------------------------------------------------------------------------------
-
-    public Iterator<DBRow> allRows(Connection connection) throws SQLException {
-        return new DBRowIterator(this, connection, null);
-    }
+	public String[] getPKColumnNames();
+    public List<DBUniqueConstraint> getUniqueConstraints();
+    public List<DBForeignKeyConstraint> getForeignKeyConstraints();
+    public Collection<DBTable> getReferrers();
+	
+	public long getRowCount(Connection connection);
+    public Iterator<DBRow> allRows(Connection connection) throws SQLException;
+    public DBRow queryById(Object[] idParts, Connection connection) throws SQLException;
+    public Iterator<DBRow> queryByColumnValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
     
-    public DBRow queryById(Object[] idParts, Connection connection) throws SQLException {
-    	DBColumn[] pkColumns = primaryKeyConstraint.getColumns();
-    	if (pkColumns.length == 0)
-    		throw new ObjectNotFoundException("Table " + name + " has no primary key");
-		String whereClause = DBUtil.renderWhereClause(pkColumns, idParts);
-        DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
-        if (!iterator.hasNext())
-        	throw new ObjectNotFoundException("No " + name + " row with id " + idParts); // TODO handle arrays
-		return iterator.next();
-    }
-    
-    public DBRowIterator queryByColumnValues(DBColumn[] columns, Object[] values, Connection connection) throws SQLException {
-		String whereClause = DBUtil.renderWhereClause(columns, values);
-        return new DBRowIterator(this, connection, whereClause);
-    }
-    
-	public String renderIdTuple(Object id) {
-    	DBColumn[] pkColumns = primaryKeyConstraint.getColumns();
-    	if (pkColumns.length == 0)
-    		throw new ObjectNotFoundException("Table " + name + " has no primary key");
-    	if (pkColumns.length == 1)
-    		return String.valueOf(id);
-    	else {
-    		Object[] idValues = (Object[]) id;
-    		StringBuilder builder = new StringBuilder("(");
-    		for (int i = 0; i < pkColumns.length; i++) {
-    			if (i > 0)
-    				builder.append(", ");
-    			builder.append(idValues[i]);
-    		}
-    		return builder.append(')').toString();
-    	}
-    }
-
 }

@@ -26,16 +26,21 @@
 
 package org.databene.jdbacl.model;
 
+import java.io.Serializable;
 import java.sql.Types;
+
+import org.databene.commons.Named;
 
 /**
  * Represents a database column type.<br/><br/>
  * Created: 06.01.2007 10:12:29
  * @author Volker Bergmann
  */
-public class DBColumnType {
+public class DBColumnType implements Named, Serializable {
 
-    public static DBColumnType getInstance(int jdbcType, String name) {
+    private static final long serialVersionUID = 7725335502838132325L;
+
+	public static DBColumnType getInstance(int jdbcType, String name) {
         return new DBColumnType(jdbcType, name.toUpperCase());
     }
 

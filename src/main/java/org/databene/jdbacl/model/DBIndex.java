@@ -26,14 +26,21 @@
 
 package org.databene.jdbacl.model;
 
+import java.io.Serializable;
+
+import org.databene.commons.ArrayFormat;
+import org.databene.commons.Named;
+
 /**
  * Represents a database index.<br/><br/>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public abstract class DBIndex {
+public abstract class DBIndex implements Named, Serializable {
 
-    private String name;
+	private static final long serialVersionUID = -1656761838194962745L;
+	
+	private String name;
     private DBCatalog catalog;
 
     public DBIndex() {
@@ -48,7 +55,7 @@ public abstract class DBIndex {
 
     public abstract DBTable getTable();
 
-    public abstract DBColumn[] getColumns();
+    public abstract String[] getColumnNames();
 
     // properties ------------------------------------------------------------------------------------------------------
 
@@ -70,7 +77,7 @@ public abstract class DBIndex {
     public String toString() {
         StringBuilder builder = new StringBuilder(name);
         builder.append(" (");
-        builder.append(DBColumn.formatColumnNames(getColumns()));
+        builder.append(ArrayFormat.format(getColumnNames()));
         builder.append(')');
         builder.append(isUnique() ? " unique" : "");
         return builder.toString();

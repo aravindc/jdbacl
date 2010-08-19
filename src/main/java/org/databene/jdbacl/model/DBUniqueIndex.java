@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -33,7 +33,9 @@ package org.databene.jdbacl.model;
  */
 public class DBUniqueIndex extends DBIndex {
 
-    private DBUniqueConstraint constraint;
+    private static final long serialVersionUID = -1758033589908866869L;
+    
+	private DBUniqueConstraint constraint;
 
     public DBUniqueIndex(String name, DBUniqueConstraint constraint) {
         super(name);
@@ -51,8 +53,8 @@ public class DBUniqueIndex extends DBIndex {
     }
 
     @Override
-    public DBColumn[] getColumns() {
-        return constraint.getColumns();
+    public String[] getColumnNames() {
+        return constraint.getColumnNames();
     }
     
 }

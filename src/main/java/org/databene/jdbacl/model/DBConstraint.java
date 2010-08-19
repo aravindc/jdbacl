@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -27,8 +27,9 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.ArrayFormat;
-import org.databene.commons.bean.ArrayPropertyExtractor;
+import org.databene.commons.Named;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -36,16 +37,20 @@ import java.util.Arrays;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public abstract class DBConstraint {
+public abstract class DBConstraint implements Named, Serializable {
 
-    protected String name;
+    private static final long serialVersionUID = 3768329019450975632L;
+    
+    protected DBTable owner;
+	protected String name;
 
     // interface -------------------------------------------------------------------------------------------------------
 
     /**
      * @param name the constraint name - it may be null
      */
-    public DBConstraint(String name) {
+    public DBConstraint(DBTable owner, String name) {
+    	this.owner = owner;
         this.name = name;
     }
 
@@ -61,13 +66,15 @@ public abstract class DBConstraint {
      * Returns the table which owns this constraint
      * @return the table which owns this constraint
      */
-    public abstract DBTable getOwner();
+    public DBTable getOwner() {
+    	return owner;
+    }
 
     /**
      * Returns the columns which constitute this constraint
      * @return the columns which constitute this constraint
      */
-    public abstract DBColumn[] getColumns();
+    public abstract String[] getColumnNames();
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
@@ -79,20 +86,19 @@ public abstract class DBConstraint {
             return false;
         final DBConstraint that = (DBConstraint) o;
         return (this.getOwner().equals(that.getOwner()) 
-        		&& Arrays.equals(this.getColumns(), that.getColumns()));
+        		&& Arrays.equals(this.getColumnNames(), that.getColumnNames()));
     }
 
     @Override
     public int hashCode() {
-        return this.getOwner().hashCode() * 29 + Arrays.hashCode(getColumns());
+        return this.getOwner().hashCode() * 29 + Arrays.hashCode(getColumnNames());
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(getClass().getSimpleName()).append('[').append(getOwner().getName()).append('[');
-        String[] columnNames = ArrayPropertyExtractor.convert(getColumns(), "name", String.class);
-        builder.append(ArrayFormat.format(columnNames));
+        builder.append(ArrayFormat.format(getColumnNames()));
         builder.append("]]");
         return builder.toString();
     }

@@ -26,17 +26,22 @@
 
 package org.databene.jdbacl.model;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
+
+import org.databene.commons.Named;
 
 /**
  * Represents a database column.<br/><br/>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public class DBColumn {
+public class DBColumn implements Named, Serializable {
 
-    private String name;
+	private static final long serialVersionUID = 5693941485232520002L;
+	
+	private String name;
     private DBColumnType type;
     private Integer size;
     private Integer fractionDigits;
@@ -99,6 +104,10 @@ public class DBColumn {
         return type;
     }
 
+    public void setType(DBColumnType type) {
+        this.type = type;
+    }
+
     public Integer getSize() {
         return size;
     }
@@ -158,7 +167,7 @@ public class DBColumn {
         } else {
             // if there needs to be a NotNullConstraint, check if there exists one, first
             if (this.isNullable()) {
-                this.notNullConstraint = new DBNotNullConstraint(this);
+                this.notNullConstraint = new DBNotNullConstraint(table, null, name);
             }
         }
     }

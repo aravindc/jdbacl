@@ -26,10 +26,8 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.CollectionUtil;
+import org.databene.commons.ArrayUtil;
 import org.databene.commons.ObjectNotFoundException;
-
-import java.util.List;
 
 /**
  * Represents a foreign key constraint.<br/><br/>
@@ -38,76 +36,70 @@ import java.util.List;
  */
 public class DBForeignKeyConstraint extends DBConstraint {
 
-    private List<DBForeignKeyColumn> foreignKeyColumns;
+    private static final long serialVersionUID = -7488054587082654132L;
+    
+    private String[] fkColumnNames;
+    
+    private DBTable refereeTable;
+    private String[] refereeColumnNames;
+    
 
-    public DBForeignKeyConstraint(String name, DBForeignKeyColumn ... foreignKeyColumns) {
-        super(name);
-        this.foreignKeyColumns = CollectionUtil.toList(foreignKeyColumns);
+    public DBForeignKeyConstraint(String name, DBTable owner, DBTable refereeTable) {
+        this(name, owner, null, refereeTable, null);
     }
 
-    public List<DBForeignKeyColumn> getForeignKeyColumns() {
-        return foreignKeyColumns;
+    public DBForeignKeyConstraint(String name, DBTable owner, String[] fkColumnNames, 
+    		DBTable refereeTable, String[] refereeColumnNames) {
+        super(owner, name);
+        this.fkColumnNames = fkColumnNames;
+        this.refereeTable = refereeTable;
+        this.refereeColumnNames = refereeColumnNames;
     }
 
-    public void addForeignKeyColumn(DBForeignKeyColumn foreignKeyColumn) {
-        this.foreignKeyColumns.add(foreignKeyColumn);
+    public String[] getForeignKeyColumnNames() {
+        return fkColumnNames;
+    }
+
+    public void addForeignKeyColumn(String fkColumn, String refereeColumn) {
+        this.fkColumnNames = ArrayUtil.append(fkColumnNames, fkColumn);
+        this.refereeColumnNames = ArrayUtil.append(refereeColumnNames, refereeColumn);
     }
     
-    public DBColumn columnReferencedBy(DBColumn fkColumn) {
-    	return columnReferencedBy(fkColumn, true);
+    public String columnReferencedBy(String fkColumnName) {
+    	return columnReferencedBy(fkColumnName, true);
     }
 
-    public DBColumn columnReferencedBy(DBColumn fkColumn, boolean required) {
-    	for (DBForeignKeyColumn column : foreignKeyColumns) {
-    		if (column.getForeignKeyColumn().equals(fkColumn))
-    			return column.getTargetColumn();
-    	}
-    	if (required)
-    		throw new ObjectNotFoundException(fkColumn.getName() + " is not a foreign key column " +
-    				"in table " + getOwner().getName());
-    	else
-    		return null;
+    public String columnReferencedBy(String fkColumnName, boolean required) {
+    	int index = ArrayUtil.indexOf(fkColumnName, fkColumnNames);
+    	if (index < 0 && required)
+    		throw new ObjectNotFoundException("foreign key '" + name + "' does not have a column '" + fkColumnName + "'");
+    	return refereeColumnNames[index];
     }
 
-    public DBTable getForeignTable() {
-        return foreignKeyColumns.get(0).getTargetColumn().getTable();
+    public DBTable getForeignTable() { // TODO rename to getRefereeTable()
+        return refereeTable;
     }
 
     @Override
-    public DBTable getOwner() {
-        return foreignKeyColumns.get(0).getForeignKeyColumn().getTable();
+    public String[] getColumnNames() {
+    	return fkColumnNames;
     }
 
-    @Override
-    public DBColumn[] getColumns() {
-        DBColumn[] columns = new DBColumn[foreignKeyColumns.size()];
-        for (int i = 0; i < foreignKeyColumns.size(); i++)
-            columns[i] = foreignKeyColumns.get(i).getForeignKeyColumn();
-        return columns;
+	public String[] getRefereeColumnNames() {
+		return refereeColumnNames;
     }
-
+    
     @Override
     public String toString() {
     	StringBuilder builder = new StringBuilder("(");
-		builder.append(foreignKeyColumns.get(0).getForeignKeyColumn().getName());
-    	for (int i = 1; i < foreignKeyColumns.size(); i++) {
-    		DBForeignKeyColumn fkc = foreignKeyColumns.get(i);
-    		builder.append(", ").append(fkc.getForeignKeyColumn().getName());
-    	}
-    	builder.append(") -> ").append(foreignKeyColumns.get(0).getTargetColumn().getTable().getName()).append("(");
-		builder.append(foreignKeyColumns.get(0).getTargetColumn().getName());
-    	for (int i = 1; i < foreignKeyColumns.size(); i++) {
-    		DBForeignKeyColumn fkc = foreignKeyColumns.get(i);
-    		builder.append(", ").append(fkc.getTargetColumn().getName());
-    	}
+		builder.append(fkColumnNames[0]);
+    	for (int i = 1; i < fkColumnNames.length; i++)
+    		builder.append(", ").append(fkColumnNames[i]);
+    	builder.append(") -> ").append(refereeTable.getName()).append(" (");
+		builder.append(refereeColumnNames[0]);
+    	for (int i = 1; i < refereeColumnNames.length; i++)
+    		builder.append(", ").append(refereeColumnNames[i]);
         return builder.append(")").toString();
     }
 
-	public DBColumn[] getRefereeColumns() {
-		DBColumn[] result = new DBColumn[foreignKeyColumns.size()];
-		for (int i = 0; i < foreignKeyColumns.size(); i++)
-			result[i] = foreignKeyColumns.get(i).getTargetColumn();
-		return result;
-    }
-    
 }

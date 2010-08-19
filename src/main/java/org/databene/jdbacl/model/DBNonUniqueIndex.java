@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,8 +26,6 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.collection.OrderedNameMap;
-
 /**
  * Represents a non-unique database index.<br/><br/>
  * Created: 11.01.2007 00:32:53
@@ -35,13 +33,15 @@ import org.databene.commons.collection.OrderedNameMap;
  */
 public class DBNonUniqueIndex extends DBIndex {
 
-    private OrderedNameMap<DBColumn> columns;
+    private static final long serialVersionUID = -6326915676663722678L;
+    
+    DBTable table;
+	private String[] columnNames;
 
-    public DBNonUniqueIndex(String name, DBColumn ... columns) {
+    public DBNonUniqueIndex(DBTable table, String name, String ... columnNames) {
         super(name);
-        this.columns = new OrderedNameMap<DBColumn>();
-        for (DBColumn column : columns)
-            this.columns.put(column.getName(), column);
+        this.table = table;
+        this.columnNames = columnNames;
     }
 
     @Override
@@ -51,13 +51,12 @@ public class DBNonUniqueIndex extends DBIndex {
 
     @Override
     public DBTable getTable() {
-        return columns.get(0).getTable();
+        return table;
     }
 
     @Override
-    public DBColumn[] getColumns() {
-        DBColumn[] array = new DBColumn[columns.size()];
-        return columns.toArray(array);
+    public String[] getColumnNames() {
+        return columnNames;
     }
     
 }

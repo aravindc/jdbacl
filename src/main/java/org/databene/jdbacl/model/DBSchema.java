@@ -26,8 +26,10 @@
 
 package org.databene.jdbacl.model;
 
+import java.io.Serializable;
 import java.util.List;
 
+import org.databene.commons.Named;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
@@ -35,9 +37,11 @@ import org.databene.commons.collection.OrderedNameMap;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema {
+public class DBSchema implements Named, Serializable {
 
-    private Database database;
+    private static final long serialVersionUID = 5890222751656809426L;
+    
+	private Database database;
     private String name;
     private DBCatalog catalog;
     private OrderedNameMap<DBTable> tables;

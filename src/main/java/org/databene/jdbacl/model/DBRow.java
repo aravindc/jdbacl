@@ -21,6 +21,9 @@
 
 package org.databene.jdbacl.model;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
@@ -29,7 +32,9 @@ import org.databene.commons.collection.OrderedNameMap;
  * @since 0.6.3
  * @author Volker Bergmann
  */
-public class DBRow {
+public class DBRow implements Serializable {
+	
+	private static final long serialVersionUID = 644247555736773166L;
 	
 	DBTable table;
 	OrderedNameMap<Object> cells;
@@ -50,28 +55,29 @@ public class DBRow {
 	public DBTable getTable() {
     	return table;
     }
+	
+	public Map<String, Object> getCells() {
+		return cells;
+	}
 
 	public Object[] getPKValues() {
 		String[] columnNames = table.getPKColumnNames();
-	    return getColumnValues(columnNames);
+	    return getCellValues(columnNames);
     }
 
 	public Object[] getFKValues(DBForeignKeyConstraint fk) {
-		return getColumnValues(fk.getColumns());
+		return getCellValues(fk.getColumnNames());
     }
 
-	private Object[] getColumnValues(String[] columnNames) {
+	private Object[] getCellValues(String[] columnNames) {
 		Object[] result = new Object[columnNames.length];
 		for (int i = 0; i < columnNames.length; i++)
 			result[i] = cells.get(columnNames[i]);
 	    return result;
     }
 
-	private Object[] getColumnValues(DBColumn[] columns) {
-		Object[] result = new Object[columns.length];
-		for (int i = 0; i < columns.length; i++)
-			result[i] = cells.get(columns[i].getName());
-	    return result;
-    }
-
+	@Override
+	public String toString() {
+	    return table.getName() + cells.values();
+	}
 }

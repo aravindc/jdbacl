@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -33,31 +33,18 @@ package org.databene.jdbacl.model;
  */
 public class DBNotNullConstraint extends DBConstraint {
 
-    private DBColumn column;
+    private static final long serialVersionUID = 5087538327994954133L;
+    
+	private String columnName;
 
-    /**
-     * @param column the DBColumn that is not nullable
-     */
-    public DBNotNullConstraint(DBColumn column) {
-        this(null, column);
-    }
-    /**
-     * @param name    the constraint name - it may be null
-     * @param column the DBColumn that is not nullable
-     */
-    public DBNotNullConstraint(String name, DBColumn column) {
-        super(name);
-        this.column = column;
+    public DBNotNullConstraint(DBTable owner, String name, String columnName) {
+        super(owner, name);
+        this.columnName = columnName;
     }
 
     @Override
-    public DBTable getOwner() {
-        return column.getTable();
-    }
-
-    @Override
-    public DBColumn[] getColumns() {
-        return new DBColumn[] { column };
+    public String[] getColumnNames() {
+        return new String[] { columnName };
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,22 +26,28 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.ArrayFormat;
+
 /**
- * Represents  aprimary key constraint in a database.<br/><br/>
+ * Represents a primary key constraint in a database.<br/><br/>
  * Created: 08.01.2007 23:53:56
  * @author Volker Bergmann
  */
 public class DBPrimaryKeyConstraint extends DBUniqueConstraint {
-    /**
+	
+    private static final long serialVersionUID = 2403324107962405097L;
+
+	/**
      * @param name    the constraint name - it may be null
-     * @param columns the DBColumns to which the constraint is applied
+     * @param columnNames the names of the columns to which the constraint is applied
      */
-    public DBPrimaryKeyConstraint(String name, DBColumn... columns) {
-        super(name, columns);
+    public DBPrimaryKeyConstraint(DBTable table, String name, String... columnNames) {
+        super(table, name, columnNames);
     }
 
     @Override
     public String toString() {
-        return getName() + " (" + DBColumn.formatColumnNames(getColumns()) + ')';
+        return getName() + " (" + ArrayFormat.format(getColumnNames()) + ')';
     }
+    
 }

@@ -26,8 +26,11 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.Named;
+import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.collection.OrderedNameMap;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,9 +40,11 @@ import java.util.Set;
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public class Database {
+public class Database implements Named, Serializable {
 	
-    private String name;
+    private static final long serialVersionUID = -374563391798067755L;
+    
+	private String name;
     private OrderedNameMap<DBCatalog> catalogs;
     private OrderedNameMap<DBSchema> schemas;
 
@@ -105,6 +110,18 @@ public class Database {
 
     // table operations ------------------------------------------------------------------------------------------------
     
+    public DBTable getTable(String name) {
+        for (DBCatalog catalog : catalogs.values())
+            for (DBTable table : catalog.getTables())
+            	if (table.getName().equals(name))
+            		return table;
+        for (DBSchema schema : schemas.values())
+            for (DBTable table : schema.getTables())
+            	if (table.getName().equals(name))
+            		return table;
+        throw new ObjectNotFoundException("Table '" + name + "'");
+    }
+    
     public Set<DBTable> getTables() {
     	Set<DBTable> tables = new HashSet<DBTable>();
         for (DBCatalog catalog : catalogs.values())
@@ -116,6 +133,14 @@ public class Database {
         return tables;
     }
     
+	public void removeTable(String tableName) {
+		DBTable table = getTable(tableName);
+		if (table.getCatalog() != null)
+			table.getCatalog().removeTable(table);
+		if (table.getSchema() != null)
+			table.getSchema().removeTable(table);
+    }
+
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
     @Override

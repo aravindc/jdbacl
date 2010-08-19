@@ -26,8 +26,11 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.Named;
+import org.databene.commons.NullSafeComparator;
 import org.databene.commons.collection.OrderedNameMap;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -35,9 +38,11 @@ import java.util.List;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBCatalog {
+public class DBCatalog implements Named, Serializable {
 
-    private String name;
+    private static final long serialVersionUID = 3956827426638393655L;
+    
+	private String name;
     private Database database;
     private OrderedNameMap<DBTable> tables;
     private OrderedNameMap<DBIndex> indexes;
@@ -92,7 +97,6 @@ public class DBCatalog {
     }
 
     public void addTable(DBTable table) {
-        table.setCatalog(this);
         tables.put(table.getName().toUpperCase(), table);
     }
 
@@ -128,12 +132,12 @@ public class DBCatalog {
         if (o == null || getClass() != o.getClass())
             return false;
         final DBCatalog that = (DBCatalog) o;
-        return name.equals(that.name);
+        return NullSafeComparator.equals(this.name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return (name != null ? name.hashCode() : 0);
     }
 
     @Override
