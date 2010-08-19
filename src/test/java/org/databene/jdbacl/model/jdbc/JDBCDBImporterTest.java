@@ -70,17 +70,17 @@ public class JDBCDBImporterTest {
 		for (DBIndex index : indexes) {
 			if (index instanceof DBNonUniqueIndex) {
 				// non-unique nickname index
-				assertEquals(1, index.getColumns().length);
-				assertTrue("NICKNAME".equalsIgnoreCase(index.getColumns()[0].getName()));
+				assertEquals(1, index.getColumnNames().length);
+				assertTrue("NICKNAME".equalsIgnoreCase(index.getColumnNames()[0]));
 			} else if (index instanceof DBUniqueIndex) {
-				if (index.getColumns().length == 1) {
+				if (index.getColumnNames().length == 1) {
 					// PK index
-					assertTrue("ID".equalsIgnoreCase(index.getColumns()[0].getName()));
+					assertTrue("ID".equalsIgnoreCase(index.getColumnNames()[0]));
 				} else {
 					// unique composite index (namespace,name)
-					assertEquals(2, index.getColumns().length);
-					assertTrue("NAMESPACE".equalsIgnoreCase(index.getColumns()[0].getName()));
-					assertTrue("NAME".equalsIgnoreCase(index.getColumns()[1].getName()));
+					assertEquals(2, index.getColumnNames().length);
+					assertTrue("NAMESPACE".equalsIgnoreCase(index.getColumnNames()[0]));
+					assertTrue("NAME".equalsIgnoreCase(index.getColumnNames()[1]));
 				}
 			} else
 				fail("Unexpected index type: " + index.getClass() + '(' + index + ')');
