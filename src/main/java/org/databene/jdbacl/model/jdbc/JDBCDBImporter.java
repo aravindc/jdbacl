@@ -83,7 +83,7 @@ public final class JDBCDBImporter implements DBImporter {
     private TableNameFilter tableNameFilter;
 
 	private boolean importingUKs = true;
-	private boolean eagerColumnFetching = true;
+	private boolean lazy = false;
 	
 	DatabaseMetaData metaData;
 	Database database;
@@ -136,8 +136,8 @@ public final class JDBCDBImporter implements DBImporter {
 	    this.schemaName = schemaName;
     }
     
-	public void setEagerColumnFetching(boolean eagerColumnFetching) {
-    	this.eagerColumnFetching = eagerColumnFetching;
+	public void setLazy(boolean lazy) {
+    	this.lazy = lazy;
     }
 
 	public Database importDatabase() throws ImportFailedException {
@@ -155,7 +155,7 @@ public final class JDBCDBImporter implements DBImporter {
             importCatalogs();
             importSchemas();
             importTables();
-            if (eagerColumnFetching) {
+            if (!lazy) {
             	importColumns();
             	importPrimaryKeys();
 	            if (importingIndexes || importingUKs)
@@ -214,6 +214,7 @@ public final class JDBCDBImporter implements DBImporter {
     private void importTables() throws SQLException {
         logger.info("Importing tables");
         ResultSet tableSet = metaData.getTables(catalogName, schemaName, null, null);
+        List<DBTable> importedTables = new ArrayList<DBTable>();
         while (tableSet.next()) {
 
             // parsing ResultSet line
@@ -236,33 +237,44 @@ public final class JDBCDBImporter implements DBImporter {
             if (logger.isDebugEnabled())
                 logger.debug("importing table: " + tCatalogName + ", " + tSchemaName + ", " + tableName + ", " + tableType + ", " + tableRemarks);
 
-            importTable(database.getCatalog(tCatalogName), database.getSchema(tSchemaName), tableName, tableRemarks, eagerColumnFetching);
+            DBTable table = createTable(database.getCatalog(tCatalogName), database.getSchema(tSchemaName), tableName, tableRemarks, lazy);
+            importedTables.add(table);
         }
+        if (!lazy)
+        	for (DBTable table : importedTables)
+        		importTableDetails((DefaultDBTable) table);
         tableSet.close();
     }
 
-	DBTable importTable(DBCatalog catalog, DBSchema schema, String tableName, String remarks, boolean eagerFetching) {
-		DBTable table;
-		if (eagerFetching) {
+	DefaultDBTable importTable(DBCatalog catalog, DBSchema schema, String tableName, String remarks) {
+		DefaultDBTable table = (DefaultDBTable) createTable(catalog, schema, tableName, remarks, false);
+		importTableDetails(table);
+        return table;
+    }
+
+	private void importTableDetails(DefaultDBTable table) {
+	    importColumns(table.getCatalog(), table.getSchema().getName(), table.getName(), null, null);
+	    importPrimaryKeys(table);
+	    importImportedKeys(table);
+	    importRefererTables(table);
+    }
+
+	private DBTable createTable(DBCatalog catalog, DBSchema schema, String tableName, String remarks, boolean lazy) {
+	    DBTable table;
+		if (lazy) {
+			table = new LazyTable(this, catalog, schema, tableName, remarks);
+		} else {
 			DefaultDBTable dTable = new DefaultDBTable(tableName);
 			dTable.setDoc(remarks);
             dTable.setCatalog(catalog);
 			dTable.setSchema(schema);
 			table = dTable;
-		} else
-			table = new LazyTable(this, catalog, schema, tableName, remarks);
+		}
         if (schema != null)
             schema.addTable(table);
         if (catalog != null)
             catalog.addTable(table);
-        if (eagerFetching) {
-			importColumns(catalog, schema.getName(), tableName, null, null);
-			DefaultDBTable dTable = (DefaultDBTable) table;
-			importPrimaryKeys(dTable);
-			importImportedKeys(dTable);
-			importRefererTables(dTable);
-        }
-        return table;
+	    return table;
     }
 
 	private boolean isOracle() {
