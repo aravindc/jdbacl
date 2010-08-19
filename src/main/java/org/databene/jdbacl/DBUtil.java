@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -40,7 +40,6 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.converter.AnyConverter;
 import org.databene.commons.converter.ToStringConverter;
-import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -414,18 +413,18 @@ public class DBUtil {
         }
     }
 
-    public static String renderQuery(DBTable table, DBColumn[] columns, Object[] values) {
+    public static String renderQuery(DBTable table, String[] columnNames, Object[] values) {
 		StringBuilder builder = new StringBuilder("SELECT * FROM ").append(table.getName());
-		builder.append(" WHERE ").append(renderWhereClause(columns, values));
+		builder.append(" WHERE ").append(renderWhereClause(columnNames, values));
 		return builder.toString();
     }
     
-    public static String renderWhereClause(DBColumn[] columns, Object[] values) {
+    public static String renderWhereClause(String[] columnNames, Object[] values) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < columns.length; i++) {
+		for (int i = 0; i < columnNames.length; i++) {
 			if (i > 0)
 				builder.append(" AND ");
-			builder.append(columns[i].getName()).append(" = ").append(renderValue(values[i]));
+			builder.append(columnNames[i]).append(" = ").append(renderValue(values[i]));
 		}
 		return builder.toString();
     }
