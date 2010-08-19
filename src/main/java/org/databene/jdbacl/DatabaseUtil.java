@@ -21,10 +21,13 @@
 
 package org.databene.jdbacl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.databene.commons.depend.DependencyModel;
+import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
 
 /**
@@ -33,7 +36,7 @@ import org.databene.jdbacl.model.Database;
  * @since 0.6.3
  * @author Volker Bergmann
  */
-public class DatabaseUtil {
+public class DatabaseUtil { // TODO class name is too close to DBUtil
 
     public static List<DBTable> dependencyOrderedTables(Database database) {
         DependencyModel<DBTable> model = new DependencyModel<DBTable>();
@@ -42,4 +45,8 @@ public class DatabaseUtil {
         return model.dependencyOrderedObjects(true);
     }
 
+	public static boolean equivalent(DBUniqueConstraint uk, DBPrimaryKeyConstraint pk) {
+	    return Arrays.equals(uk.getColumnNames(), pk.getColumnNames());
+    }
+    
 }
