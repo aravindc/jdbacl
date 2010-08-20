@@ -140,7 +140,7 @@ public class LazyTable implements DBTable {
 
 	public DefaultDBTable getRealTable() {
 		if (realTable == null)
-			realTable = (DefaultDBTable) importer.importTable(catalog, schema, tableName, remarks);
+			realTable = importer.importTable(catalog, schema, tableName, remarks);
 	    return realTable;
     }
 
