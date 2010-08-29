@@ -551,7 +551,8 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	    return tableNameFilter.accept(tableName);
     }
 
-	private void importImportedKeys(DefaultDBTable table) {
+	@SuppressWarnings("null")
+    private void importImportedKeys(DefaultDBTable table) {
         logger.debug("Importing imported keys for table {}", table.getName());
         DBCatalog catalog = table.getCatalog();
         DBSchema schema = table.getSchema();
