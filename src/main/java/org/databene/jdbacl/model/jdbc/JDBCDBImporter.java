@@ -54,6 +54,7 @@ import org.databene.jdbacl.model.DefaultDBTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -63,7 +64,7 @@ import java.util.regex.Pattern;
  * Created: 06.01.2007 19:16:45
  * @author Volker Bergmann
  */
-public final class JDBCDBImporter implements DBImporter {
+public final class JDBCDBImporter implements DBImporter, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JDBCDBImporter.class);
 
@@ -293,7 +294,7 @@ public final class JDBCDBImporter implements DBImporter {
         String catalogName = catalog.getName();
         Database database = catalog.getDatabase();
         String schemaPattern = (schemaName != null ? schemaName : (database.getSchemas().size() == 1 ? database.getSchemas().get(0).getName() : null));
-        logger.info("Importing columns for catalog '{}' and schemaPattern '{}'", catalogName, schemaName);
+        logger.debug("Importing columns for catalog '" + catalogName + "', schemaPattern '" + schemaName + "', tablePattern '" + tablePattern + "'");
         ResultSet columnSet = null;
         try {
         	columnSet = metaData.getColumns(catalogName, schemaPattern, tablePattern, null);
@@ -603,10 +604,12 @@ public final class JDBCDBImporter implements DBImporter {
 	            String fktable_cat = resultSet.getString(5);
 	            String fktable_schem = resultSet.getString(6);
 	            String fktable_name = resultSet.getString(7);
-	            DBTable referrer = database.getTable(fktable_name);
-	            if (logger.isDebugEnabled())
-	            	logger.debug("Imported referrer: " + referrer);
-	            table.addReferrer(referrer);
+	            if (tableSupported(fktable_name)) {
+		            DBTable referrer = database.getTable(fktable_name);
+		            if (logger.isDebugEnabled())
+		            	logger.debug("Imported referrer: " + referrer);
+		            table.addReferrer(referrer);
+	            }
 	        }
         } catch (SQLException e) {
         	errorHandler.handleError("Error importing foreign key constraints", e);
@@ -635,6 +638,10 @@ public final class JDBCDBImporter implements DBImporter {
 
         }
     	
+    }
+
+	public Connection getConnection() {
+	    return connection;
     }
 
 }
