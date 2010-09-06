@@ -50,6 +50,7 @@ import java.util.Set;
 public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Serializable {
 
     private static final long serialVersionUID = 6829370969378083211L;
+    private static final String[] EMPTY_ARRAY = new String[0];
     
 	private DBCatalog catalog;
     private DBSchema schema;
@@ -215,7 +216,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
     
 	public String[] getPKColumnNames() {
-        return primaryKeyConstraint.getColumnNames();
+		return (primaryKeyConstraint != null ? primaryKeyConstraint.getColumnNames() : EMPTY_ARRAY);
 	}
 
     // row operations --------------------------------------------------------------------------------------------------
