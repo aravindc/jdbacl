@@ -71,8 +71,12 @@ public class DBForeignKeyConstraint extends DBConstraint {
 
     public String columnReferencedBy(String fkColumnName, boolean required) {
     	int index = ArrayUtil.indexOf(fkColumnName, fkColumnNames);
-    	if (index < 0 && required)
-    		throw new ObjectNotFoundException("foreign key '" + name + "' does not have a column '" + fkColumnName + "'");
+    	if (index < 0) {
+    		if (required)
+    			throw new ObjectNotFoundException("foreign key '" + name + "' does not have a column '" + fkColumnName + "'");
+    		else
+    			return null;
+    	}
     	return refereeColumnNames[index];
     }
 
