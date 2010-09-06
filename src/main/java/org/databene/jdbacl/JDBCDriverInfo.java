@@ -235,6 +235,7 @@ public class JDBCDriverInfo implements Serializable {
 
 	public static final JDBCDriverInfo HSQL = getInstance("HSQL");
 	public static final JDBCDriverInfo FIREBIRD = getInstance("FIREBIRD");
+	public static final JDBCDriverInfo ORACLE = getInstance("ORACLE");
 	
 	public static Collection<JDBCDriverInfo> getInstances() {
 		return instances.values();
