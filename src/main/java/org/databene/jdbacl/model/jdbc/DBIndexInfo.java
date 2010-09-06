@@ -62,10 +62,13 @@ class DBIndexInfo {
 
     public void addColumn(short ordinalPosition, String columnName) {
         int expectedPosition = columnNames.length + 1;
-        if (ordinalPosition != expectedPosition)
-            throw new IllegalArgumentException("ordinalPosition is expected to be " + expectedPosition + ", " +
+        if (ordinalPosition == expectedPosition)
+        	columnNames = ArrayUtil.append(columnNames, columnName);
+        else {
+        	if (ordinalPosition > expectedPosition || !columnNames[ordinalPosition - 1].equals(columnName))
+        		throw new IllegalArgumentException("ordinalPosition is expected to be " + expectedPosition + ", " +
                     "found: " + ordinalPosition);
-        columnNames = ArrayUtil.append(columnNames, columnName);
+        }
     }
     
 }
