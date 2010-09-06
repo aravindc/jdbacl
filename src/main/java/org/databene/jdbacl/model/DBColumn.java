@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.databene.commons.ArrayUtil;
 import org.databene.commons.Named;
 
 /**
@@ -50,7 +51,7 @@ public class DBColumn implements Named, Serializable {
     private DBTable table;
     private boolean versionColumn;
 
-    private List<DBConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
+    private List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
     private DBConstraint notNullConstraint;
 //    private DBForeignKeyConstraint fkConstraint;
 
@@ -80,7 +81,7 @@ public class DBColumn implements Named, Serializable {
         this.fractionDigits = fractionDigits;
         this.doc = null;
         this.defaultValue = null;
-        this.ukConstraints = new ArrayList<DBConstraint>();
+        this.ukConstraints = new ArrayList<DBUniqueConstraint>();
         this.notNullConstraint = null;
 //        this.fkConstraint = null;
         this.versionColumn = false;
@@ -140,11 +141,18 @@ public class DBColumn implements Named, Serializable {
         this.defaultValue = defaultValue;
     }
 
-    public List<DBConstraint> getUkConstraints() {
+    public boolean isUnique() {
+    	for (DBUniqueConstraint constraint : ukConstraints)
+    		if (constraint.getColumnNames().length == 1)
+    			return true;
+    	return false;
+    }
+    
+    public List<DBUniqueConstraint> getUkConstraints() {
         return ukConstraints;
     }
 
-    public void addUkConstraint(DBConstraint constraint) {
+    public void addUkConstraint(DBUniqueConstraint constraint) {
         this.ukConstraints.add(constraint);
     }
 
@@ -178,6 +186,13 @@ public class DBColumn implements Named, Serializable {
 
     public void setVersionColumn(boolean versionColumn) {
         this.versionColumn = versionColumn;
+    }
+
+	public boolean isForeignKeyComponent() {
+		for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints())
+			if (ArrayUtil.contains(fk.getColumnNames(), name))
+				return true;
+	    return false;
     }
 
     // java.lang.overrides ---------------------------------------------------------------------------------------------
