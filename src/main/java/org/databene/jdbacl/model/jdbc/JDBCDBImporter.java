@@ -214,7 +214,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 
     private void importTables() throws SQLException {
         logger.info("Importing tables");
-        ResultSet tableSet = metaData.getTables(catalogName, schemaName, null, null);
+        ResultSet tableSet = metaData.getTables(catalogName, schemaName, null, new String[] { "TABLE", "VIEW" });
         List<DBTable> importedTables = new ArrayList<DBTable>();
         while (tableSet.next()) {
 
@@ -645,4 +645,9 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	    return connection;
     }
 
+	@Override
+	public String toString() {
+	    return getClass().getSimpleName();
+	}
+	
 }
