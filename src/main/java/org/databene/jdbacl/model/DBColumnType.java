@@ -76,13 +76,24 @@ public class DBColumnType implements Named, Serializable {
     }
 
     public boolean isLOB() {
-        return name.endsWith("CLOB") || "BLOB".equals(name);
+        return name.endsWith("CLOB") || 
+        	"BLOB".equals(name);
     }
 
     public boolean isAlpha() {
-        return jdbcType == Types.VARCHAR || jdbcType == Types.CHAR
-                || jdbcType == Types.CLOB || jdbcType == Types.LONGVARCHAR
-                || name.endsWith("VARCHAR2") || name.endsWith("CLOB");
+        return jdbcType == Types.VARCHAR || 
+        	jdbcType == Types.CHAR || 
+        	jdbcType == Types.CLOB || 
+        	jdbcType == Types.LONGVARCHAR || 
+        	name.endsWith("VARCHAR2") || 
+        	name.endsWith("CLOB");
+    }
+
+	public boolean isTemporal() {
+	    return jdbcType == Types.DATE || 
+	    	jdbcType == Types.TIMESTAMP || 
+	    	name.contains("DATE") || 
+	    	name.contains("TIME");
     }
 
 // java.lang.Object overrides --------------------------------------------------------------------------------------
