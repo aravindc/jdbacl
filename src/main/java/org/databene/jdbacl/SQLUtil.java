@@ -21,6 +21,11 @@
 
 package org.databene.jdbacl;
 
+import java.util.Set;
+
+import org.databene.commons.CollectionUtil;
+import org.databene.jdbacl.model.DBColumn;
+
 /**
  * TODO Document class.<br/><br/>
  * Created: 01.09.2010 09:38:46
@@ -28,6 +33,42 @@ package org.databene.jdbacl;
  * @author Volker Bergmann
  */
 public class SQLUtil {
+	
+	private static final Set<String> NO_SIZE_TYPES = CollectionUtil.toSet(
+			"DATE", "BLOB", "CLOB", "NCLOB");
+
+	public static String renderColumn(DBColumn column) {
+		StringBuilder builder = new StringBuilder();
+		
+	    // column name
+	    builder.append(column.getName());
+	    
+	    // column type & size
+		builder.append(' ');
+		renderTypeAndSize(column, builder);
+	    
+	    // default
+	    if (column.getDefaultValue() != null)
+	    	builder.append(" DEFAULT " + column.getDefaultValue());
+	    
+	    // nullability
+	    if (!column.isNullable())
+	    	builder.append(" NOT NULL");
+	    
+	    return builder.toString();
+    }
+
+	private static void renderTypeAndSize(DBColumn column, StringBuilder builder) {
+	    String typeName = column.getType().getName();
+	    builder.append(typeName);
+	    if (column.getSize() != null && !NO_SIZE_TYPES.contains(typeName)) {
+	    	builder.append("(" + column.getSize());
+	    	if (column.getFractionDigits() != null)
+	    		builder.append("," + column.getFractionDigits());
+	    	builder.append(")");
+	    }
+    }
+	
 
 	public static String renderValue(Object value) {
 		return (value instanceof String ? "'" + value.toString() + "'" : String.valueOf(value));
