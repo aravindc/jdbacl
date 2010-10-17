@@ -37,6 +37,8 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.Level;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBColumnType;
@@ -69,6 +71,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
     private static final Logger logger = LoggerFactory.getLogger(JDBCDBImporter.class);
 
     private final Connection connection;
+    private DatabaseDialect dialect;
 
     private final String user;
     
@@ -137,6 +140,10 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	    this.schemaName = schemaName;
     }
     
+    public void setCatalogName(String catalogName) {
+	    this.catalogName = catalogName;
+    }
+    
 	public void setLazy(boolean lazy) {
     	this.lazy = lazy;
     }
@@ -150,6 +157,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
             productName = metaData.getDatabaseProductName();
             if (logger.isDebugEnabled())
                 logger.debug("Product name: " + productName);
+            dialect = DatabaseDialectManager.getDialectForProduct(productName);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", connection);
             database = new Database();
@@ -184,7 +192,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
             String catalogName = catalogSet.getString(1);
             logger.debug("found catalog " + catalogName);
             if ((schemaName == null && user.equalsIgnoreCase(catalogName)) 
-            		|| (schemaName != null && schemaName.equalsIgnoreCase(catalogName))
+            		|| (schemaName != null && this.catalogName.equalsIgnoreCase(catalogName))
             		|| catalogName.equalsIgnoreCase(connection.getCatalog()))
                 this.catalogName = catalogName;
             database.addCatalog(new DBCatalog(catalogName));
@@ -200,7 +208,8 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
         ResultSet schemaSet = metaData.getSchemas();
         while (schemaSet.next()) {
             String schemaName = schemaSet.getString(1);
-            if (this.schemaName == null || schemaName.equalsIgnoreCase(this.schemaName)) {
+            if (schemaName.equalsIgnoreCase(this.schemaName) 
+            		|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
 	            logger.debug("importing schema {}", schemaName);
 	            if (schemaName.equalsIgnoreCase(this.schemaName))
 	            	this.schemaName = schemaName; // take over capitalization used in the DB
@@ -212,7 +221,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
         schemaSet.close();
     }
 
-    private void importTables() throws SQLException {
+	private void importTables() throws SQLException {
         logger.info("Importing tables");
         ResultSet tableSet = metaData.getTables(catalogName, schemaName, null, new String[] { "TABLE", "VIEW" });
         List<DBTable> importedTables = new ArrayList<DBTable>();
