@@ -1,0 +1,6 @@
+Release Notes jdbacl 0.6.4
+--------------------------
+
+Enhancements
+- Introduced 'catalog' property in JDBCDBImporter
+- Added default catalog and schema recognition to DatabaseDialect
