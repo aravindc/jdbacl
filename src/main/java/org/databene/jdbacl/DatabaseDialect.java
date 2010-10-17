@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DatabaseDialect {
 	
-	private static final String DEFAULT_TIMESTAMP_PREFIX_PATTERN = "yyyy-MM-dd HH:mm:ss.";
+	private static final String DEFAULT_TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -74,6 +74,10 @@ public abstract class DatabaseDialect {
     	return system;
     }
 
+    public abstract boolean isDefaultCatalog(String catalog, String user);
+    
+    public abstract boolean isDefaultSchema(String schema, String user);
+    
 	public boolean isSequenceSupported() {
     	return sequenceSupported;
     }
@@ -176,7 +180,7 @@ public abstract class DatabaseDialect {
     }
 
 	public String formatTimestamp(Timestamp timestamp) {
-		return "'" + new TimestampFormatter(DEFAULT_TIMESTAMP_PREFIX_PATTERN).format(timestamp) + "'";
+		return "'" + new TimestampFormatter(DEFAULT_TIMESTAMP_PATTERN).format(timestamp) + "'";
 	}
 	
 	
