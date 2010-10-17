@@ -48,6 +48,16 @@ public class HSQLDialect extends DatabaseDialect {
     }
 
 	@Override
+    public boolean isDefaultCatalog(String catalog, String user) {
+	    return (catalog == null);
+    }
+
+	@Override
+    public boolean isDefaultSchema(String schema, String user) {
+	    return "PUBLIC".equals(schema);
+    }
+
+	@Override
     public String[] querySequences(Connection connection) throws SQLException {
         String query = "select sequence_name from information_schema.system_sequences";
         return DBUtil.queryScalarArray(query, String.class, connection);

@@ -44,6 +44,16 @@ public class H2Dialect extends DatabaseDialect {
     }
 
 	@Override
+    public boolean isDefaultCatalog(String catalog, String user) {
+	    return (catalog == null);
+    }
+
+	@Override
+    public boolean isDefaultSchema(String schema, String user) {
+	    return "PUBLIC".equals(schema);
+    }
+
+	@Override
     public String[] querySequences(Connection connection) throws SQLException {
         String query = "select SEQUENCE_NAME from INFORMATION_SCHEMA.SEQUENCES";
         // TODO v0.7 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html

@@ -43,4 +43,14 @@ public class UnknownDialect extends DatabaseDialect {
 	    super(system, false, false, DATE_PATTERN, TIME_PATTERN);
     }
 
+	@Override
+    public boolean isDefaultCatalog(String catalog, String user) {
+	    return true;
+    }
+
+	@Override
+    public boolean isDefaultSchema(String schema, String user) {
+	    return true;
+    }
+
 }

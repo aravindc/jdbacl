@@ -45,6 +45,16 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN);
     }
 
+    @Override
+    public boolean isDefaultCatalog(String catalog, String user) {
+        return true; // TODO default catalog for PostgreSQL
+    }
+    
+    @Override
+    public boolean isDefaultSchema(String schema, String user) {
+        return true; // TODO default schema for PostgreSQL
+    }
+    
 	@Override
     public String renderFetchSequenceValue(String sequenceName) {
         return "select nextval('" + sequenceName + "')";

@@ -54,6 +54,16 @@ public class FirebirdDialect extends DatabaseDialect {
     	return "org.firebirdsql.jdbc.FBDriver";
     }
     
+	@Override
+    public boolean isDefaultCatalog(String catalog, String user) {
+	    return true;
+    }
+
+	@Override
+    public boolean isDefaultSchema(String schema, String user) {
+	    return true;
+    }
+
     @Override
     public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
     	DBUtil.executeUpdate(renderCreateSequence(name), connection);

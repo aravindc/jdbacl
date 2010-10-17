@@ -43,12 +43,22 @@ public class OracleDialect extends DatabaseDialect {
 	private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd HH:mm:ss''', ''yyyy-mm-dd HH24:mi:ss'')'";
 	private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
     private static final String TIMESTAMP_MESSAGE = "to_timestamp(''{0}'', ''yyyy-mm-dd HH24:mi:ss.FF'')";
-    private static final String TIMESTAMP_PREFIX_PATTERN = "yyyy-MM-dd HH:mm:ss.";
+    private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
 
 	public OracleDialect() {
 	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN);
     }
 
+	@Override
+	public boolean isDefaultCatalog(String catalog, String user) {
+	    return (catalog == null);
+	}
+	
+	@Override
+	public boolean isDefaultSchema(String schema, String user) {
+	    return user.equals(schema);
+	}
+	
 	@Override
     public String renderFetchSequenceValue(String sequenceName) {
         return "select " + sequenceName + ".nextval from dual";
@@ -56,7 +66,7 @@ public class OracleDialect extends DatabaseDialect {
 	
 	@Override
     public String formatTimestamp(Timestamp value) {
-		String renderedTimestamp = new TimestampFormatter(TIMESTAMP_PREFIX_PATTERN).format(value);
+		String renderedTimestamp = new TimestampFormatter(TIMESTAMP_PATTERN).format(value);
 		return MessageFormat.format(TIMESTAMP_MESSAGE, renderedTimestamp);
     }
 

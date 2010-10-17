@@ -43,4 +43,14 @@ public class DerbyDialect extends DatabaseDialect {
 	    super("derby", false, false, DATE_PATTERN, TIME_PATTERN);
     }
 
+	@Override
+    public boolean isDefaultCatalog(String catalog, String user) {
+	    return true; // TODO default catalog for Derby
+    }
+
+	@Override
+    public boolean isDefaultSchema(String schema, String user) {
+	    return true; // TODO default schema for Derby
+    }
+
 }
