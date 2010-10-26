@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -46,6 +47,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
     private ResultSet resultSet;
     private Boolean hasNext;
+    private String[] columnLabels;
 
     private String query;
     
@@ -63,6 +65,21 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
     // interface -------------------------------------------------------------------------------------------------------
 
+    public String[] getColumnLabels() {
+    	if (columnLabels == null) {
+    		try {
+	            ResultSetMetaData metaData = resultSet.getMetaData();
+	            int n = metaData.getColumnCount();
+	            columnLabels = new String[n];
+	            for (int i = 0; i < n; i++)
+	            	columnLabels[i] = metaData.getColumnLabel(i + 1);
+            } catch (SQLException e) {
+	            throw new RuntimeException("Error querying column meta data", e);
+            }
+    	}
+    	return columnLabels;
+    }
+    
     public boolean hasNext() {
         if (logger.isDebugEnabled())
             logger.debug("hasNext() called on: " + this);

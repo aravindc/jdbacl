@@ -58,4 +58,8 @@ public class QueryIterator extends IteratorProxy<ResultSet> {
         }
     }
 
+	public String[] getColumnLabels() {
+	    return ((ResultSetIterator) source).getColumnLabels();
+    }
+
 }
