@@ -34,10 +34,11 @@ import org.databene.commons.iterator.ConvertingIterator;
  */
 public class ArrayResultSetIterator extends ConvertingIterator<ResultSet, Object[]> {
 	
-	// TODO test
-
 	public ArrayResultSetIterator(Connection connection, String query) {
 	    super(new QueryIterator(query, connection, 500), new ResultSetConverter<Object[]>(Object[].class, false));
     }
 
+	public String[] getColumnLabels() {
+		return ((QueryIterator) source).getColumnLabels();
+	}
 }
