@@ -58,6 +58,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     }
 
     public ResultSetIterator(ResultSet resultSet, String query) {
+    	if (resultSet == null)
+    		throw new IllegalArgumentException("resultSet is null");
         this.resultSet = resultSet;
         this.hasNext = null;
         this.query = query;
