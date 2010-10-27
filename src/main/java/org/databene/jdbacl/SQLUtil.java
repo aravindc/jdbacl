@@ -27,9 +27,9 @@ import org.databene.commons.CollectionUtil;
 import org.databene.jdbacl.model.DBColumn;
 
 /**
- * TODO Document class.<br/><br/>
+ * Provides utility methods for creating SQL queries and commands.<br/><br/>
  * Created: 01.09.2010 09:38:46
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
 public class SQLUtil {

@@ -32,9 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO Document class.<br/><br/>
+ * Performs a query and wraps the result set with an {@link Iterator} interface.<br/><br/>
  * Created: 13.10.2010 13:17:42
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
 public class QueryIterator extends IteratorProxy<ResultSet> {
