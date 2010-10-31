@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -41,7 +41,6 @@ public abstract class DBIndex implements Named, Serializable {
 	private static final long serialVersionUID = -1656761838194962745L;
 	
 	private String name;
-    private DBCatalog catalog;
 
     public DBIndex() {
         this(null);
@@ -63,14 +62,6 @@ public abstract class DBIndex implements Named, Serializable {
         return name;
     }
 
-    public DBCatalog getCatalog() {
-        return catalog;
-    }
-
-    public void setCatalog(DBCatalog catalog) {
-        this.catalog = catalog;
-    }
-
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
     @Override
@@ -82,4 +73,5 @@ public abstract class DBIndex implements Named, Serializable {
         builder.append(isUnique() ? " unique" : "");
         return builder.toString();
     }
+    
 }
