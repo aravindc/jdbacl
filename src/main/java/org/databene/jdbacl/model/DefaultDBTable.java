@@ -30,6 +30,7 @@ import org.databene.commons.Named;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.SQLUtil;
 import org.databene.commons.depend.Dependent;
 
 import java.io.Serializable;
@@ -57,7 +58,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     private String name;
     private String doc;
     private OrderedNameMap<DBColumn> columns;
-    private DBPrimaryKeyConstraint primaryKeyConstraint;
+    private DBPrimaryKeyConstraint pkConstraint;
     private List<DBUniqueConstraint> uniqueConstraints;
     private List<DBForeignKeyConstraint> foreignKeyConstraints;
     private Set<DBTable> referrers;
@@ -77,7 +78,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
         this.name = name;
         this.catalog = catalog;
         this.columns = new OrderedNameMap<DBColumn>();
-        this.primaryKeyConstraint = null;
+        this.pkConstraint = null;
         this.doc = null;
         this.schema = null;
         this.indexes = new OrderedNameMap<DBIndex>();
@@ -121,11 +122,11 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
 
     public void setPrimaryKeyConstraint(DBPrimaryKeyConstraint constraint) {
-        this.primaryKeyConstraint = constraint;
+        this.pkConstraint = constraint;
     }
 
     public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
-        return primaryKeyConstraint;
+        return pkConstraint;
     }
 
     // column operations -----------------------------------------------------------------------------------------------
@@ -216,7 +217,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
     
 	public String[] getPKColumnNames() {
-		return (primaryKeyConstraint != null ? primaryKeyConstraint.getColumnNames() : EMPTY_ARRAY);
+		return (pkConstraint != null ? pkConstraint.getColumnNames() : EMPTY_ARRAY);
 	}
 
     // row operations --------------------------------------------------------------------------------------------------
@@ -230,11 +231,11 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
 		return ((Number) result).longValue();
 	}
 
-    public DBRow queryById(Object[] idParts, Connection connection) throws SQLException {
-    	String[] pkColumnNames = primaryKeyConstraint.getColumnNames();
+    public DBRow queryByPK(Object[] idParts, Connection connection) throws SQLException {
+    	String[] pkColumnNames = pkConstraint.getColumnNames();
     	if (pkColumnNames.length == 0)
     		throw new ObjectNotFoundException("Table " + name + " has no primary key");
-		String whereClause = DBUtil.renderWhereClause(pkColumnNames, idParts);
+		String whereClause = SQLUtil.renderWhereClause(pkColumnNames, idParts);
         DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
         if (!iterator.hasNext())
         	throw new ObjectNotFoundException("No " + name + " row with id " + idParts); // TODO handle arrays
@@ -242,7 +243,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
     
     public Iterator<DBRow> queryByColumnValues(String[] columns, Object[] values, Connection connection) throws SQLException {
-		String whereClause = DBUtil.renderWhereClause(columns, values);
+		String whereClause = SQLUtil.renderWhereClause(columns, values);
         return new DBRowIterator(this, connection, whereClause);
     }
     

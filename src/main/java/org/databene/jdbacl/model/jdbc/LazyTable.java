@@ -49,24 +49,22 @@ public class LazyTable implements DBTable {
 
 	private static final long serialVersionUID = 188548842580766795L;
 	
+	private String name;
+	private String doc;
 	private JDBCDBImporter importer;
-	private DBCatalog catalog;
 	private DBSchema schema;
-	private String tableName;
-	private String remarks;
 	
 	private DefaultDBTable realTable;
 	
-	public LazyTable(JDBCDBImporter importer, DBCatalog catalog, DBSchema schema, String tableName, String remarks) {
+	public LazyTable(JDBCDBImporter importer, DBSchema schema, String tableName, String doc) {
 	    this.importer = importer;
-	    this.catalog = catalog;
 	    this.schema = schema;
-	    this.tableName = tableName;
-	    this.remarks = remarks;
+	    this.name = tableName;
+	    this.doc = doc;
     }
 
 	public DBCatalog getCatalog() {
-		return catalog;
+		return schema.getCatalog();
     }
 
 	public DBSchema getSchema() {
@@ -74,11 +72,11 @@ public class LazyTable implements DBTable {
     }
 
 	public String getName() {
-	    return tableName;
+	    return name;
     }
 
 	public String getDoc() {
-	    return remarks;
+	    return doc;
     }
 
 	public DBColumn getColumn(String columnName) {
@@ -130,8 +128,8 @@ public class LazyTable implements DBTable {
 	    return getRealTable().queryByColumnValues(columnNames, values, connection);
     }
 
-	public DBRow queryById(Object[] idParts, Connection connection) throws SQLException {
-	    return getRealTable().queryById(idParts, connection);
+	public DBRow queryByPK(Object[] idParts, Connection connection) throws SQLException {
+	    return getRealTable().queryByPK(idParts, connection);
     }
 
 	public Iterator<DBRow> allRows(Connection connection) throws SQLException {
@@ -140,7 +138,7 @@ public class LazyTable implements DBTable {
 
 	public DefaultDBTable getRealTable() {
 		if (realTable == null)
-			realTable = importer.importTable(catalog, schema, tableName, remarks);
+			realTable = importer.importTable(getCatalog(), schema, name, doc);
 	    return realTable;
     }
 
@@ -162,16 +160,15 @@ public class LazyTable implements DBTable {
 	
 	@Override
 	public String toString() {
-		return tableName;
+		return name;
 	}
 
 	@Override
     public int hashCode() {
 	    final int prime = 31;
 	    int result = 1;
-	    result = prime * result + ((catalog == null) ? 0 : catalog.hashCode());
 	    result = prime * result + ((schema == null) ? 0 : schema.hashCode());
-	    result = prime * result + ((tableName == null) ? 0 : tableName.hashCode());
+	    result = prime * result + ((name == null) ? 0 : name.hashCode());
 	    return result;
     }
 
@@ -182,11 +179,9 @@ public class LazyTable implements DBTable {
 	    if (other == null || !(other instanceof DBTable))
 		    return false;
 	    DBTable that = (DBTable) other;
-	    if (!NullSafeComparator.equals(this.catalog, that.getCatalog()))
+	    if (!NullSafeComparator.equals(this.schema, that.getSchema()))
 	    	return false;
-	    else if (!NullSafeComparator.equals(this.schema, that.getSchema()))
-	    	return false;
-	    return NullSafeComparator.equals(this.tableName, that.getName());
+	    return NullSafeComparator.equals(this.name, that.getName());
     }
 
 }
