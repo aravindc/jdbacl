@@ -42,11 +42,10 @@ import java.util.Set;
  */
 public class Database implements Named, Serializable {
 	
-    private static final long serialVersionUID = -374563391798067755L;
-    
+	private static final long serialVersionUID = -1873203097942961523L;
+	
 	private String name;
     private OrderedNameMap<DBCatalog> catalogs;
-    private OrderedNameMap<DBSchema> schemas;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -59,7 +58,6 @@ public class Database implements Named, Serializable {
         this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
         if (catalogs != null)
             this.catalogs.putAll(catalogs);
-        this.schemas = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -88,57 +86,27 @@ public class Database implements Named, Serializable {
         catalog.setDatabase(null);
     }
 
-    // schema operations -----------------------------------------------------------------------------------------------
-
-    public List<DBSchema> getSchemas() {
-        return schemas.values();
-    }
-
-    public DBSchema getSchema(String schemaName) {
-        return schemas.get(schemaName);
-    }
-
-    public void addSchema(DBSchema schema) {
-        schema.setDatabase(this);
-        schemas.put(schema.getName(), schema);
-    }
-
-    public void removeSchema(DBSchema schema) {
-        schemas.remove(schema.getName());
-        schema.setDatabase(null);
-    }
-
     // table operations ------------------------------------------------------------------------------------------------
-    
-    public DBTable getTable(String name) {
-        for (DBCatalog catalog : catalogs.values())
-            for (DBTable table : catalog.getTables())
-            	if (table.getName().equals(name))
-            		return table;
-        for (DBSchema schema : schemas.values())
-            for (DBTable table : schema.getTables())
-            	if (table.getName().equals(name))
-            		return table;
-        throw new ObjectNotFoundException("Table '" + name + "'");
-    }
-    
+
     public Set<DBTable> getTables() {
     	Set<DBTable> tables = new HashSet<DBTable>();
         for (DBCatalog catalog : catalogs.values())
             for (DBTable table : catalog.getTables())
             	tables.add(table);
-        for (DBSchema schema : schemas.values())
-            for (DBTable table : schema.getTables())
-            	tables.add(table);
         return tables;
+    }
+
+    public DBTable getTable(String name) {
+        for (DBCatalog catalog : catalogs.values())
+            for (DBTable table : catalog.getTables())
+            	if (table.getName().equals(name))
+            		return table;
+        throw new ObjectNotFoundException("Table '" + name + "'");
     }
     
 	public void removeTable(String tableName) {
 		DBTable table = getTable(tableName);
-		if (table.getCatalog() != null)
-			table.getCatalog().removeTable(table);
-		if (table.getSchema() != null)
-			table.getSchema().removeTable(table);
+		catalogs.get(table.getCatalog()).removeTable(tableName);
     }
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------

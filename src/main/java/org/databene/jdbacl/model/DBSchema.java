@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -41,7 +41,6 @@ public class DBSchema implements Named, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
-	private Database database;
     private String name;
     private DBCatalog catalog;
     private OrderedNameMap<DBTable> tables;
@@ -56,25 +55,21 @@ public class DBSchema implements Named, Serializable {
         this(null, name);
     }
 
-    public DBSchema(Database database, String name) {
+    public DBSchema(DBCatalog catalog, String name) {
         this.name = name;
-        this.database = database;
+        this.catalog = catalog;
         this.catalog = null;
         this.tables = new OrderedNameMap<DBTable>();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
 
-    public Database getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(Database database) {
-        this.database = database;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public Database getDatabase() {
+        return getCatalog().getDatabase();
     }
 
     // catalog operations ----------------------------------------------------------------------------------------------

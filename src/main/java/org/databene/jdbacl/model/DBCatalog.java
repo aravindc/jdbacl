@@ -28,9 +28,11 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.Named;
 import org.databene.commons.NullSafeComparator;
+import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.collection.OrderedNameMap;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,10 +45,9 @@ public class DBCatalog implements Named, Serializable {
     private static final long serialVersionUID = 3956827426638393655L;
     
 	private String name;
-    private Database database;
-    private OrderedNameMap<DBTable> tables;
-    private OrderedNameMap<DBIndex> indexes;
     private String doc;
+    private Database database;
+    private OrderedNameMap<DBSchema> schemas;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -56,8 +57,7 @@ public class DBCatalog implements Named, Serializable {
 
     public DBCatalog(String name) {
         this.name = name;
-        this.tables = new OrderedNameMap<DBTable>();
-        this.indexes = new OrderedNameMap<DBIndex>();
+        this.schemas = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -86,43 +86,49 @@ public class DBCatalog implements Named, Serializable {
         this.doc = doc;
     }
 
+    // schema operations -----------------------------------------------------------------------------------------------
+
+    public List<DBSchema> getSchemas() {
+        return schemas.values();
+    }
+
+    public DBSchema getSchema(String schemaName) {
+        return schemas.get(schemaName);
+    }
+
+    public void addSchema(DBSchema schema) {
+        schema.setCatalog(this);
+        schemas.put(schema.getName(), schema);
+    }
+
+    public void removeSchema(DBSchema schema) {
+        schemas.remove(schema.getName());
+        schema.setCatalog(null);
+    }
+
     // table operations ------------------------------------------------------------------------------------------------
-
+    
     public List<DBTable> getTables() {
-        return tables.values();
+    	List<DBTable> tables = new ArrayList<DBTable>();
+        for (DBSchema schema : schemas.values())
+            for (DBTable table : schema.getTables())
+            	tables.add(table);
+        return tables;
     }
 
-    public DBTable getTable(String tableName) {
-        return tables.get(tableName.toUpperCase());
+    public DBTable getTable(String name) {
+        for (DBSchema schema : schemas.values())
+            for (DBTable table : schema.getTables())
+            	if (table.getName().equals(name))
+            		return table;
+        throw new ObjectNotFoundException("Table '" + name + "'");
     }
-
-    public void addTable(DBTable table) {
-        tables.put(table.getName().toUpperCase(), table);
+    
+	public void removeTable(String tableName) {
+		DBTable table = getTable(tableName);
+		schemas.get(table.getSchema()).removeTable(table);
     }
-
-    public void removeTable(DBTable table) {
-        tables.remove(table.getName());
-    }
-
-    // index operations ------------------------------------------------------------------------------------------------
-
-    public List<DBIndex> getIndexes() {
-        return indexes.values();
-    }
-
-    public DBIndex getIndex(String indexName) {
-        return indexes.get(indexName);
-    }
-
-    public void addIndex(DBIndex index) {
-        index.setCatalog(this);
-        indexes.put(index.getName(), index);
-    }
-
-    public void removeIndex(DBIndex index) {
-        indexes.remove(index.getName());
-    }
-
+	
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
     @Override
