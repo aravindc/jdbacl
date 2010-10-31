@@ -44,7 +44,7 @@ public class ResultsWithMetadata {
 		this.results = results;
 	}
 
-	public String[] getColumnNames() {
+	public String[] getColumnLabels() {
 		return columnNames;
 	}
 
