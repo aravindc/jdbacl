@@ -21,10 +21,12 @@
 
 package org.databene.jdbacl;
 
+import java.util.List;
 import java.util.Set;
 
 import org.databene.commons.CollectionUtil;
 import org.databene.jdbacl.model.DBColumn;
+import org.databene.jdbacl.model.DBTable;
 
 /**
  * Provides utility methods for creating SQL queries and commands.<br/><br/>
@@ -36,6 +38,20 @@ public class SQLUtil {
 	
 	private static final Set<String> NO_SIZE_TYPES = CollectionUtil.toSet(
 			"DATE", "BLOB", "CLOB", "NCLOB");
+
+    public static String formatColumnNames(DBColumn[] columns) {
+        StringBuilder builder = new StringBuilder(columns[0].getName());
+        for (int i = 1; i < columns.length; i++)
+            builder.append(", ").append(columns[i].getName());
+        return builder.toString();
+    }
+
+    public static String formatColumnNames(List<DBColumn> columns) {
+        StringBuilder builder = new StringBuilder(columns.get(0).getName());
+        for (int i = 1; i < columns.size(); i++)
+            builder.append(", ").append(columns.get(i).getName());
+        return builder.toString();
+    }
 
 	public static String renderColumn(DBColumn column) {
 		StringBuilder builder = new StringBuilder();
@@ -69,13 +85,31 @@ public class SQLUtil {
 	    }
     }
 	
-
-	public static String renderValue(Object value) {
-		return (value instanceof String ? "'" + value.toString() + "'" : String.valueOf(value));
-	}
-	
 	public static String substituteMarkers(String sql, String marker, Object substitution) {
 		return sql.replace(marker, renderValue(substitution));
     }
 
+    public static String renderQuery(DBTable table, String[] columnNames, Object[] values) {
+		StringBuilder builder = new StringBuilder("SELECT * FROM ").append(table.getName());
+		builder.append(" WHERE ").append(renderWhereClause(columnNames, values));
+		return builder.toString();
+    }
+    
+    public static String renderWhereClause(String[] columnNames, Object[] values) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < columnNames.length; i++) {
+			if (i > 0)
+				builder.append(" AND ");
+			builder.append(columnNames[i]).append(" = ").append(renderValue(values[i]));
+		}
+		return builder.toString();
+    }
+    
+    public static String renderValue(Object value) {
+	    if (value instanceof String || value instanceof Character)
+	    	return "'" + value + "'";
+	    else
+	    	return String.valueOf(value);
+    }
+    
 }
