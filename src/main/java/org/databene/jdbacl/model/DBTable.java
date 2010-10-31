@@ -43,26 +43,26 @@ import java.util.List;
  */
 public interface DBTable extends Dependent<DBTable>, Named, Serializable {
 
-    public String getName();
-    public String getDoc();
-    public DBCatalog getCatalog();
-    public DBSchema getSchema();
-    public DBPrimaryKeyConstraint getPrimaryKeyConstraint();
+    String getName();
+    String getDoc();
+    DBCatalog getCatalog();
+    DBSchema getSchema();
+    DBPrimaryKeyConstraint getPrimaryKeyConstraint();
 
-    public List<DBColumn> getColumns();
-    public DBColumn[] getColumns(List<String> columnNames);
-    public DBColumn getColumn(String columnName);
-    public List<DBIndex> getIndexes();
-    public DBIndex getIndex(String indexName);
+    List<DBColumn> getColumns();
+    DBColumn[] getColumns(List<String> columnNames);
+    DBColumn getColumn(String columnName);
+    List<DBIndex> getIndexes();
+    DBIndex getIndex(String indexName);
 
-	public String[] getPKColumnNames();
-    public List<DBUniqueConstraint> getUniqueConstraints();
-    public List<DBForeignKeyConstraint> getForeignKeyConstraints();
-    public Collection<DBTable> getReferrers();
+	String[] getPKColumnNames();
+    List<DBUniqueConstraint> getUniqueConstraints();
+    List<DBForeignKeyConstraint> getForeignKeyConstraints();
+    Collection<DBTable> getReferrers();
 	
-	public long getRowCount(Connection connection);
-    public Iterator<DBRow> allRows(Connection connection) throws SQLException;
-    public DBRow queryById(Object[] idParts, Connection connection) throws SQLException;
-    public Iterator<DBRow> queryByColumnValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
+	long getRowCount(Connection connection);
+    Iterator<DBRow> allRows(Connection connection) throws SQLException;
+    DBRow queryByPK(Object[] pkParts, Connection connection) throws SQLException;
+    Iterator<DBRow> queryByColumnValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
     
 }
