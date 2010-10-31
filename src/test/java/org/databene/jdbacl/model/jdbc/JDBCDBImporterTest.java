@@ -59,7 +59,7 @@ public class JDBCDBImporterTest {
 		JDBCDBImporter importer = new JDBCDBImporter(connection, "sa", "public", ".*", true);
 		Database db = importer.importDatabase();
 		// check schema
-		DBSchema schema = db.getSchema("public");
+		DBSchema schema = db.getCatalog(null).getSchema("public");
 		assertNotNull(schema);
 		// check tables
 		assertEquals(1, schema.getTables().size());

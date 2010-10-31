@@ -43,7 +43,7 @@ import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBColumnType;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
-import org.databene.jdbacl.model.DBImporter;
+import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBNonUniqueIndex;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
@@ -66,29 +66,27 @@ import java.util.regex.Pattern;
  * Created: 06.01.2007 19:16:45
  * @author Volker Bergmann
  */
-public final class JDBCDBImporter implements DBImporter, Closeable {
+public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(JDBCDBImporter.class);
 
-    private final Connection connection;
-    private DatabaseDialect dialect;
-
-    private final String user;
-    
-    private String catalogName;
-    private String schemaName;
+    final String user;
+    String catalogName;
+    String schemaName;
     Pattern includeTables;
     Pattern excludeTables;
-    private boolean importingIndexes;
-
-    private String productName;
-    private Escalator escalator = new LoggerEscalator();
-    private ErrorHandler errorHandler;
-    private TableNameFilter tableNameFilter;
-
-	private boolean importingUKs = true;
-	private boolean lazy = false;
+    boolean importingIndexes;
+	boolean importingUKs = true;
+	boolean lazy = false;
 	
+    final Connection connection;
+    DatabaseDialect dialect;
+    String productName;
+
+    Escalator escalator = new LoggerEscalator();
+    ErrorHandler errorHandler;
+    TableNameFilter tableNameFilter;
+
 	DatabaseMetaData metaData;
 	Database database;
 
@@ -109,6 +107,23 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
         this.includeTables = Pattern.compile(includeTables != null ? includeTables : ".*");
         this.importingIndexes = importingIndexes;
         this.errorHandler = new ErrorHandler(getClass());
+    }
+
+    // properties ------------------------------------------------------------------------------------------------------
+    
+    /**
+     * @return the productName
+     */
+    public String getProductName() {
+        return productName;
+    }
+    
+    public void setFaultTolerant(boolean faultTolerant) {
+    	this.errorHandler = new ErrorHandler(getClass().getName(), (faultTolerant ? Level.warn : Level.error));
+    }
+
+	public Connection getConnection() {
+	    return connection;
     }
 
     @Deprecated
@@ -148,6 +163,8 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
     	this.lazy = lazy;
     }
 
+	// functional interface --------------------------------------------------------------------------------------------
+	
 	public Database importDatabase() throws ImportFailedException {
         logger.info("Importing database metadata. Be patient, this may take some time...");
         long startTime = System.currentTimeMillis();
@@ -183,6 +200,8 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	public void close() {
         DBUtil.close(connection);
 	}
+	
+	// private helper methods ------------------------------------------------------------------------------------------
 
 	private void importCatalogs() throws SQLException {
         logger.info("Importing catalogs");
@@ -205,19 +224,24 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 
     private void importSchemas() throws SQLException {
         logger.info("Importing schemas");
+        int schemaCount = 0;
         ResultSet schemaSet = metaData.getSchemas();
         while (schemaSet.next()) {
             String schemaName = schemaSet.getString(1);
+            String catalogName = schemaSet.getString(2);
             if (schemaName.equalsIgnoreCase(this.schemaName) 
             		|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
 	            logger.debug("importing schema {}", schemaName);
 	            if (schemaName.equalsIgnoreCase(this.schemaName))
 	            	this.schemaName = schemaName; // take over capitalization used in the DB
 	            DBSchema schema = new DBSchema(schemaName);
-	            database.addSchema(schema);
+	            database.getCatalog(catalogName).addSchema(schema);
+	            schemaCount++;
             } else
                 logger.debug("ignoring schema {}", schemaName);
         }
+        if (schemaCount == 0)
+        	database.getCatalogs().get(0).addSchema(new DBSchema(null));
         schemaSet.close();
     }
 
@@ -247,7 +271,8 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
             if (logger.isDebugEnabled())
                 logger.debug("importing table: " + tCatalogName + ", " + tSchemaName + ", " + tableName + ", " + tableType + ", " + tableRemarks);
 
-            DBTable table = createTable(database.getCatalog(tCatalogName), database.getSchema(tSchemaName), tableName, tableRemarks, lazy);
+            DBCatalog catalog = database.getCatalog(tCatalogName);
+			DBTable table = createTable(catalog, catalog.getSchema(tSchemaName), tableName, tableRemarks, lazy);
             importedTables.add(table);
         }
         if (!lazy)
@@ -272,7 +297,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	private DBTable createTable(DBCatalog catalog, DBSchema schema, String tableName, String remarks, boolean lazy) {
 	    DBTable table;
 		if (lazy) {
-			table = new LazyTable(this, catalog, schema, tableName, remarks);
+			table = new LazyTable(this, schema, tableName, remarks);
 		} else {
 			DefaultDBTable dTable = new DefaultDBTable(tableName);
 			dTable.setDoc(remarks);
@@ -282,8 +307,6 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 		}
         if (schema != null)
             schema.addTable(table);
-        if (catalog != null)
-            catalog.addTable(table);
 	    return table;
     }
 
@@ -299,10 +322,9 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 				importColumns(catalog, this.schemaName, null, tableNameFilter, errorHandler);
     }
 
-    public void importColumns(DBCatalog catalog, String schemaName, String tablePattern, Filter<String> tableFilter, ErrorHandler errorHandler) {
+    private void importColumns(DBCatalog catalog, String schemaName, String tablePattern, Filter<String> tableFilter, ErrorHandler errorHandler) {
         String catalogName = catalog.getName();
-        Database database = catalog.getDatabase();
-        String schemaPattern = (schemaName != null ? schemaName : (database.getSchemas().size() == 1 ? database.getSchemas().get(0).getName() : null));
+        String schemaPattern = (schemaName != null ? schemaName : (catalog.getSchemas().size() == 1 ? catalog.getSchemas().get(0).getName() : null));
         logger.debug("Importing columns for catalog '" + catalogName + "', schemaPattern '" + schemaName + "', tablePattern '" + tablePattern + "'");
         ResultSet columnSet = null;
         try {
@@ -346,7 +368,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	
 	            DefaultDBTable table = (DefaultDBTable) catalog.getTable(tableName);
 	            if (table == null) {
-	                DBSchema schema = database.getSchema(schemaName);
+	                DBSchema schema = catalog.getSchema(schemaName);
 	                if (schema != null)
 	                    table = (DefaultDBTable) schema.getTable(tableName);
 	            }
@@ -393,7 +415,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 */
     private void importPrimaryKeys() {
         int count = 0;
-        DBSchema schema = database.getSchema(schemaName);
+        DBSchema schema = database.getCatalog(catalogName).getSchema(schemaName);
         if (schema != null)
             for (DBTable table : schema.getTables()) {
                 if (!tableSupported(table.getName()))
@@ -450,7 +472,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
     private void importIndexes() {
         for (DBCatalog catalog : database.getCatalogs()) {
         	try {
-        		importIndexes(database, catalog, metaData);
+        		importIndexes(catalog, metaData);
         	} catch (SQLException e) {
         		// possibly we try to query a catalog to which we do not have access rights
         		errorHandler.handleError("Error parsing metadata of catalog " + catalog.getName());
@@ -458,7 +480,7 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
         }
     }
 
-	private void importIndexes(Database database, DBCatalog catalog, DatabaseMetaData metaData) throws SQLException {
+	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) throws SQLException {
 	    for (DBTable table : catalog.getTables()) {
 	    	if (!tableSupported(table.getName()))
 	    		continue;
@@ -522,11 +544,6 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
 	                } else {
 	                    index = new DBNonUniqueIndex(table, indexInfo.name, indexInfo.columnNames);
 	                }
-	                if (!StringUtil.isEmpty(indexInfo.catalogName)) {
-	                    DBCatalog ct = database.getCatalog(indexInfo.catalogName);
-	                    if (ct != null)
-	                        ct.addIndex(index);
-	                }
 	                ((DefaultDBTable) table).addIndex(index);
 	            } catch (ObjectNotFoundException e) {
 	                logger.error("Error parsing index: " + index, e);
@@ -538,22 +555,14 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
     private void importImportedKeys() {
         logger.info("Importing imported keys");
         int count = 0;
-        for (DBSchema schema : database.getSchemas())
-            for (DBTable table : schema.getTables()) {
-                if (!tableSupported(table.getName()))
-                	continue;
-                importImportedKeys((DefaultDBTable) table);
-                count++;
-            }
-        if (count > 0)
-            return;
         for (DBCatalog catalog : database.getCatalogs())
-            for (DBTable table : catalog.getTables()) {
-                if (!tableSupported(table.getName()))
-                	continue;
-                importImportedKeys((DefaultDBTable) table);
-                count++;
-            }
+	        for (DBSchema schema : catalog.getSchemas())
+	            for (DBTable table : schema.getTables()) {
+	                if (!tableSupported(table.getName()))
+	                	continue;
+	                importImportedKeys((DefaultDBTable) table);
+	                count++;
+	            }
     }
 
     private boolean tableSupported(String tableName) {
@@ -628,17 +637,6 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
         }
      }
 
-    /**
-     * @return the productName
-     */
-    public String getProductName() {
-        return productName;
-    }
-    
-    public void setFaultTolerant(boolean faultTolerant) {
-    	this.errorHandler = new ErrorHandler(getClass().getName(), (faultTolerant ? Level.warn : Level.error));
-    }
-
     class TableNameFilter implements Filter<String> {
 
 		public boolean accept(String tableName) {
@@ -649,10 +647,8 @@ public final class JDBCDBImporter implements DBImporter, Closeable {
         }
     	
     }
-
-	public Connection getConnection() {
-	    return connection;
-    }
+    
+    // java.lang.Object overrides --------------------------------------------------------------------------------------
 
 	@Override
 	public String toString() {
