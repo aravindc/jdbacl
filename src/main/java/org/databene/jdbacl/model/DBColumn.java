@@ -227,20 +227,4 @@ public class DBColumn implements Named, Serializable {
         return builder.toString();
     }
 
-    // static convenience methods --------------------------------------------------------------------------------------
-
-    public static String formatColumnNames(DBColumn[] columns) {
-        StringBuilder builder = new StringBuilder(columns[0].getName());
-        for (int i = 1; i < columns.length; i++)
-            builder.append(", ").append(columns[i].getName());
-        return builder.toString();
-    }
-
-    public static String formatColumnNames(List<DBColumn> columns) {
-        StringBuilder builder = new StringBuilder(columns.get(0).getName());
-        for (int i = 1; i < columns.size(); i++)
-            builder.append(", ").append(columns.get(i).getName());
-        return builder.toString();
-    }
-
 }
