@@ -27,7 +27,7 @@ import java.io.ObjectInputStream;
 
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
-import org.databene.jdbacl.model.DBImporter;
+import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.Database;
 
 /**
@@ -36,7 +36,7 @@ import org.databene.jdbacl.model.Database;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public class DeserializingImporter implements DBImporter {
+public class DeserializingImporter implements DBMetaDataImporter {
 	
 	private File file;
 	

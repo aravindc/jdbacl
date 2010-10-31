@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 import org.databene.commons.IOUtil;
-import org.databene.jdbacl.model.DBMetaExporter;
+import org.databene.jdbacl.model.DBMetaDataExporter;
 import org.databene.jdbacl.model.Database;
 
 /**
@@ -36,7 +36,7 @@ import org.databene.jdbacl.model.Database;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public class SerializingExporter implements DBMetaExporter {
+public class SerializingExporter implements DBMetaDataExporter {
 
     public void export(Database database, File file) throws IOException {
     	// TODO make sure it is completely loaded, close connection and make connection volatile
