@@ -40,7 +40,11 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.converter.AnyConverter;
 import org.databene.commons.converter.ToStringConverter;
+import org.databene.commons.depend.DependencyModel;
+import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.DBUniqueConstraint;
+import org.databene.jdbacl.model.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +61,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -380,7 +385,7 @@ public class DBUtil {
 			int columnCount = metaData.getColumnCount();
             String[] columnNames = new String[columnCount];
             for (int i = 1; i <= columnCount; i++)
-            	columnNames[i - 1] = metaData.getColumnName(i);
+            	columnNames[i - 1] = metaData.getColumnLabel(i);
 	        List<Object[]> rows = new ArrayList<Object[]>();
 	        while (resultSet.next()) {
 	            String[] cells = new String[columnCount];
@@ -413,27 +418,18 @@ public class DBUtil {
         }
     }
 
-    public static String renderQuery(DBTable table, String[] columnNames, Object[] values) {
-		StringBuilder builder = new StringBuilder("SELECT * FROM ").append(table.getName());
-		builder.append(" WHERE ").append(renderWhereClause(columnNames, values));
-		return builder.toString();
+    public static List<DBTable> dependencyOrderedTables(Database database) {
+        DependencyModel<DBTable> model = new DependencyModel<DBTable>();
+        for (DBTable table : database.getTables())
+            model.addNode(table);
+        return model.dependencyOrderedObjects(true);
+    }
+
+	public static boolean equivalent(DBUniqueConstraint uk, DBPrimaryKeyConstraint pk) {
+	    return Arrays.equals(uk.getColumnNames(), pk.getColumnNames());
     }
     
-    public static String renderWhereClause(String[] columnNames, Object[] values) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < columnNames.length; i++) {
-			if (i > 0)
-				builder.append(" AND ");
-			builder.append(columnNames[i]).append(" = ").append(renderValue(values[i]));
-		}
-		return builder.toString();
-    }
-    
-    public static String renderValue(Object value) {
-	    if (value instanceof String || value instanceof Character)
-	    	return "'" + value + "'";
-	    return String.valueOf(value);
-    }
+    // private helper methods ------------------------------------------------------------------------------------------
 
 	private static boolean mutates(String sql) {
 		sql = sql.trim().toLowerCase();
