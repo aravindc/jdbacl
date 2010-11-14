@@ -27,9 +27,7 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.Named;
-import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
-import org.databene.commons.collection.OrderedNameMap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,15 +38,10 @@ import java.util.List;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBCatalog implements Named, Serializable {
+public class DBCatalog extends DBCompositeObjectImpl<DBSchema> implements Named, Serializable {
 
     private static final long serialVersionUID = 3956827426638393655L;
     
-	private String name;
-    private String doc;
-    private Database database;
-    private OrderedNameMap<DBSchema> schemas;
-
     // constructors ----------------------------------------------------------------------------------------------------
 
     public DBCatalog() {
@@ -56,18 +49,17 @@ public class DBCatalog implements Named, Serializable {
     }
 
     public DBCatalog(String name) {
-        this.name = name;
-        this.schemas = OrderedNameMap.createCaseInsensitiveMap();
+        super(name);
     }
 
     // properties ------------------------------------------------------------------------------------------------------
 
     public Database getDatabase() {
-        return database;
+        return (Database) getOwner();
     }
 
     public void setDatabase(Database database) {
-        this.database = database;
+        this.owner = database;
     }
 
     public String getName() {
@@ -89,35 +81,33 @@ public class DBCatalog implements Named, Serializable {
     // schema operations -----------------------------------------------------------------------------------------------
 
     public List<DBSchema> getSchemas() {
-        return schemas.values();
+        return getComponents();
     }
 
     public DBSchema getSchema(String schemaName) {
-        return schemas.get(schemaName);
+        return getComponent(schemaName);
     }
 
     public void addSchema(DBSchema schema) {
-        schema.setCatalog(this);
-        schemas.put(schema.getName(), schema);
+        addComponent(schema);
     }
 
     public void removeSchema(DBSchema schema) {
-        schemas.remove(schema.getName());
-        schema.setCatalog(null);
+        removeComponent(schema);
     }
 
     // table operations ------------------------------------------------------------------------------------------------
     
     public List<DBTable> getTables() {
     	List<DBTable> tables = new ArrayList<DBTable>();
-        for (DBSchema schema : schemas.values())
+        for (DBSchema schema : components.values())
             for (DBTable table : schema.getTables())
             	tables.add(table);
         return tables;
     }
 
     public DBTable getTable(String name) {
-        for (DBSchema schema : schemas.values())
+        for (DBSchema schema : components.values())
             for (DBTable table : schema.getTables())
             	if (table.getName().equals(name))
             		return table;
@@ -126,28 +116,7 @@ public class DBCatalog implements Named, Serializable {
     
 	public void removeTable(String tableName) {
 		DBTable table = getTable(tableName);
-		schemas.get(table.getSchema()).removeTable(table);
+		components.get(table.getSchema()).removeTable(table);
     }
 	
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final DBCatalog that = (DBCatalog) o;
-        return NullSafeComparator.equals(this.name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return (name != null ? name.hashCode() : 0);
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }

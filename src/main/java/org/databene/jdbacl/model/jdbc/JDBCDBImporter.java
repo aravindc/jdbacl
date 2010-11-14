@@ -177,7 +177,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
             dialect = DatabaseDialectManager.getDialectForProduct(productName);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", connection);
-            database = new Database();
+            database = new Database(productName);
             importCatalogs();
             importSchemas();
             importTables();

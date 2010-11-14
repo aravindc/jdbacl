@@ -38,17 +38,14 @@ import org.databene.commons.Named;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public class DBColumn implements Named, Serializable {
+public class DBColumn extends DBObjectImpl implements Named, Serializable {
 
 	private static final long serialVersionUID = 5693941485232520002L;
 	
-	private String name;
     private DBColumnType type;
     private Integer size;
     private Integer fractionDigits;
-    private String doc;
     private String defaultValue;
-    private DBTable table;
     private boolean versionColumn;
 
     private List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
@@ -74,7 +71,8 @@ public class DBColumn implements Named, Serializable {
     }
 
     public DBColumn(DBTable table, String name, DBColumnType type, Integer size, Integer fractionDigits) {
-        this.table = table;
+    	super(name);
+        setTable(table);
         this.name = name;
         this.type = type;
         this.size = size;
@@ -90,15 +88,13 @@ public class DBColumn implements Named, Serializable {
     // properties ------------------------------------------------------------------------------------------------------
 
     public DBTable getTable() {
-        return table;
+        return (DBTable) getOwner();
     }
 
     public void setTable(DBTable table) {
-        this.table = table;
-    }
-
-    public String getName() {
-        return name;
+        setOwner(table);
+        if (table != null)
+        	table.addComponent(this);
     }
 
     public DBColumnType getType() {
@@ -123,14 +119,6 @@ public class DBColumn implements Named, Serializable {
 
     public void setFractionDigits(Integer fractionDigits) {
         this.fractionDigits = fractionDigits;
-    }
-
-    public String getDoc() {
-        return doc;
-    }
-
-    public void setDoc(String doc) {
-        this.doc = doc;
     }
 
     public String getDefaultValue() {
@@ -175,7 +163,7 @@ public class DBColumn implements Named, Serializable {
         } else {
             // if there needs to be a NotNullConstraint, check if there exists one, first
             if (this.isNullable()) {
-                this.notNullConstraint = new DBNotNullConstraint(table, null, name);
+                this.notNullConstraint = new DBNotNullConstraint(getTable(), null, name);
             }
         }
     }
@@ -189,28 +177,13 @@ public class DBColumn implements Named, Serializable {
     }
 
 	public boolean isForeignKeyComponent() {
-		for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints())
+		for (DBForeignKeyConstraint fk : getTable().getForeignKeyConstraints())
 			if (ArrayUtil.contains(fk.getColumnNames(), name))
 				return true;
 	    return false;
     }
 
-    // java.lang.overrides ---------------------------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final DBColumn that = (DBColumn) o;
-        return this.table.equals(that.table) && name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return table.hashCode() * 29 + name.hashCode();
-    }
+    // java.lang.Object overrides --------------------------------------------------------------------------------------
 
     @Override
     public String toString() {

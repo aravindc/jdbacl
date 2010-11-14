@@ -30,36 +30,26 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.databene.commons.Named;
-import org.databene.commons.collection.OrderedNameMap;
 
 /**
  * Represents a JDBC database schema.<br/><br/>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema implements Named, Serializable {
+public class DBSchema extends DBCompositeObjectImpl<DBTable> implements Named, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
-    private String name;
-    private DBCatalog catalog;
-    private OrderedNameMap<DBTable> tables;
-
     // constructors ----------------------------------------------------------------------------------------------------
-
-    public DBSchema() {
-        this(null);
-    }
 
     public DBSchema(String name) {
         this(null, name);
     }
 
     public DBSchema(DBCatalog catalog, String name) {
-        this.name = name;
-        this.catalog = catalog;
-        this.catalog = null;
-        this.tables = new OrderedNameMap<DBTable>();
+    	super(name);
+    	if (catalog != null)
+    		catalog.addComponent(this);
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -75,50 +65,29 @@ public class DBSchema implements Named, Serializable {
     // catalog operations ----------------------------------------------------------------------------------------------
 
     public DBCatalog getCatalog() {
-        return catalog;
+        return (DBCatalog) owner;
     }
 
     public void setCatalog(DBCatalog catalog) {
-        this.catalog = catalog;
+        this.owner = catalog;
     }
 
     // table operations ------------------------------------------------------------------------------------------------
 
     public List<DBTable> getTables() {
-        return tables.values();
+        return getComponents();
     }
 
     public DBTable getTable(String tableName) {
-        return tables.get(tableName.toUpperCase());
+        return getComponent(tableName.toUpperCase());
     }
 
     public void addTable(DBTable table) {
-        tables.put(table.getName().toUpperCase(), table);
+        addComponent(table);
     }
 
     public void removeTable(DBTable table) {
-        tables.remove(table.getName());
+        removeComponent(table);
     }
 
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final DBSchema that = (DBSchema) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }

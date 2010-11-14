@@ -41,7 +41,7 @@ import java.util.List;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBTable extends Dependent<DBTable>, Named, Serializable {
+public interface DBTable extends DBCompositeObject<DBColumn>, Dependent<DBTable>, Named, Serializable {
 
     String getName();
     String getDoc();

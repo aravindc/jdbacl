@@ -48,16 +48,12 @@ import java.util.Set;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Serializable {
+public class DefaultDBTable extends DBCompositeObjectImpl<DBColumn> implements DBTable, Dependent<DBTable>, Named, Serializable {
 
     private static final long serialVersionUID = 6829370969378083211L;
     private static final String[] EMPTY_ARRAY = new String[0];
     
 	private DBCatalog catalog;
-    private DBSchema schema;
-    private String name;
-    private String doc;
-    private OrderedNameMap<DBColumn> columns;
     private DBPrimaryKeyConstraint pkConstraint;
     private List<DBUniqueConstraint> uniqueConstraints;
     private List<DBForeignKeyConstraint> foreignKeyConstraints;
@@ -75,12 +71,10 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
 
     public DefaultDBTable(DBCatalog catalog, String name) {
-        this.name = name;
+        super(name);
         this.catalog = catalog;
-        this.columns = new OrderedNameMap<DBColumn>();
         this.pkConstraint = null;
         this.doc = null;
-        this.schema = null;
         this.indexes = new OrderedNameMap<DBIndex>();
         this.uniqueConstraints = new ArrayList<DBUniqueConstraint>();
         this.foreignKeyConstraints = new ArrayList<DBForeignKeyConstraint>();
@@ -88,14 +82,6 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
 
     // properties ------------------------------------------------------------------------------------------------------
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getDoc() {
         return doc;
@@ -114,11 +100,11 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
 
     public DBSchema getSchema() {
-        return schema;
+        return (DBSchema) getOwner();
     }
 
     public void setSchema(DBSchema schema) {
-        this.schema = schema;
+        setOwner(schema);
     }
 
     public void setPrimaryKeyConstraint(DBPrimaryKeyConstraint constraint) {
@@ -132,7 +118,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     // column operations -----------------------------------------------------------------------------------------------
 
     public List<DBColumn> getColumns() {
-        return columns.values();
+        return getComponents();
     }
 
     public DBColumn[] getColumns(List<String> columnNames) {
@@ -148,7 +134,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
     }
 
     public DBColumn getColumn(String columnName) {
-        DBColumn column = columns.get(columnName.toUpperCase());
+        DBColumn column = getComponent(columnName);
         if (column == null)
             throw new ObjectNotFoundException("Column '" + columnName + 
                     "' not found in table '" + this.getName() + "'");
@@ -157,7 +143,7 @@ public class DefaultDBTable implements DBTable, Dependent<DBTable>, Named, Seria
 
     public void addColumn(DBColumn column) {
         column.setTable(this);
-        columns.put(column.getName().toUpperCase(), column);
+        addComponent(column);
     }
 
     // index operations ------------------------------------------------------------------------------------------------

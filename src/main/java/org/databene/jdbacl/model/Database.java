@@ -28,7 +28,6 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.Named;
 import org.databene.commons.ObjectNotFoundException;
-import org.databene.commons.collection.OrderedNameMap;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -40,64 +39,48 @@ import java.util.Set;
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public class Database implements Named, Serializable {
+public class Database extends DBCompositeObjectImpl<DBCatalog> implements Named, Serializable {
 	
 	private static final long serialVersionUID = -1873203097942961523L;
 	
-	private String name;
-    private OrderedNameMap<DBCatalog> catalogs;
-
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public Database() {
-        this(null, null);
-    }
-
-    public Database(String name, OrderedNameMap<DBCatalog> catalogs) {
-        this.name = name;
-        this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
-        if (catalogs != null)
-            this.catalogs.putAll(catalogs);
-    }
-
-    // properties ------------------------------------------------------------------------------------------------------
-
-    public String getName() {
-        return name;
+    public Database(String name) {
+        super(name);
     }
 
     // catalog operations ----------------------------------------------------------------------------------------------
 
     public List<DBCatalog> getCatalogs() {
-        return catalogs.values();
+        return getComponents();
     }
 
     public DBCatalog getCatalog(String catalogName) {
-        return catalogs.get(catalogName);
+        return getComponent(catalogName);
     }
 
     public void addCatalog(DBCatalog catalog) {
         catalog.setDatabase(this);
-        catalogs.put(catalog.getName(), catalog);
+        addComponent(catalog);
     }
 
     public void removeCatalog(DBCatalog catalog) {
-        catalogs.remove(catalog.getName());
-        catalog.setDatabase(null);
+        removeComponent(catalog);
+        catalog.setOwner(null);
     }
 
     // table operations ------------------------------------------------------------------------------------------------
 
     public Set<DBTable> getTables() {
     	Set<DBTable> tables = new HashSet<DBTable>();
-        for (DBCatalog catalog : catalogs.values())
+        for (DBCatalog catalog : components.values())
             for (DBTable table : catalog.getTables())
             	tables.add(table);
         return tables;
     }
 
     public DBTable getTable(String name) {
-        for (DBCatalog catalog : catalogs.values())
+        for (DBCatalog catalog : components.values())
             for (DBTable table : catalog.getTables())
             	if (table.getName().equals(name))
             		return table;
@@ -106,7 +89,7 @@ public class Database implements Named, Serializable {
     
 	public void removeTable(String tableName) {
 		DBTable table = getTable(tableName);
-		catalogs.get(table.getCatalog()).removeTable(tableName);
+		components.get(table.getCatalog()).removeTable(tableName);
     }
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------
@@ -124,11 +107,6 @@ public class Database implements Named, Serializable {
     @Override
     public int hashCode() {
         return name.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return name;
     }
 
 }

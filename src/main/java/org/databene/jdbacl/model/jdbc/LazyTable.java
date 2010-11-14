@@ -30,6 +30,7 @@ import java.util.List;
 import org.databene.commons.NullSafeComparator;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
+import org.databene.jdbacl.model.DBCompositeObject;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
@@ -156,6 +157,30 @@ public class LazyTable implements DBTable {
 	    return getRealTable().requiresProvider(index);
     }
 	
+	public List<DBColumn> getComponents() {
+		return getRealTable().getComponents();
+	}
+
+	public DBColumn getComponent(String name) {
+		return getRealTable().getComponent(name);
+	}
+
+	public void addComponent(DBColumn component) {
+		getRealTable().addComponent(component);
+	}
+
+	public void removeComponent(DBColumn component) {
+		getRealTable().removeComponent(component);
+	}
+
+	public DBCompositeObject<?> getOwner() {
+		return getRealTable().getOwner();
+	}
+
+	public void setOwner(DBCompositeObject<?> owner) {
+		getRealTable().setOwner(owner);
+	}
+
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
 	
 	@Override
