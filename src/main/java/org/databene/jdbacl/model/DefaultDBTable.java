@@ -26,14 +26,12 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.Named;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.commons.depend.Dependent;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,7 +46,7 @@ import java.util.Set;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public class DefaultDBTable extends DBCompositeObjectImpl<DBColumn> implements DBTable, Dependent<DBTable>, Named, Serializable {
+public class DefaultDBTable extends DBCompositeObjectImpl<DBColumn> implements DBTable, Dependent<DBTable> {
 
     private static final long serialVersionUID = 6829370969378083211L;
     private static final String[] EMPTY_ARRAY = new String[0];
