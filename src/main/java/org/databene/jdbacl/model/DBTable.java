@@ -26,10 +26,8 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.Named;
 import org.databene.commons.depend.Dependent;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,7 +39,7 @@ import java.util.List;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBTable extends DBCompositeObject<DBColumn>, Dependent<DBTable>, Named, Serializable {
+public interface DBTable extends DBCompositeObject<DBColumn>, Dependent<DBTable> {
 
     String getName();
     String getDoc();
