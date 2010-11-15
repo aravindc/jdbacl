@@ -52,6 +52,7 @@ import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.DefaultDBColumn;
 import org.databene.jdbacl.model.DefaultDBTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -355,7 +356,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	                        + ", " + nullable + ", " + comment + ", " + defaultValue);
 	
 	            Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
-	            DBColumn column = new DBColumn(columnName, DBColumnType.getInstance(sqlType, columnType), columnSize, fractionDigits);
+	            DefaultDBColumn column = new DefaultDBColumn(columnName, DBColumnType.getInstance(sqlType, columnType), columnSize, fractionDigits);
 	            if (!StringUtil.isEmpty(comment))
 	                column.setDoc(comment);
 	            if (!StringUtil.isEmpty(defaultValue)) {
