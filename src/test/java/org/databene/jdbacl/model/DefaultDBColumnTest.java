@@ -36,12 +36,12 @@ import static junit.framework.Assert.*;
  * Created: 06.01.2007 10:41:46
  * @author Volker Bergmann
  */
-public class DBColumnTest {
+public class DefaultDBColumnTest {
 
 	@Test
     public void testToString() {
         assertEquals("Column formatting failed", "ID : NUMBER(11,2)",
-                new DBColumn(null, "ID", DBColumnType.getInstance("NUMBER"), 11, 2).toString());
+                new DefaultDBColumn(null, "ID", DBColumnType.getInstance("NUMBER"), 11, 2).toString());
     }
     
 }
