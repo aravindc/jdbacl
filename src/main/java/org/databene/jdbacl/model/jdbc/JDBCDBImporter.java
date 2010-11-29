@@ -302,7 +302,6 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 		} else {
 			DefaultDBTable dTable = new DefaultDBTable(tableName);
 			dTable.setDoc(remarks);
-            dTable.setCatalog(catalog);
 			dTable.setSchema(schema);
 			table = dTable;
 		}
@@ -543,7 +542,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
 	                    index = new DBUniqueIndex(indexInfo.name, constraint);
 	                } else {
-	                    index = new DBNonUniqueIndex(table, indexInfo.name, indexInfo.columnNames);
+	                    index = new DBNonUniqueIndex(indexInfo.name, table, indexInfo.columnNames);
 	                }
 	                ((DefaultDBTable) table).addIndex(index);
 	            } catch (ObjectNotFoundException e) {

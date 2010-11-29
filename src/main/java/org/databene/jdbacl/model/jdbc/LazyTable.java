@@ -30,13 +30,14 @@ import java.util.List;
 import org.databene.commons.NullSafeComparator;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
-import org.databene.jdbacl.model.DBCompositeObject;
+import org.databene.jdbacl.model.CompositeDBObject;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBRow;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.DBTableComponent;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.DefaultDBTable;
 
@@ -157,28 +158,32 @@ public class LazyTable implements DBTable {
 	    return getRealTable().requiresProvider(index);
     }
 	
-	public List<DBColumn> getComponents() {
+	public List<DBTableComponent> getComponents() {
 		return getRealTable().getComponents();
 	}
 
-	public DBColumn getComponent(String name) {
+	public DBTableComponent getComponent(String name) {
 		return getRealTable().getComponent(name);
 	}
 
-	public void addComponent(DBColumn component) {
+	public void addComponent(DBTableComponent component) {
 		getRealTable().addComponent(component);
 	}
 
-	public void removeComponent(DBColumn component) {
+	public void removeComponent(DBTableComponent component) {
 		getRealTable().removeComponent(component);
 	}
 
-	public DBCompositeObject<?> getOwner() {
+	public CompositeDBObject<?> getOwner() {
 		return getRealTable().getOwner();
 	}
 
-	public void setOwner(DBCompositeObject<?> owner) {
+	public void setOwner(CompositeDBObject<?> owner) {
 		getRealTable().setOwner(owner);
+	}
+	
+	public boolean deepEquals(CompositeDBObject<?> other) {
+		return getRealTable().deepEquals(other);
 	}
 
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
