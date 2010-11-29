@@ -38,7 +38,23 @@ public class SQLUtil {
 	
 	private static final Set<String> NO_SIZE_TYPES = CollectionUtil.toSet(
 			"DATE", "BLOB", "CLOB", "NCLOB");
-
+	
+	public static Object[] parseColumnTypeAndSize(String spec) {
+		int lparen = spec.indexOf('(');
+		if (lparen < 0)
+			return new Object[] { spec };
+		String type = spec.substring(0, lparen);
+		int rparen = spec.indexOf(')', lparen);
+		if (rparen < 0)
+			throw new RuntimeException("Illegal column type format: " + spec);
+		String[] sizeAndFractionDigits = spec.substring(lparen + 1, rparen).split(",");
+		if (sizeAndFractionDigits.length == 1)
+			return new Object[] { type, Integer.parseInt(sizeAndFractionDigits[0].trim()) };
+		else 
+			return new Object[] { type, Integer.parseInt(sizeAndFractionDigits[0].trim()), 
+				Integer.parseInt(sizeAndFractionDigits[1].trim()) };
+	}
+	
     public static String formatColumnNames(DBColumn[] columns) {
         StringBuilder builder = new StringBuilder(columns[0].getName());
         for (int i = 1; i < columns.length; i++)
@@ -61,7 +77,7 @@ public class SQLUtil {
 	    
 	    // column type & size
 		builder.append(' ');
-		renderTypeAndSize(column, builder);
+		renderColumnTypeWithSize(column, builder);
 	    
 	    // default
 	    if (column.getDefaultValue() != null)
@@ -74,7 +90,13 @@ public class SQLUtil {
 	    return builder.toString();
     }
 
-	private static void renderTypeAndSize(DBColumn column, StringBuilder builder) {
+	public static String renderColumnTypeWithSize(DBColumn column) {
+	    StringBuilder builder = new StringBuilder();
+		renderColumnTypeWithSize(column, builder);
+		return builder.toString();
+    }
+	
+	public static void renderColumnTypeWithSize(DBColumn column, StringBuilder builder) {
 	    String typeName = column.getType().getName();
 	    builder.append(typeName);
 	    if (column.getSize() != null && !NO_SIZE_TYPES.contains(typeName)) {
