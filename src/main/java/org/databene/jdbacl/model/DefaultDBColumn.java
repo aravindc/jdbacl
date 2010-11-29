@@ -25,14 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.NullSafeComparator;
+import org.databene.commons.bean.HashCodeBuilder;
+import org.databene.jdbacl.SQLUtil;
 
 /**
- * TODO Document class.<br/><br/>
+ * Default implementation of the {@link DBColumn} interface.<br/><br/>
  * Created: 14.11.2010 19:33:30
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
-public class DefaultDBColumn extends DBObjectImpl implements DBColumn {
+public class DefaultDBColumn extends AbstractDBTableComponent implements DBColumn {
 
 	private static final long serialVersionUID = 5693941485232520002L;
 	
@@ -44,12 +47,23 @@ public class DefaultDBColumn extends DBObjectImpl implements DBColumn {
 
     protected List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
     protected DBConstraint notNullConstraint;
-//    private DBForeignKeyConstraint fkConstraint;
+//    TODO private DBForeignKeyConstraint fkConstraint;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
     public DefaultDBColumn(String name, DBColumnType type) {
         this(name, type, null);
+    }
+
+    public DefaultDBColumn(String name, String typeAndSize) {
+        this(name, null, null);
+        Object[] tokens = SQLUtil.parseColumnTypeAndSize(typeAndSize);
+        if (tokens.length > 0)
+        	this.type = DBColumnType.getInstance((String) tokens[0]);
+        if (tokens.length > 1)
+        	this.size = (Integer) tokens[1];
+        if (tokens.length > 2)
+        	this.fractionDigits = (Integer) tokens[2];
     }
 
     public DefaultDBColumn(String name, DBColumnType type, Integer size) {
@@ -76,16 +90,6 @@ public class DefaultDBColumn extends DBObjectImpl implements DBColumn {
     }
 
     // properties ------------------------------------------------------------------------------------------------------
-
-    public DBTable getTable() {
-        return (DBTable) getOwner();
-    }
-
-    public void setTable(DBTable table) {
-        setOwner(table);
-        if (table != null)
-        	table.addComponent(this);
-    }
 
     public DBColumnType getType() {
         return type;
@@ -175,16 +179,34 @@ public class DefaultDBColumn extends DBObjectImpl implements DBColumn {
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || !DBColumn.class.isAssignableFrom(obj.getClass()))
+			return false;
+		DBColumn that = (DBColumn) obj;
+		return NullSafeComparator.equals(this.name, that.getName())
+			&& this.type.equals(that.getType())
+			&& NullSafeComparator.equals(this.size, that.getSize())
+			&& NullSafeComparator.equals(this.fractionDigits, that.getFractionDigits())
+			&& NullSafeComparator.equals(this.defaultValue, that.getDefaultValue())
+			&& this.versionColumn == that.isVersionColumn()
+			&& this.ukConstraints.equals(that.getUkConstraints())
+			&& NullSafeComparator.equals(notNullConstraint, that.getNotNullConstraint())
+			/*&& NullSafeComparator.equals(this.fkConstraint, that.getForeignKeyConstraint())*/;
+	}
+	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.hashCode(name, type, size, fractionDigits, defaultValue, versionColumn, 
+				ukConstraints, notNullConstraint/*, fkConstraint*/);
+	}
+	
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(name).append(" : ").append(type);
-        if (size != null) {
-            builder.append('(');
-            builder.append(size);
-            if (fractionDigits != null)
-                builder.append(",").append(fractionDigits);
-            builder.append(')');
-        }
+        StringBuilder builder = new StringBuilder(name).append(" : ");
+        SQLUtil.renderColumnTypeWithSize(this, builder);
         if (!isNullable())
             builder.append(" NOT NULL");
         return builder.toString();

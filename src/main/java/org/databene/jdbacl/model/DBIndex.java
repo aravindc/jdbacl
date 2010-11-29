@@ -27,32 +27,30 @@
 package org.databene.jdbacl.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import org.databene.commons.ArrayFormat;
 import org.databene.commons.Named;
+import org.databene.commons.NullSafeComparator;
 
 /**
  * Represents a database index.<br/><br/>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public abstract class DBIndex implements Named, Serializable {
+public abstract class DBIndex extends AbstractDBTableComponent implements Named, Serializable {
 
 	private static final long serialVersionUID = -1656761838194962745L;
 	
-	private String name;
-
     public DBIndex() {
-        this(null);
+        this(null, null);
     }
 
-    public DBIndex(String name) {
-        this.name = name;
+    public DBIndex(String name, DBTable table) {
+        super(name, table);
     }
 
     public abstract boolean isUnique();
-
-    public abstract DBTable getTable();
 
     public abstract String[] getColumnNames();
 
@@ -64,6 +62,24 @@ public abstract class DBIndex implements Named, Serializable {
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
+    @Override
+    public boolean equals(Object obj) {
+    	if (this == obj)
+    		return true;
+    	if (obj == null || obj.getClass() != this.getClass())
+    		return false;
+    	DBIndex that = (DBIndex) obj;
+    	return NullSafeComparator.equals(this.getName(), that.getName())
+			&& NullSafeComparator.equals(this.getTable(), that.getTable())
+			&& NullSafeComparator.equals(this.isUnique(), that.isUnique())
+			&& Arrays.equals(this.getColumnNames(), that.getColumnNames());
+    }
+    
+    @Override
+    public int hashCode() {
+    	throw new UnsupportedOperationException("DBIndex.hashCode() is not implemented"); // TODO implement DBIndex.hashCode
+    }
+    
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(name);

@@ -37,37 +37,17 @@ import java.util.Arrays;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public abstract class DBConstraint implements Named, Serializable {
+public abstract class DBConstraint extends AbstractDBTableComponent implements Named, Serializable {
 
     private static final long serialVersionUID = 3768329019450975632L;
     
-    protected DBTable owner;
-	protected String name;
-
     // interface -------------------------------------------------------------------------------------------------------
 
     /**
      * @param name the constraint name - it may be null
      */
-    public DBConstraint(DBTable owner, String name) {
-    	this.owner = owner;
-        this.name = name;
-    }
-
-    /**
-     * Returns the constraint name
-     * @return the constraint name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the table which owns this constraint
-     * @return the table which owns this constraint
-     */
-    public DBTable getOwner() {
-    	return owner;
+    public DBConstraint(String name, DBTable owner) {
+    	super(name, owner);
     }
 
     /**
@@ -75,6 +55,12 @@ public abstract class DBConstraint implements Named, Serializable {
      * @return the columns which constitute this constraint
      */
     public abstract String[] getColumnNames();
+
+    public DBTable getTable() {
+        return (DBTable) getOwner();
+    }
+
+    
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
@@ -102,4 +88,5 @@ public abstract class DBConstraint implements Named, Serializable {
         builder.append("]]");
         return builder.toString();
     }
+    
 }

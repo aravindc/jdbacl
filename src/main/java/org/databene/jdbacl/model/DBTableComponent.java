@@ -21,45 +21,13 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.TreeModel;
-
 /**
- * {@link TreeModel} adapter for the hierarchy formed by the Composite pattern of
- * {@link DBObject} and {@link CompositeDBObject}.<br/><br/>
- * Created: 10.11.2010 10:17:14
+ * Parent interface for all {@link DBObject}s that can be part of a {@link DBTable}.<br/><br/>
+ * Created: 28.11.2010 11:57:37
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public class DBTreeModel implements TreeModel<DBObject> {
-
-	CompositeDBObject<?> root;
-	
-	public DBTreeModel(CompositeDBObject<?> root) {
-		this.root = root;
-	}
-
-	public DBObject getRoot() {
-		return root;
-	}
-
-	public DBObject getParent(DBObject child) {
-		return child.getOwner();
-	}
-
-	public boolean isLeaf(DBObject node) {
-		return !(node instanceof CompositeDBObject);
-	}
-
-	public int getChildCount(DBObject parent) {
-		return ((CompositeDBObject<?>) parent).getComponents().size();
-	}
-
-	public DBObject getChild(DBObject parent, int index) {
-		return ((CompositeDBObject<?>) parent).getComponents().get(index);
-	}
-
-	public int getIndexOfChild(DBObject parent, DBObject child) {
-		return ((CompositeDBObject<?>) parent).getComponents().indexOf(child);
-	}
-
+public interface DBTableComponent extends DBObject {
+    DBTable getTable();
+	void setTable(DBTable table);
 }

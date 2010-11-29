@@ -21,53 +21,18 @@
 
 package org.databene.jdbacl.model;
 
+import java.util.List;
+
 /**
- * TODO Document class.<br/><br/>
- * Created: 09.11.2010 11:45:20
- * @since TODO version
+ * {@link DBObject} implementation that aggregates sub objects of a DBObject sub type C.<br/><br/>
+ * Created: 09.11.2010 11:26:08
+ * @since 0.6.4
  * @author Volker Bergmann
  */
-public class DBObjectImpl implements DBObject {
-
-	private static final long serialVersionUID = -9344600767967258L;
-	
-	protected String name;
-	protected String doc;
-	protected DBCompositeObject<?> owner;
-    
-	public DBObjectImpl(String name) {
-		this.name = name;
-	}
-
-    // properties ------------------------------------------------------------------------------------------------------
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDoc() {
-        return doc;
-    }
-
-    public void setDoc(String doc) {
-        this.doc = doc;
-    }
-
-    public DBCompositeObject<?> getOwner() {
-		return owner;
-	}
-
-	public void setOwner(DBCompositeObject<?> owner) {
-		this.owner = owner;
-	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
-	
+public interface CompositeDBObject<C extends DBObject> extends DBObject {
+	List<C> getComponents();
+    C getComponent(String name);
+    void addComponent(C component);
+    void removeComponent(C component);
+    boolean deepEquals(CompositeDBObject<?> other);
 }

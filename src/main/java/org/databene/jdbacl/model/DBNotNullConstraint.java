@@ -38,7 +38,7 @@ public class DBNotNullConstraint extends DBConstraint {
 	private String columnName;
 
     public DBNotNullConstraint(DBTable owner, String name, String columnName) {
-        super(owner, name);
+        super(name, owner);
         this.columnName = columnName;
     }
 

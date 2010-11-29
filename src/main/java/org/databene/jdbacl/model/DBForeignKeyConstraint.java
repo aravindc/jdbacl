@@ -26,8 +26,12 @@
 
 package org.databene.jdbacl.model;
 
+import java.util.Arrays;
+
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.bean.HashCodeBuilder;
 
 /**
  * Represents a foreign key constraint.<br/><br/>
@@ -50,7 +54,7 @@ public class DBForeignKeyConstraint extends DBConstraint {
 
     public DBForeignKeyConstraint(String name, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
-        super(owner, name);
+        super(name, owner);
         this.fkColumnNames = fkColumnNames;
         this.refereeTable = refereeTable;
         this.refereeColumnNames = refereeColumnNames;
@@ -93,7 +97,31 @@ public class DBForeignKeyConstraint extends DBConstraint {
 		return refereeColumnNames;
     }
     
+	
+	
     @Override
+	public int hashCode() {
+		return HashCodeBuilder.hashCode(
+				super.hashCode(), 
+				Arrays.hashCode(fkColumnNames), 
+				Arrays.hashCode(refereeColumnNames), 
+				refereeTable.hashCode());
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		if (other == null || getClass() != other.getClass())
+			return false;
+		DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
+		return NullSafeComparator.equals(this.name, that.name)
+			&& Arrays.equals(fkColumnNames, that.fkColumnNames)
+			&& Arrays.equals(refereeColumnNames, that.refereeColumnNames)
+			&& NullSafeComparator.equals(refereeTable, that.refereeTable);
+	}
+
+	@Override
     public String toString() {
     	StringBuilder builder = new StringBuilder("(");
 		builder.append(fkColumnNames[0]);

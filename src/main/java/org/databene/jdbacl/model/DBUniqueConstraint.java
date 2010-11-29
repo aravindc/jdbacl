@@ -45,7 +45,7 @@ public class DBUniqueConstraint extends DBConstraint {
      * @param columnNames the names of the columns to which the constraint applies
      */
     public DBUniqueConstraint(DBTable owner, String name, String... columnNames) {
-        super(owner, name);
+        super(name, owner);
         this.columnNames = columnNames;
     }
 

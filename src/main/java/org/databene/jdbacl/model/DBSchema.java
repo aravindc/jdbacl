@@ -36,17 +36,17 @@ import org.databene.commons.Named;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema extends DBCompositeObjectImpl<DBTable> implements Named, Serializable {
+public class DBSchema extends AbstractDBCompositeObject<DBTable> implements Named, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
     public DBSchema(String name) {
-        this(null, name);
+        this(name, null);
     }
 
-    public DBSchema(DBCatalog catalog, String name) {
+    public DBSchema(String name, DBCatalog catalog) {
     	super(name);
     	if (catalog != null)
     		catalog.addComponent(this);

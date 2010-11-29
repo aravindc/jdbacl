@@ -22,17 +22,19 @@
 package org.databene.jdbacl.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * TODO Document class.<br/><br/>
+ * Abstract implementation of the {@link CompositeDBObject} interface which serves as parent class
+ * for individual implementations.<br/><br/>
  * Created: 09.11.2010 11:47:43
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
-public class DBCompositeObjectImpl<C extends DBObject> extends DBObjectImpl implements DBCompositeObject<C>  {
+public abstract class AbstractDBCompositeObject<C extends DBObject> extends AbstractDBObject implements CompositeDBObject<C>  {
 
 	private static final long serialVersionUID = 4823482587175647368L;
 	
@@ -40,12 +42,16 @@ public class DBCompositeObjectImpl<C extends DBObject> extends DBObjectImpl impl
 
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public DBCompositeObjectImpl(String name) {
-    	super(name);
+    public AbstractDBCompositeObject(String name) {
+    	this(name, null);
+    }
+
+    public AbstractDBCompositeObject(String name, CompositeDBObject<?> owner) {
+    	super(name, owner);
         this.components = OrderedNameMap.createCaseInsensitiveMap();
     }
 
-    // schema operations -----------------------------------------------------------------------------------------------
+    // sub component operations ----------------------------------------------------------------------------------------
 
 	public List<C> getComponents() {
         return components.values();
@@ -72,12 +78,34 @@ public class DBCompositeObjectImpl<C extends DBObject> extends DBObjectImpl impl
 	@SuppressWarnings("unchecked")
 	private <T extends DBObject> List<T> addSubComponents(Class<T> type, boolean recursive, List<T> result) {
 		for (DBObject component : getComponents()) {
-			if (type == component.getClass())
+			if (type.isAssignableFrom(component.getClass()))
 				result.add((T) component);
-			if (recursive && component instanceof DBCompositeObject)
+			if (recursive && component instanceof CompositeDBObject)
 				addSubComponents(type, true, result);
 		}
 		return result;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public boolean deepEquals(CompositeDBObject<?> other) {
+		if (!this.equals(other))
+			return false;
+		List<? extends DBObject> otherComponents = other.getComponents();
+		if (this.components.size() != otherComponents.size())
+			return false;
+		Iterator<C> componentIterator = this.components.values().iterator();
+		for (int i = 0; i < components.size(); i++) {
+			C component = componentIterator.next();
+			DBObject otherComponent = otherComponents.get(i);
+			if ((component instanceof CompositeDBObject)) {
+				if (!(otherComponent instanceof CompositeDBObject))
+					return false;
+				if (!((CompositeDBObject) component).deepEquals((CompositeDBObject) otherComponent))
+					return false;
+			} else if (!component.equals(otherComponent))
+				return false;
+		}
+		return true;
 	}
 	
 }

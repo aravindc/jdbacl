@@ -38,7 +38,7 @@ import java.util.List;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBCatalog extends DBCompositeObjectImpl<DBSchema> implements Named, Serializable {
+public class DBCatalog extends AbstractDBCompositeObject<DBSchema> implements Named, Serializable {
 
     private static final long serialVersionUID = 3956827426638393655L;
     
@@ -49,7 +49,11 @@ public class DBCatalog extends DBCompositeObjectImpl<DBSchema> implements Named,
     }
 
     public DBCatalog(String name) {
-        super(name);
+        this(name, null);
+    }
+
+    public DBCatalog(String name, Database owner) {
+        super(name, owner);
     }
 
     // properties ------------------------------------------------------------------------------------------------------

@@ -35,23 +35,16 @@ public class DBNonUniqueIndex extends DBIndex {
 
     private static final long serialVersionUID = -6326915676663722678L;
     
-    DBTable table;
 	private String[] columnNames;
 
-    public DBNonUniqueIndex(DBTable table, String name, String ... columnNames) {
-        super(name);
-        this.table = table;
+    public DBNonUniqueIndex(String name, DBTable table, String ... columnNames) {
+        super(name, table);
         this.columnNames = columnNames;
     }
 
     @Override
     public boolean isUnique() {
         return false;
-    }
-
-    @Override
-    public DBTable getTable() {
-        return table;
     }
 
     @Override

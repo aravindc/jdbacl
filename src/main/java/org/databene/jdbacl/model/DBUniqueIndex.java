@@ -38,7 +38,7 @@ public class DBUniqueIndex extends DBIndex {
 	private DBUniqueConstraint constraint;
 
     public DBUniqueIndex(String name, DBUniqueConstraint constraint) {
-        super(name);
+        super(name, constraint.getTable());
         this.constraint = constraint;
     }
 
@@ -49,7 +49,7 @@ public class DBUniqueIndex extends DBIndex {
 
     @Override
     public DBTable getTable() {
-        return constraint.getOwner();
+        return (DBTable) constraint.getOwner();
     }
 
     @Override

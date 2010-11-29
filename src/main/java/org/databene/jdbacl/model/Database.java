@@ -39,7 +39,7 @@ import java.util.Set;
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public class Database extends DBCompositeObjectImpl<DBCatalog> implements Named, Serializable {
+public class Database extends AbstractDBCompositeObject<DBCatalog> implements Named, Serializable {
 	
 	private static final long serialVersionUID = -1873203097942961523L;
 	
@@ -89,7 +89,7 @@ public class Database extends DBCompositeObjectImpl<DBCatalog> implements Named,
     
 	public void removeTable(String tableName) {
 		DBTable table = getTable(tableName);
-		components.get(table.getCatalog()).removeTable(tableName);
+		components.get(table.getSchema()).removeTable(tableName);
     }
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------

@@ -33,9 +33,7 @@ import java.util.List;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBColumn extends DBObject {
-    DBTable getTable();
-	void setTable(DBTable table);
+public interface DBColumn extends DBTableComponent {
     DBColumnType getType();
     Integer getSize();
     Integer getFractionDigits();

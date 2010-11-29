@@ -21,17 +21,32 @@
 
 package org.databene.jdbacl.model;
 
-import java.util.List;
-
 /**
- * TODO Document class.<br/><br/>
- * Created: 09.11.2010 11:26:08
- * @since TODO version
+ * Parent class for classes that represent a sub {@link DBObject} of a {@link DBTable}.<br/><br/>
+ * Created: 28.11.2010 11:58:44
+ * @since 0.6.4
  * @author Volker Bergmann
  */
-public interface DBCompositeObject<C extends DBObject> extends DBObject {
-	public List<C> getComponents();
-    public C getComponent(String name);
-    public void addComponent(C component);
-    public void removeComponent(C component);
+public abstract class AbstractDBTableComponent extends AbstractDBObject implements DBTableComponent {
+
+	private static final long serialVersionUID = 3009611143703482138L;
+
+	public AbstractDBTableComponent(String name) {
+		this(name, null);
+	}
+	
+	public AbstractDBTableComponent(String name, DBTable owner) {
+		super(name, owner);
+	}
+
+    public DBTable getTable() {
+        return (DBTable) getOwner();
+    }
+
+    public void setTable(DBTable table) {
+        setOwner(table);
+        if (table != null)
+        	table.addComponent(this);
+    }
+
 }

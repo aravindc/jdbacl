@@ -25,13 +25,13 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
-
 /**
- * TODO Document class.<br/><br/>
+ * Interface for classes that can export a meta data model.<br/><br/>
  * Created: 08.07.2010 06:39:28
  * @since 0.6.3
  * @author Volker Bergmann
  */
 public interface DBMetaDataExporter {
-	void export(Database database, File file) throws IOException, SQLException;
+	// TODO not only file export should be supported - setting up a schema in an empty DB could be seen as a kind of export, too
+	void export(Database database, File file) throws IOException, SQLException; 
 }

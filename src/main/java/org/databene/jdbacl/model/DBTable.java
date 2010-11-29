@@ -39,7 +39,7 @@ import java.util.List;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBTable extends DBCompositeObject<DBColumn>, Dependent<DBTable> {
+public interface DBTable extends CompositeDBObject<DBTableComponent>, Dependent<DBTable> {
 
     String getName();
     String getDoc();

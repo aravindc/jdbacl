@@ -26,13 +26,14 @@ import java.io.Serializable;
 import org.databene.commons.Named;
 
 /**
- * TODO Document class.<br/><br/>
+ * Abstract parent interface for assembling database objects in a tree using the Composite design pattern. 
+ * The corresponding interface for Composite objects is {@link CompositeDBObject}.<br/><br/>
  * Created: 09.11.2010 11:41:09
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
 public interface DBObject extends Named, Serializable {
     public String getDoc();
-    public DBCompositeObject<?> getOwner();
-	public void setOwner(DBCompositeObject<?> owner);
+    public CompositeDBObject<?> getOwner();
+	public void setOwner(CompositeDBObject<?> owner);
 }
