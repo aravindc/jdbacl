@@ -29,6 +29,7 @@ package org.databene.jdbacl.model;
 import java.util.Arrays;
 
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.Assert;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.bean.HashCodeBuilder;
@@ -55,9 +56,11 @@ public class DBForeignKeyConstraint extends DBConstraint {
     public DBForeignKeyConstraint(String name, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
         super(name, owner);
+        Assert.notNull(refereeTable, "refereeTable");
         this.fkColumnNames = fkColumnNames;
         this.refereeTable = refereeTable;
         this.refereeColumnNames = refereeColumnNames;
+        owner.addForeignKey(this);
     }
 
     public String[] getForeignKeyColumnNames() {

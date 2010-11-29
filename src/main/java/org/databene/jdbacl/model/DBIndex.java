@@ -48,6 +48,7 @@ public abstract class DBIndex extends AbstractDBTableComponent implements Named,
 
     public DBIndex(String name, DBTable table) {
         super(name, table);
+        table.addIndex(this);
     }
 
     public abstract boolean isUnique();

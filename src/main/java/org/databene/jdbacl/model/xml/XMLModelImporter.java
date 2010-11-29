@@ -144,7 +144,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String nullableSpec = e.getAttribute("nullable");
 		boolean nullable = (nullableSpec == null || !"false".equals(nullableSpec));
 		column.setNullable(nullable);
-		column.setTable(table);
+		table.addColumn(column);
 		return column;
 	}
 

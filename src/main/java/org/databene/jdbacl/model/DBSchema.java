@@ -30,15 +30,18 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.databene.commons.Named;
+import org.databene.commons.collection.OrderedNameMap;
 
 /**
  * Represents a JDBC database schema.<br/><br/>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema extends AbstractDBCompositeObject<DBTable> implements Named, Serializable {
+public class DBSchema extends AbstractCompositeDBObject<DBTable> implements Named, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
+    
+    OrderedNameMap<DBTable> tables;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -49,7 +52,8 @@ public class DBSchema extends AbstractDBCompositeObject<DBTable> implements Name
     public DBSchema(String name, DBCatalog catalog) {
     	super(name);
     	if (catalog != null)
-    		catalog.addComponent(this);
+    		catalog.addSchema(this);
+    	this.tables = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -72,6 +76,12 @@ public class DBSchema extends AbstractDBCompositeObject<DBTable> implements Name
         this.owner = catalog;
     }
 
+    // CompositeDBObject implementation --------------------------------------------------------------------------------
+
+	public List<DBTable> getComponents() {
+		return tables.values();
+	}
+	
     // table operations ------------------------------------------------------------------------------------------------
 
     public List<DBTable> getTables() {
@@ -79,15 +89,15 @@ public class DBSchema extends AbstractDBCompositeObject<DBTable> implements Name
     }
 
     public DBTable getTable(String tableName) {
-        return getComponent(tableName.toUpperCase());
+        return tables.get(tableName);
     }
 
     public void addTable(DBTable table) {
-        addComponent(table);
+        tables.put(table.getName(), table);
     }
 
     public void removeTable(DBTable table) {
-        removeComponent(table);
+        tables.remove(table.getName());
     }
 
 }

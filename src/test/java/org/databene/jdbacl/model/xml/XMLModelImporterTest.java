@@ -41,7 +41,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
 
 	@Test
 	public void test() throws Exception {
-		File file = new File("target/classes", TEST_MODEL_FILENAME);
+		File file = new File("target/test-classes", TEST_MODEL_FILENAME);
 		XMLModelImporter importer = new XMLModelImporter(file);
 		Database actual = importer.importDatabase();
 		new TreeLogger().log(new DBTreeModel(actual));

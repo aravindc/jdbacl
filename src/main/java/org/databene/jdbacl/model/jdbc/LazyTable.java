@@ -162,18 +162,6 @@ public class LazyTable implements DBTable {
 		return getRealTable().getComponents();
 	}
 
-	public DBTableComponent getComponent(String name) {
-		return getRealTable().getComponent(name);
-	}
-
-	public void addComponent(DBTableComponent component) {
-		getRealTable().addComponent(component);
-	}
-
-	public void removeComponent(DBTableComponent component) {
-		getRealTable().removeComponent(component);
-	}
-
 	public CompositeDBObject<?> getOwner() {
 		return getRealTable().getOwner();
 	}
@@ -182,6 +170,22 @@ public class LazyTable implements DBTable {
 		getRealTable().setOwner(owner);
 	}
 	
+	public void setPrimaryKey(DBPrimaryKeyConstraint pk) {
+		getRealTable().setPrimaryKey(pk);
+	}
+
+	public void addUniqueConstraint(DBUniqueConstraint uk) {
+		getRealTable().addUniqueConstraint(uk);
+	}
+
+	public void addForeignKey(DBForeignKeyConstraint fk) {
+		getRealTable().addForeignKey(fk);
+	}
+
+	public void addIndex(DBIndex dbIndex) {
+		throw new UnsupportedOperationException("DBTable.addIndex() is not implemented"); // TODO implement DBTable.addIndex
+	}
+
 	public boolean deepEquals(CompositeDBObject<?> other) {
 		return getRealTable().deepEquals(other);
 	}

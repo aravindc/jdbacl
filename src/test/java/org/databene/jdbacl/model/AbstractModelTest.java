@@ -37,41 +37,41 @@ public abstract class AbstractModelTest {
 		DBCatalog catalog = new DBCatalog("cat1", db);
 		DBSchema schema = new DBSchema("schema1", catalog);
 		
-		DBTable table1 = new DefaultDBTable("table1", schema);
+		DefaultDBTable table1 = new DefaultDBTable("table1", schema);
 		DBColumn id1 = new DefaultDBColumn("id1", "int");
-		table1.addComponent(id1); // TODO add owner table to ctor args?
+		table1.addColumn(id1); // TODO add owner table to ctor args?
 		DBColumn name1 = new DefaultDBColumn("name1", "int");
-		table1.addComponent(name1);
+		table1.addColumn(name1);
 		DBPrimaryKeyConstraint pk1 = new DBPrimaryKeyConstraint(table1, "table1_pk", "id1");
 		DBUniqueConstraint uk1 = new DBUniqueConstraint(table1, "table1_name1_uk", "name1");
 		DBIndex index1 = new DBUniqueIndex("index1", uk1);
 		
-		DBTable table2 = new DefaultDBTable("table2", schema);
+		DefaultDBTable table2 = new DefaultDBTable("table2", schema);
 		DBColumn id2 = new DefaultDBColumn("id2", "int");
 		DBColumn ref2 = new DefaultDBColumn("ref2", "int");
-		table2.addComponent(id2);
+		table2.addColumn(id2);
 		DBPrimaryKeyConstraint pk2 = new DBPrimaryKeyConstraint(table2, "table2_pk", "id2");
 		DBForeignKeyConstraint fk2 = new DBForeignKeyConstraint("table2_fk2", table2, new String[] {"ref2"}, table1, new String[] {"id1"});
 		
-		DBTable table3 = new DefaultDBTable("table3", schema);
+		DefaultDBTable table3 = new DefaultDBTable("table3", schema);
 		DBColumn id3_1 = new DefaultDBColumn("id3_1", "int");
-		table3.addComponent(id3_1);
+		table3.addColumn(id3_1);
 		DBColumn id3_2 = new DefaultDBColumn("id3_2", "int");
-		table3.addComponent(id3_2);
+		table3.addColumn(id3_2);
 		DBColumn name3 = new DefaultDBColumn("name3", "varchar(8)");
-		table3.addComponent(name3);
+		table3.addColumn(name3);
 		DBColumn type3 = new DefaultDBColumn("type3", "char");
-		table3.addComponent(type3);
+		table3.addColumn(type3);
 		DBPrimaryKeyConstraint pk3 = new DBPrimaryKeyConstraint(table3, "table3_pk", "id3_1", "id3_2");
 		DBUniqueConstraint uk3 = new DBUniqueConstraint(table3, "table3_name3_uk", "name3", "type3");
 		
-		DBTable table4 = new DefaultDBTable("table4", schema);
+		DefaultDBTable table4 = new DefaultDBTable("table4", schema);
 		DBColumn id4 = new DefaultDBColumn("id4", "int");
-		table4.addComponent(id4); // TODO create addColumn()?
+		table4.addColumn(id4);
 		DBColumn ref4_1 = new DefaultDBColumn("ref4_1", "int");
-		table4.addComponent(ref4_1);
+		table4.addColumn(ref4_1);
 		DBColumn ref4_2 = new DefaultDBColumn("ref4_2", "int");
-		table4.addComponent(ref4_2);
+		table4.addColumn(ref4_2);
 		DBPrimaryKeyConstraint pk4 = new DBPrimaryKeyConstraint(table4, "table4_pk", "id4");
 		DBForeignKeyConstraint fk4 = new DBForeignKeyConstraint("table4_fk2", table4, new String[] {"ref4_1", "ref4_2"}, 
 				table1, new String[] {"id3_1", "id3_2"});

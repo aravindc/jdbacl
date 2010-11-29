@@ -184,9 +184,9 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
             importTables();
             if (!lazy) {
             	importColumns();
-            	importPrimaryKeys();
 	            if (importingIndexes || importingUKs)
 	                importIndexes();
+            	importPrimaryKeys();
 	            importImportedKeys();
             }
             return database;
@@ -456,7 +456,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	        if (pkComponents.size() > 0) {
 		        String[] columnNames = pkComponents.values().toArray(new String[pkComponents.size()]);
 		        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(table, pkName, columnNames);
-		        table.setPrimaryKeyConstraint(constraint);
+		        table.setPrimaryKey(constraint);
 		        for (String columnName : columnNames) {
 		        	DBColumn column = table.getColumn(columnName);
 		            column.addUkConstraint(constraint);
@@ -569,7 +569,6 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	    return tableNameFilter.accept(tableName);
     }
 
-	@SuppressWarnings("null")
     private void importImportedKeys(DefaultDBTable table) {
         logger.debug("Importing imported keys for table {}", table.getName());
         DBCatalog catalog = table.getCatalog();
@@ -598,7 +597,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 				for (int i = 0; i < n; i++)
 	                foreignKeyConstraint.addForeignKeyColumn(key.getForeignKeyColumnNames().get(i), 
 	                		key.getRefereeColumnNames().get(i));
-	            table.addForeignKeyConstraint(foreignKeyConstraint);
+	            table.addForeignKey(foreignKeyConstraint);
 	            if (logger.isDebugEnabled())
 	            	logger.debug("Imported foreign key {}", foreignKeyConstraint);
 	        }

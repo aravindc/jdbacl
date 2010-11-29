@@ -45,8 +45,6 @@ public abstract class AbstractDBTableComponent extends AbstractDBObject implemen
 
     public void setTable(DBTable table) {
         setOwner(table);
-        if (table != null)
-        	table.addComponent(this);
     }
 
 }

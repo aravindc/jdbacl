@@ -28,6 +28,7 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.Named;
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.collection.OrderedNameMap;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,9 +39,11 @@ import java.util.List;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBCatalog extends AbstractDBCompositeObject<DBSchema> implements Named, Serializable {
+public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Named, Serializable {
 
     private static final long serialVersionUID = 3956827426638393655L;
+    
+    OrderedNameMap<DBSchema> schemas;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -54,6 +57,9 @@ public class DBCatalog extends AbstractDBCompositeObject<DBSchema> implements Na
 
     public DBCatalog(String name, Database owner) {
         super(name, owner);
+        if (owner != null)
+        	owner.addCatalog(this);
+        this.schemas = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -81,7 +87,13 @@ public class DBCatalog extends AbstractDBCompositeObject<DBSchema> implements Na
     public void setDoc(String doc) {
         this.doc = doc;
     }
+    
+    // CompositeDBObject implementation --------------------------------------------------------------------------------
 
+	public List<DBSchema> getComponents() {
+		return schemas.values();
+	}
+	
     // schema operations -----------------------------------------------------------------------------------------------
 
     public List<DBSchema> getSchemas() {
@@ -89,29 +101,30 @@ public class DBCatalog extends AbstractDBCompositeObject<DBSchema> implements Na
     }
 
     public DBSchema getSchema(String schemaName) {
-        return getComponent(schemaName);
+        return schemas.get(schemaName);
     }
 
     public void addSchema(DBSchema schema) {
-        addComponent(schema);
+        schemas.put(schema.getName(), schema);
+        schema.setOwner(this);
     }
 
     public void removeSchema(DBSchema schema) {
-        removeComponent(schema);
+        schemas.remove(schema.getName());
     }
 
     // table operations ------------------------------------------------------------------------------------------------
     
     public List<DBTable> getTables() {
     	List<DBTable> tables = new ArrayList<DBTable>();
-        for (DBSchema schema : components.values())
+        for (DBSchema schema : getComponents())
             for (DBTable table : schema.getTables())
             	tables.add(table);
         return tables;
     }
 
     public DBTable getTable(String name) {
-        for (DBSchema schema : components.values())
+        for (DBSchema schema : getComponents())
             for (DBTable table : schema.getTables())
             	if (table.getName().equals(name))
             		return table;
@@ -120,7 +133,7 @@ public class DBCatalog extends AbstractDBCompositeObject<DBSchema> implements Na
     
 	public void removeTable(String tableName) {
 		DBTable table = getTable(tableName);
-		components.get(table.getSchema()).removeTable(table);
+		table.getSchema().removeTable(table);
     }
-	
+
 }

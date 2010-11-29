@@ -31,8 +31,5 @@ import java.util.List;
  */
 public interface CompositeDBObject<C extends DBObject> extends DBObject {
 	List<C> getComponents();
-    C getComponent(String name);
-    void addComponent(C component);
-    void removeComponent(C component);
     boolean deepEquals(CompositeDBObject<?> other);
 }

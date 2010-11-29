@@ -27,13 +27,14 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.StringUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.SQLUtil;
+import org.databene.commons.collection.OrderedNameMap;
 import org.databene.commons.depend.Dependent;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,11 +47,16 @@ import java.util.Set;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public class DefaultDBTable extends AbstractDBCompositeObject<DBTableComponent> implements DBTable, Dependent<DBTable> {
+public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> implements DBTable, Dependent<DBTable> {
 
     private static final long serialVersionUID = 6829370969378083211L;
     private static final String[] EMPTY_ARRAY = new String[0];
-    
+
+    OrderedNameMap<DBColumn> columns;
+    private DBPrimaryKeyConstraint pkConstraint;
+    private List<DBUniqueConstraint> uniqueConstraints;
+    private List<DBForeignKeyConstraint> foreignKeyConstraints;
+    private OrderedNameMap<DBIndex> indexes;
     private Set<DBTable> referrers;
 
     // constructors ----------------------------------------------------------------------------------------------------
@@ -65,15 +71,16 @@ public class DefaultDBTable extends AbstractDBCompositeObject<DBTableComponent> 
 
     public DefaultDBTable(String name, DBSchema schema) {
         super(name, schema);
+        if (schema != null)
+        	schema.addTable(this);
         this.doc = null;
+        this.columns = OrderedNameMap.createCaseInsensitiveMap();
+        this.uniqueConstraints = new ArrayList<DBUniqueConstraint>();
+        this.foreignKeyConstraints = new ArrayList<DBForeignKeyConstraint>();
+        this.indexes = OrderedNameMap.createCaseInsensitiveMap();
         this.referrers = new HashSet<DBTable>();
     }
     
-    @Override
-    public void addComponent(DBTableComponent component) {
-    	super.addComponent(component);
-    }
-
     // properties ------------------------------------------------------------------------------------------------------
 
     public String getDoc() {
@@ -96,19 +103,27 @@ public class DefaultDBTable extends AbstractDBCompositeObject<DBTableComponent> 
         setOwner(schema);
     }
 
-    public void setPrimaryKeyConstraint(DBPrimaryKeyConstraint constraint) {
-        addComponent(constraint);
+    public void setPrimaryKey(DBPrimaryKeyConstraint constraint) {
+        this.pkConstraint = constraint;
+        this.uniqueConstraints.add(constraint);
     }
 
     public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
-    	List<DBPrimaryKeyConstraint> pks = getComponents(DBPrimaryKeyConstraint.class, false);
-    	return (pks.size() > 0 ? pks.get(0) : null);
+    	return pkConstraint;
     }
+
+	public List<DBTableComponent> getComponents() {
+		List<DBTableComponent> result = new ArrayList<DBTableComponent>();
+		result.addAll(columns.values());
+		result.addAll(foreignKeyConstraints);
+		result.addAll(indexes.values());
+		return result;
+	}
 
     // column operations -----------------------------------------------------------------------------------------------
 
     public List<DBColumn> getColumns() {
-        return getComponents(DBColumn.class, false);
+        return columns.values();
     }
 
     public DBColumn[] getColumns(List<String> columnNames) {
@@ -124,7 +139,7 @@ public class DefaultDBTable extends AbstractDBCompositeObject<DBTableComponent> 
     }
 
     public DBColumn getColumn(String columnName) {
-        DBColumn column = (DBColumn) getComponent(columnName);
+        DBColumn column = columns.get(columnName);
         if (column == null)
             throw new ObjectNotFoundException("Column '" + columnName + 
                     "' not found in table '" + this.getName() + "'");
@@ -133,60 +148,63 @@ public class DefaultDBTable extends AbstractDBCompositeObject<DBTableComponent> 
 
     public void addColumn(DBColumn column) {
         column.setTable(this);
-        addComponent(column);
+        columns.put(column.getName(), column);
     }
 
     // index operations ------------------------------------------------------------------------------------------------
 
     public List<DBIndex> getIndexes() {
-        return getComponents(DBIndex.class, false);
+        return indexes.values();
     }
 
     public DBIndex getIndex(String indexName) {
-        return (DBIndex) getComponent(indexName);
+        return indexes.get(indexName);
     }
 
     public void addIndex(DBIndex index) {
-        addComponent(index);
+    	index.setTable(this);
+        indexes.put(index.getName(), index);
     }
 
     public void removeIndex(DBIndex index) {
-        removeComponent(index);
+        indexes.remove(index.getName());
     }
 
     // uniqueConstraint operations -------------------------------------------------------------------------------------
 
     public List<DBUniqueConstraint> getUniqueConstraints() {
-        return getComponents(DBUniqueConstraint.class, false);
+        return uniqueConstraints;
     }
 
 	public DBUniqueConstraint getUniqueConstraint(String[] columnNames) {
-		for (DBUniqueConstraint constraint : getComponents(DBUniqueConstraint.class, false))
-			if (Arrays.equals(columnNames, constraint.getColumnNames()))
+		for (DBUniqueConstraint constraint : uniqueConstraints)
+			if (StringUtil.equalsIgnoreCase(columnNames, constraint.getColumnNames()))
 				return constraint;
 		return null;
 	}
 
 	public void addUniqueConstraint(DBUniqueConstraint constraint) {
-        addComponent(constraint);
+		constraint.setTable(this);
+        uniqueConstraints.add(constraint);
     }
 
     public void removeUniqueConstraint(DBUniqueConstraint constraint) {
-        removeComponent(constraint);
+        uniqueConstraints.remove(constraint.getName());
     }
 
     // ForeignKeyConstraint operations ---------------------------------------------------------------------------------
 
     public List<DBForeignKeyConstraint> getForeignKeyConstraints() {
-        return getComponents(DBForeignKeyConstraint.class, false);
+        return foreignKeyConstraints;
     }
 
-    public void addForeignKeyConstraint(DBForeignKeyConstraint constraint) {
-        addComponent(constraint);
+    public void addForeignKey(DBForeignKeyConstraint constraint) {
+    	constraint.setTable(this);
+        foreignKeyConstraints.add(constraint);
     }
 
     public void removeForeignKeyConstraint(DBForeignKeyConstraint constraint) {
-        removeComponent(constraint);
+        foreignKeyConstraints.remove(constraint);
     }
 
     // referrer operations ---------------------------------------------------------------------------------------------

@@ -43,6 +43,7 @@ public class DBPrimaryKeyConstraint extends DBUniqueConstraint {
      */
     public DBPrimaryKeyConstraint(DBTable table, String name, String... columnNames) {
         super(table, name, columnNames);
+        table.setPrimaryKey(this);
     }
 
     @Override

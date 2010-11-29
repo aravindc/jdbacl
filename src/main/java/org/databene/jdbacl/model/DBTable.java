@@ -62,5 +62,10 @@ public interface DBTable extends CompositeDBObject<DBTableComponent>, Dependent<
     Iterator<DBRow> allRows(Connection connection) throws SQLException;
     DBRow queryByPK(Object[] pkParts, Connection connection) throws SQLException;
     Iterator<DBRow> queryByColumnValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
+
+    void setPrimaryKey(DBPrimaryKeyConstraint dbPrimaryKeyConstraint);
+	void addUniqueConstraint(DBUniqueConstraint dbUniqueConstraint);
+	void addForeignKey(DBForeignKeyConstraint dbForeignKeyConstraint);
+	void addIndex(DBIndex dbIndex);
     
 }

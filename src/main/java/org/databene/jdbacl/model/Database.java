@@ -28,6 +28,7 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.Named;
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.collection.OrderedNameMap;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -39,16 +40,25 @@ import java.util.Set;
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public class Database extends AbstractDBCompositeObject<DBCatalog> implements Named, Serializable {
+public class Database extends AbstractCompositeDBObject<DBCatalog> implements Named, Serializable {
 	
 	private static final long serialVersionUID = -1873203097942961523L;
+	
+	OrderedNameMap<DBCatalog> catalogs;
 	
     // constructors ----------------------------------------------------------------------------------------------------
 
     public Database(String name) {
         super(name);
+        this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
     }
 
+    // CompositeDBObject implementation --------------------------------------------------------------------------------
+
+	public List<DBCatalog> getComponents() {
+		return catalogs.values();
+	}
+	
     // catalog operations ----------------------------------------------------------------------------------------------
 
     public List<DBCatalog> getCatalogs() {
@@ -56,16 +66,16 @@ public class Database extends AbstractDBCompositeObject<DBCatalog> implements Na
     }
 
     public DBCatalog getCatalog(String catalogName) {
-        return getComponent(catalogName);
+        return catalogs.get(catalogName);
     }
 
     public void addCatalog(DBCatalog catalog) {
         catalog.setDatabase(this);
-        addComponent(catalog);
+        catalogs.put(catalog.getName(), catalog);
     }
 
     public void removeCatalog(DBCatalog catalog) {
-        removeComponent(catalog);
+        catalogs.remove(catalog.getName());
         catalog.setOwner(null);
     }
 
@@ -73,14 +83,14 @@ public class Database extends AbstractDBCompositeObject<DBCatalog> implements Na
 
     public Set<DBTable> getTables() {
     	Set<DBTable> tables = new HashSet<DBTable>();
-        for (DBCatalog catalog : components.values())
+        for (DBCatalog catalog : getComponents())
             for (DBTable table : catalog.getTables())
             	tables.add(table);
         return tables;
     }
 
     public DBTable getTable(String name) {
-        for (DBCatalog catalog : components.values())
+        for (DBCatalog catalog : getComponents())
             for (DBTable table : catalog.getTables())
             	if (table.getName().equals(name))
             		return table;
@@ -89,24 +99,7 @@ public class Database extends AbstractDBCompositeObject<DBCatalog> implements Na
     
 	public void removeTable(String tableName) {
 		DBTable table = getTable(tableName);
-		components.get(table.getSchema()).removeTable(tableName);
-    }
-
-    // java.lang.Object overrides --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final Database that = (Database) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
+		table.getSchema().removeTable(table);
     }
 
 }

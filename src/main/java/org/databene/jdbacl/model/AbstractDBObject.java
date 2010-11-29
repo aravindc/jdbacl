@@ -37,16 +37,17 @@ public abstract class AbstractDBObject implements DBObject {
 	protected String name;
 	protected String doc;
 	protected CompositeDBObject<?> owner;
+	
+	// constructors ----------------------------------------------------------------------------------------------------
     
 	public AbstractDBObject(String name) {
 		this.name = name;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes"})
 	public AbstractDBObject(String name, CompositeDBObject owner) {
 		this.name = name;
-		if (owner != null)
-			owner.addComponent(this);
+		this.owner = owner;
 	}
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -74,10 +75,17 @@ public abstract class AbstractDBObject implements DBObject {
 	public void setOwner(CompositeDBObject<?> owner) {
 		this.owner = owner;
 	}
+	
+	// java.lang.Object overrides --------------------------------------------------------------------------------------
 
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (name != null ? name.hashCode() : 0);
 	}
 	
 	@Override

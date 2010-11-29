@@ -24,8 +24,9 @@ package org.databene.jdbacl.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import org.databene.commons.collection.OrderedNameMap;
+import org.databene.commons.OrderedMap;
 
 /**
  * Abstract implementation of the {@link CompositeDBObject} interface which serves as parent class
@@ -34,31 +35,32 @@ import org.databene.commons.collection.OrderedNameMap;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public abstract class AbstractDBCompositeObject<C extends DBObject> extends AbstractDBObject implements CompositeDBObject<C>  {
+public abstract class AbstractCompositeDBObject<C extends DBObject> extends AbstractDBObject implements CompositeDBObject<C>  {
 
 	private static final long serialVersionUID = 4823482587175647368L;
 	
-    protected OrderedNameMap<C> components;
-
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public AbstractDBCompositeObject(String name) {
+    public AbstractCompositeDBObject(String name) {
     	this(name, null);
     }
 
-    public AbstractDBCompositeObject(String name, CompositeDBObject<?> owner) {
+    public AbstractCompositeDBObject(String name, CompositeDBObject<?> owner) {
     	super(name, owner);
-        this.components = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // sub component operations ----------------------------------------------------------------------------------------
-
+/*
 	public List<C> getComponents() {
-        return components.values();
+		List<C> result = new ArrayList<C>();
+		for (Map<String, C> map : components.values())
+			result.addAll(map.values());
+        return result;
     }
 
-    public C getComponent(String name) {
-        return components.get(name);
+    public C getComponent(Class<? extends DBObject> type, String name) {
+        Map<String, C> typeMap = components.get(type);
+        return (typeMap != null ? typeMap.get(name) : null);
     }
 
 	public <T extends DBObject> List<T> getComponents(Class<T> type, boolean recursive) {
@@ -67,7 +69,8 @@ public abstract class AbstractDBCompositeObject<C extends DBObject> extends Abst
 	
     public void addComponent(C component) {
         component.setOwner(this);
-        components.put(component.getName(), component);
+        Map<String, C> typeMap = components.get(component.getClass());
+        typeMap.put(component.getName(), component);
     }
 
     public void removeComponent(C component) {
@@ -85,16 +88,17 @@ public abstract class AbstractDBCompositeObject<C extends DBObject> extends Abst
 		}
 		return result;
 	}
-
+*/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean deepEquals(CompositeDBObject<?> other) {
 		if (!this.equals(other))
 			return false;
+		List<? extends DBObject> thisComponents = this.getComponents();
 		List<? extends DBObject> otherComponents = other.getComponents();
-		if (this.components.size() != otherComponents.size())
+		if (thisComponents.size() != otherComponents.size())
 			return false;
-		Iterator<C> componentIterator = this.components.values().iterator();
-		for (int i = 0; i < components.size(); i++) {
+		Iterator<C> componentIterator = this.getComponents().iterator();
+		for (int i = 0; i < thisComponents.size(); i++) {
 			C component = componentIterator.next();
 			DBObject otherComponent = otherComponents.get(i);
 			if ((component instanceof CompositeDBObject)) {
