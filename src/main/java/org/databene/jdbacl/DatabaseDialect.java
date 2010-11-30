@@ -82,7 +82,6 @@ public abstract class DatabaseDialect {
     	return sequenceSupported;
     }
 
-	@SuppressWarnings("unused")
     public String[] querySequences(Connection connection) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
@@ -94,7 +93,6 @@ public abstract class DatabaseDialect {
 			throw checkSequenceSupport("createSequence");
     }
     
-	@SuppressWarnings("unused")
     public String renderFetchSequenceValue(String sequenceName) {
 		throw checkSequenceSupport("nextSequenceValue");
     }
