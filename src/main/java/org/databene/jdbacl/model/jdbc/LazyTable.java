@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.databene.commons.NullSafeComparator;
 import org.databene.jdbacl.model.DBCatalog;
@@ -93,7 +94,7 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getColumns(columnNames);
     }
 
-	public List<DBForeignKeyConstraint> getForeignKeyConstraints() {
+	public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
 	    return getRealTable().getForeignKeyConstraints();
     }
 
@@ -117,7 +118,7 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getRowCount(connection);
     }
 
-	public List<DBUniqueConstraint> getUniqueConstraints() {
+	public Set<DBUniqueConstraint> getUniqueConstraints() {
 	    return getRealTable().getUniqueConstraints();
     }
 

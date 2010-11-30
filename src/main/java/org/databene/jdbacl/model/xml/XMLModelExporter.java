@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.databene.SimpleXMLWriter;
 import org.databene.commons.Encodings;
@@ -115,8 +116,8 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
 		if (pk != null)
 			exportPK(pk, writer);
-		exportUKs(table.getUniqueConstraints(), writer);
 		exportFks(table.getForeignKeyConstraints(), writer);
+		exportUKs(table.getUniqueConstraints(), writer);
 		exportIndexes(table.getIndexes(), writer);
 		writer.endElement("table");
 	}
@@ -152,7 +153,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("columns");
 	}
 
-	private void exportUKs(List<DBUniqueConstraint> uks, SimpleXMLWriter writer) 
+	private void exportUKs(Set<DBUniqueConstraint> uks, SimpleXMLWriter writer) 
 			throws SAXException {
 		for (DBUniqueConstraint uk : uks) {
 			if (uk instanceof DBPrimaryKeyConstraint)
@@ -168,7 +169,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private void exportFks(List<DBForeignKeyConstraint> fks, SimpleXMLWriter writer) 
+	private void exportFks(Set<DBForeignKeyConstraint> fks, SimpleXMLWriter writer) 
 			throws SAXException {
 		for (DBForeignKeyConstraint fk : fks) {
 			AttributesImpl atts = createAttributes("name", fk.getName());
