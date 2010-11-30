@@ -26,11 +26,13 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.OrderedSet;
 import org.databene.commons.StringUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.SQLUtil;
+import org.databene.commons.bean.HashCodeBuilder;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.commons.depend.Dependent;
 
@@ -273,24 +275,20 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
 	
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        final DefaultDBTable that = (DefaultDBTable) o;
-        return name.equals(that.name); // TODO there might be different tables with same name in different schemas
-    }
-
-    @Override
+	@Override
     public int hashCode() {
-        return name.hashCode(); // TODO there might be different tables with same name in different schemas
+		return HashCodeBuilder.hashCode(owner, name);
     }
 
-    @Override
-    public String toString() {
-        return name;
+    public boolean equals(Object other) {
+	    if (this == other)
+		    return true;
+	    if (other == null || !(other instanceof DBTable))
+		    return false;
+	    DBTable that = (DBTable) other;
+	    if (!NullSafeComparator.equals(this.owner, that.getSchema()))
+	    	return false;
+	    return NullSafeComparator.equals(this.name, that.getName());
     }
 
 }
