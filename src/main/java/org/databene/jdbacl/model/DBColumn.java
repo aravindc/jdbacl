@@ -34,15 +34,32 @@ import java.util.List;
  * @author Volker Bergmann
  */
 public interface DBColumn extends DBTableComponent {
+	
     DBColumnType getType();
+    void setType(DBColumnType type);
+    
     Integer getSize();
+    void setSize(Integer size);
+    
     Integer getFractionDigits();
+    void setFractionDigits(Integer fractionDigits);
+    
     String getDefaultValue();
+    void setDefaultValue(String defaultValue);
+    
     boolean isUnique();
+    void setUnique(boolean unique);
+    
     List<DBUniqueConstraint> getUkConstraints();
+    
     DBConstraint getNotNullConstraint();
+    void addUkConstraint(DBUniqueConstraint constraint);
+    
     boolean isNullable();
+    void setNullable(boolean nullable);
+    
     boolean isVersionColumn();
-	boolean isForeignKeyComponent();
-	void addUkConstraint(DBUniqueConstraint constraint);
+    void setVersionColumn(boolean versionColumn);
+	
+    boolean isForeignKeyComponent();
 }
