@@ -29,10 +29,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
-import org.databene.SimpleXMLWriter;
 import org.databene.commons.Encodings;
 import org.databene.commons.IOUtil;
 import org.databene.commons.StringUtil;
+import org.databene.commons.xml.SimpleXMLWriter;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
