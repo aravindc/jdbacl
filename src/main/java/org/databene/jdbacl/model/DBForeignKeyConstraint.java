@@ -43,16 +43,11 @@ public class DBForeignKeyConstraint extends DBConstraint {
 
     private static final long serialVersionUID = -7488054587082654132L;
     
-    private String[] fkColumnNames;
+    private final String[] fkColumnNames;
     
-    private DBTable refereeTable;
-    private String[] refereeColumnNames;
+    private final DBTable refereeTable;
+    private final String[] refereeColumnNames;
     
-
-    public DBForeignKeyConstraint(String name, DBTable owner, DBTable refereeTable) {
-        this(name, owner, null, refereeTable, null);
-    }
-
     public DBForeignKeyConstraint(String name, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
         super(name, owner);
@@ -67,11 +62,6 @@ public class DBForeignKeyConstraint extends DBConstraint {
         return fkColumnNames;
     }
 
-    public void addForeignKeyColumn(String fkColumn, String refereeColumn) {
-        this.fkColumnNames = ArrayUtil.append(fkColumnNames, fkColumn);
-        this.refereeColumnNames = ArrayUtil.append(refereeColumnNames, refereeColumn);
-    }
-    
     public String columnReferencedBy(String fkColumnName) {
     	return columnReferencedBy(fkColumnName, true);
     }
