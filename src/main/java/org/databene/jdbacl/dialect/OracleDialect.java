@@ -56,7 +56,7 @@ public class OracleDialect extends DatabaseDialect {
 	
 	@Override
 	public boolean isDefaultSchema(String schema, String user) {
-	    return user.equals(schema);
+	    return user.toLowerCase().equals(schema.toLowerCase());
 	}
 	
 	@Override
