@@ -107,7 +107,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
         this.schemaName = schemaName;
         this.includeTables = Pattern.compile(includeTables != null ? includeTables : ".*");
         this.importingIndexes = importingIndexes;
-        this.errorHandler = new ErrorHandler(getClass());
+        this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -472,17 +472,11 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
     }
 
     private void importIndexes() {
-        for (DBCatalog catalog : database.getCatalogs()) {
-        	try {
-        		importIndexes(catalog, metaData);
-        	} catch (SQLException e) {
-        		// possibly we try to query a catalog to which we do not have access rights
-        		errorHandler.handleError("Error parsing metadata of catalog " + catalog.getName());
-        	}
-        }
+        for (DBCatalog catalog : database.getCatalogs())
+       		importIndexes(catalog, metaData);
     }
 
-	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) throws SQLException {
+	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) {
 	    for (DBTable table : catalog.getTables()) {
 	    	if (!tableSupported(table.getName()))
 	    		continue;
@@ -532,20 +526,27 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 		            	errorHandler.handleError("Error parsing indexes: ", e); // TODO errors when parsing GLB indexes
 		            }
 		        }
-	        } finally {
+	        } catch (SQLException e) {
+        		// possibly we try to query a catalog to which we do not have access rights
+        		errorHandler.handleError("Error parsing metadata of catalog " + catalog.getName(), e);
+			} finally {
 	        	DBUtil.close(indexSet);
 	        }
 	        for (DBIndexInfo indexInfo : tableIndexes.values()) {
                 DBIndex index = null;
 	            try {
 	                if (indexInfo.unique) {
-	                	if (!StringUtil.equalsIgnoreCase(indexInfo.columnNames, table.getPKColumnNames())) {
-		                    DBUniqueConstraint constraint = new DBUniqueConstraint(
-		                    		table, indexInfo.name, indexInfo.columnNames);
+	                	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
+	                	boolean isPK = StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames());
+	                	DBUniqueConstraint constraint;
+	                	if (isPK) {
+	                		constraint = pk;
+	                	} else {
+	                		constraint = new DBUniqueConstraint(table, indexInfo.name, indexInfo.columnNames);
 		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
-		                    index = new DBUniqueIndex(indexInfo.name, constraint);
-			                ((DefaultDBTable) table).addIndex(index);
 	                	}
+	                    index = new DBUniqueIndex(indexInfo.name, constraint);
+		                ((DefaultDBTable) table).addIndex(index);
 	                } else {
 	                    index = new DBNonUniqueIndex(indexInfo.name, table, indexInfo.columnNames);
 		                ((DefaultDBTable) table).addIndex(index);
@@ -597,12 +598,15 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	            recent = cursor;
 	        }
 	        for (ImportedKey key : importedKeys) {
-	            DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(key.fk_name, table, key.getPkTable());
 	            int n = key.getForeignKeyColumnNames().size();
-				for (int i = 0; i < n; i++)
-	                foreignKeyConstraint.addForeignKeyColumn(key.getForeignKeyColumnNames().get(i), 
-	                		key.getRefereeColumnNames().get(i));
-	            table.addForeignKey(foreignKeyConstraint);
+	            String[] columnNames = new String[n];
+	            String[] refereeColumnNames = new String[n];
+				for (int i = 0; i < n; i++) {
+	                columnNames[i] = key.getForeignKeyColumnNames().get(i); 
+	                refereeColumnNames[i] = key.getRefereeColumnNames().get(i);
+				}
+	            DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
+	            		key.fk_name, table, columnNames, key.getPkTable(), refereeColumnNames);
 	            if (logger.isDebugEnabled())
 	            	logger.debug("Imported foreign key {}", foreignKeyConstraint);
 	        }
