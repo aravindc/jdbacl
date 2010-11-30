@@ -229,7 +229,9 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
         ResultSet schemaSet = metaData.getSchemas();
         while (schemaSet.next()) {
             String schemaName = schemaSet.getString(1);
-            String catalogName = schemaSet.getString(2);
+            String catalogName = null;
+            if (schemaSet.getMetaData().getColumnCount() >= 2)
+            	catalogName = schemaSet.getString(2);
             if (schemaName.equalsIgnoreCase(this.schemaName) 
             		|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
 	            logger.debug("importing schema {}", schemaName);
@@ -537,14 +539,17 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
                 DBIndex index = null;
 	            try {
 	                if (indexInfo.unique) {
-	                    DBUniqueConstraint constraint = new DBUniqueConstraint(
-	                    		table, indexInfo.name, indexInfo.columnNames);
-	                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
-	                    index = new DBUniqueIndex(indexInfo.name, constraint);
+	                	if (!StringUtil.equalsIgnoreCase(indexInfo.columnNames, table.getPKColumnNames())) {
+		                    DBUniqueConstraint constraint = new DBUniqueConstraint(
+		                    		table, indexInfo.name, indexInfo.columnNames);
+		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
+		                    index = new DBUniqueIndex(indexInfo.name, constraint);
+			                ((DefaultDBTable) table).addIndex(index);
+	                	}
 	                } else {
 	                    index = new DBNonUniqueIndex(indexInfo.name, table, indexInfo.columnNames);
+		                ((DefaultDBTable) table).addIndex(index);
 	                }
-	                ((DefaultDBTable) table).addIndex(index);
 	            } catch (ObjectNotFoundException e) {
 	                logger.error("Error parsing index: " + index, e);
 	            }
