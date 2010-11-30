@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl.model.jdbc;
 
+import org.databene.commons.ArrayFormat;
 import org.databene.commons.ArrayUtil;
 
 /**
@@ -69,6 +70,11 @@ class DBIndexInfo {
         		throw new IllegalArgumentException("ordinalPosition is expected to be " + expectedPosition + ", " +
                     "found: " + ordinalPosition);
         }
+    }
+    
+    @Override
+    public String toString() {
+    	return "[" + ArrayFormat.format(columnNames) + "]";
     }
     
 }
