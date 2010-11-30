@@ -130,6 +130,11 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
     	return false;
     }
     
+	public void setUnique(boolean unique) {
+		DBUniqueConstraint constraint = new DBUniqueConstraint(getTable(), name + "_UK", name);
+		addUkConstraint(constraint);
+	}
+
     public List<DBUniqueConstraint> getUkConstraints() {
         return ukConstraints;
     }
