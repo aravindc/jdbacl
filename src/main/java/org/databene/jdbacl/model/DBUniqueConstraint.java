@@ -47,7 +47,8 @@ public class DBUniqueConstraint extends DBConstraint {
     public DBUniqueConstraint(DBTable owner, String name, String... columnNames) {
         super(name, owner);
         this.columnNames = columnNames;
-        owner.addUniqueConstraint(this);
+        if (getClass() == DBUniqueConstraint.class)
+        	owner.addUniqueConstraint(this);
     }
 
     @Override

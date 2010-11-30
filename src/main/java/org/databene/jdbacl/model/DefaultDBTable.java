@@ -27,6 +27,7 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.OrderedSet;
 import org.databene.commons.StringUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.SQLUtil;
@@ -53,9 +54,9 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     private static final String[] EMPTY_ARRAY = new String[0];
 
     OrderedNameMap<DBColumn> columns;
-    private DBPrimaryKeyConstraint pkConstraint;
-    private List<DBUniqueConstraint> uniqueConstraints;
-    private List<DBForeignKeyConstraint> foreignKeyConstraints;
+    private DBPrimaryKeyConstraint pk;
+    private OrderedSet<DBUniqueConstraint> uniqueConstraints;
+    private OrderedSet<DBForeignKeyConstraint> foreignKeyConstraints;
     private OrderedNameMap<DBIndex> indexes;
     private Set<DBTable> referrers;
 
@@ -75,8 +76,8 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
         	schema.addTable(this);
         this.doc = null;
         this.columns = OrderedNameMap.createCaseInsensitiveMap();
-        this.uniqueConstraints = new ArrayList<DBUniqueConstraint>();
-        this.foreignKeyConstraints = new ArrayList<DBForeignKeyConstraint>();
+        this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
+        this.foreignKeyConstraints = new OrderedSet<DBForeignKeyConstraint>();
         this.indexes = OrderedNameMap.createCaseInsensitiveMap();
         this.referrers = new HashSet<DBTable>();
     }
@@ -95,6 +96,8 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 		return getSchema().getCatalog();
 	}
 
+    // schema operations -----------------------------------------------------------------------------------------------
+
 	public DBSchema getSchema() {
         return (DBSchema) getOwner();
     }
@@ -103,13 +106,15 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
         setOwner(schema);
     }
 
+    // Primary Key operations ------------------------------------------------------------------------------------------
+
     public void setPrimaryKey(DBPrimaryKeyConstraint constraint) {
-        this.pkConstraint = constraint;
+        this.pk = constraint;
         this.uniqueConstraints.add(constraint);
     }
 
     public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
-    	return pkConstraint;
+    	return pk;
     }
 
 	public List<DBTableComponent> getComponents() {
@@ -172,7 +177,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
     // uniqueConstraint operations -------------------------------------------------------------------------------------
 
-    public List<DBUniqueConstraint> getUniqueConstraints() {
+    public Set<DBUniqueConstraint> getUniqueConstraints() {
         return uniqueConstraints;
     }
 
@@ -183,9 +188,11 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 		return null;
 	}
 
-	public void addUniqueConstraint(DBUniqueConstraint constraint) {
-		constraint.setTable(this);
-        uniqueConstraints.add(constraint);
+	public void addUniqueConstraint(DBUniqueConstraint uk) {
+		uk.setTable(this);
+		if (uk instanceof DBPrimaryKeyConstraint)
+			setPrimaryKey((DBPrimaryKeyConstraint) uk);
+		uniqueConstraints.add(uk);
     }
 
     public void removeUniqueConstraint(DBUniqueConstraint constraint) {
@@ -194,7 +201,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
     // ForeignKeyConstraint operations ---------------------------------------------------------------------------------
 
-    public List<DBForeignKeyConstraint> getForeignKeyConstraints() {
+    public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
         return foreignKeyConstraints;
     }
 
@@ -256,11 +263,11 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     }
 
     public DBTable getProvider(int index) {
-        return getForeignKeyConstraints().get(index).getForeignTable();
+        return foreignKeyConstraints.get(index).getForeignTable();
     }
 
     public boolean requiresProvider(int index) {
-        String fkColumnName = getForeignKeyConstraints().get(index).getForeignKeyColumnNames()[0];
+        String fkColumnName = foreignKeyConstraints.get(index).getForeignKeyColumnNames()[0];
 		return !getColumn(fkColumnName).isNullable();
     }
 

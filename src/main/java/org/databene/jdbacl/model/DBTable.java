@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a database table.<br/><br/>
@@ -54,8 +55,8 @@ public interface DBTable extends CompositeDBObject<DBTableComponent>, Dependent<
     DBIndex getIndex(String indexName);
 
 	String[] getPKColumnNames();
-    List<DBUniqueConstraint> getUniqueConstraints();
-    List<DBForeignKeyConstraint> getForeignKeyConstraints();
+    Set<DBUniqueConstraint> getUniqueConstraints();
+    Set<DBForeignKeyConstraint> getForeignKeyConstraints();
     Collection<DBTable> getReferrers();
 	
 	long getRowCount(Connection connection);
