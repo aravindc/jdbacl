@@ -26,8 +26,6 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.ArrayUtil;
-
 /**
  * Represents a unique constraint on one or the combination of several columns of one table.<br/>
  * <br/>
@@ -38,7 +36,7 @@ public class DBUniqueConstraint extends DBConstraint {
 
     private static final long serialVersionUID = -8241121848879185421L;
     
-	private String[] columnNames;
+	private final String[] columnNames;
 
     /**
      * @param name the constraint name - it may be null
@@ -56,12 +54,4 @@ public class DBUniqueConstraint extends DBConstraint {
         return columnNames;
     }
 
-    public void addColumn(String columnName) {
-        columnNames = ArrayUtil.append(columnNames, columnName);
-    }
-
-    public void removeColumn(String columnName) {
-    	columnNames = ArrayUtil.removeElement(columnNames, columnName);
-    }
-    
 }
