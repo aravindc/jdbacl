@@ -28,6 +28,7 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.ArrayFormat;
 import org.databene.commons.Named;
+import org.databene.commons.bean.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -77,7 +78,7 @@ public abstract class DBConstraint extends AbstractDBTableComponent implements N
 
     @Override
     public int hashCode() {
-        return this.getOwner().hashCode() * 29 + Arrays.hashCode(getColumnNames());
+        return HashCodeBuilder.hashCode(this.getOwner(), getColumnNames());
     }
 
     @Override
