@@ -24,6 +24,7 @@ package org.databene.jdbacl.model;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.databene.commons.Assert;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
@@ -41,15 +42,7 @@ public class DBRow implements Serializable {
 
 	public DBRow(DBTable table) {
 	    this.table = table;
-	    this.cells = new OrderedNameMap<Object>();
-    }
-
-	public void setCellValue(String columnName, Object value) {
-	    cells.put(columnName, value);
-    }
-
-	public Object getCellValue(String columnName) {
-	    return cells.get(columnName);
+	    this.cells = OrderedNameMap.createCaseIgnorantMap();
     }
 
 	public DBTable getTable() {
@@ -61,13 +54,40 @@ public class DBRow implements Serializable {
 	}
 
 	public Object[] getPKValues() {
-		String[] columnNames = table.getPKColumnNames();
-	    return getCellValues(columnNames);
+		return getCellValues(table.getPKColumnNames());
     }
 
-	public Object[] getFKValues(DBForeignKeyConstraint fk) {
-		return getCellValues(fk.getColumnNames());
+	public Object getPKValue() {
+		String[] columnNames = table.getPKColumnNames();
+		if (columnNames.length == 1)
+			return getCellValue(columnNames[0]);
+		else
+			return getCellValues(columnNames);
+	}
+
+	public Object getFKValue(DBForeignKeyConstraint fk) {
+		String[] columnNames = fk.getColumnNames();
+		if (columnNames.length == 1)
+			return getCellValue(columnNames[0]);
+		else
+			return getCellValues(columnNames);
     }
+
+	public void setFKValues(DBForeignKeyConstraint fkConstraint, Object fkValue) {
+		String[] columnNames = fkConstraint.getColumnNames();
+		if (columnNames.length == 1)
+			setCellValue(columnNames[0], fkValue);
+		else {
+			Object[] cellValues = (Object[]) fkValue;
+			setCellValues(columnNames, cellValues);
+		}
+	}
+
+	public void setCellValues(String[] columnNames, Object[] cellValues) {
+		Assert.equals(columnNames.length, cellValues.length, "mismatch of column and value counts");
+		for (int i = 0; i < columnNames.length; i++)
+			setCellValue(columnNames[i], cellValues[i]);
+	}
 
 	private Object[] getCellValues(String[] columnNames) {
 		Object[] result = new Object[columnNames.length];
@@ -76,8 +96,25 @@ public class DBRow implements Serializable {
 	    return result;
     }
 
+	public Object getCellValue(String columnName) {
+	    return cells.get(columnName);
+    }
+
+	public void setCellValue(String columnName, Object value) {
+	    cells.put(columnName, value);
+    }
+
 	@Override
 	public String toString() {
 	    return table.getName() + cells.values();
 	}
+
+	public void setPKValue(Object newPK) {
+		String[] columnNames = table.getPKColumnNames();
+		if (columnNames.length == 1)
+			setCellValue(columnNames[0], newPK);
+		else
+			setCellValues(columnNames, (Object[]) newPK);
+	}
+
 }
