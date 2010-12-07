@@ -26,12 +26,6 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.Named;
-import org.databene.commons.ObjectNotFoundException;
-import org.databene.commons.collection.OrderedNameMap;
-
-import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,66 +34,14 @@ import java.util.Set;
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public class Database extends AbstractCompositeDBObject<DBCatalog> implements Named, Serializable {
+public interface Database extends CompositeDBObject<DBCatalog> {
 	
-	private static final long serialVersionUID = -1873203097942961523L;
-	
-	OrderedNameMap<DBCatalog> catalogs;
-	
-    // constructors ----------------------------------------------------------------------------------------------------
+    public List<DBCatalog> getCatalogs() ;
+    public DBCatalog getCatalog(String catalogName);
+    public void addCatalog(DBCatalog catalog);
+    public void removeCatalog(DBCatalog catalog);
 
-    public Database(String name) {
-        super(name);
-        this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
-    }
-
-    // CompositeDBObject implementation --------------------------------------------------------------------------------
-
-	public List<DBCatalog> getComponents() {
-		return catalogs.values();
-	}
-	
-    // catalog operations ----------------------------------------------------------------------------------------------
-
-    public List<DBCatalog> getCatalogs() {
-        return getComponents();
-    }
-
-    public DBCatalog getCatalog(String catalogName) {
-        return catalogs.get(catalogName);
-    }
-
-    public void addCatalog(DBCatalog catalog) {
-        catalog.setDatabase(this);
-        catalogs.put(catalog.getName(), catalog);
-    }
-
-    public void removeCatalog(DBCatalog catalog) {
-        catalogs.remove(catalog.getName());
-        catalog.setOwner(null);
-    }
-
-    // table operations ------------------------------------------------------------------------------------------------
-
-    public Set<DBTable> getTables() {
-    	Set<DBTable> tables = new HashSet<DBTable>();
-        for (DBCatalog catalog : getComponents())
-            for (DBTable table : catalog.getTables())
-            	tables.add(table);
-        return tables;
-    }
-
-    public DBTable getTable(String name) {
-        for (DBCatalog catalog : getComponents())
-            for (DBTable table : catalog.getTables())
-            	if (table.getName().equals(name))
-            		return table;
-        throw new ObjectNotFoundException("Table '" + name + "'");
-    }
-    
-	public void removeTable(String tableName) {
-		DBTable table = getTable(tableName);
-		table.getSchema().removeTable(table);
-    }
-
+    public Set<DBTable> getTables();
+    public DBTable getTable(String name);
+	public void removeTable(String tableName);
 }

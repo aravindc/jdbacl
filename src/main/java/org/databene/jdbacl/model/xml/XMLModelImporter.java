@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.Assert;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
@@ -44,6 +45,7 @@ import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.DefaultDBColumn;
 import org.databene.jdbacl.model.DefaultDBTable;
+import org.databene.jdbacl.model.DefaultDatabase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -76,7 +78,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private Database parseDatabase(Element e) {
 		String name = e.getAttribute("name");
-		Database db = new Database(name);
+		Database db = new DefaultDatabase(name);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("catalog".equals(childName))
@@ -103,19 +105,32 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	private DBSchema parseSchema(Element e, DBCatalog catalog) {
 		String name = e.getAttribute("name");
 		DBSchema schema = new DBSchema(name, catalog);
-		for (Element child : XMLUtil.getChildElements(e)) {
+		Element[] children = XMLUtil.getChildElements(e);
+		for (Element child : children) {
 			String childName = child.getNodeName();
 			if ("table".equals(childName))
-				parseTable(child, schema);
+				parseTableName(child, schema);
+			else
+				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
+		}
+		for (Element child : children) {
+			String childName = child.getNodeName();
+			if ("table".equals(childName))
+				parseTableStructure(child, schema);
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
 		return schema;
 	}
 
-	private DefaultDBTable parseTable(Element e, DBSchema schema) {
+	private DefaultDBTable parseTableName(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
-		DefaultDBTable table = new DefaultDBTable(name, schema);
+		return new DefaultDBTable(name, schema);
+	}
+
+	private DefaultDBTable parseTableStructure(Element e, DBSchema schema) {
+		String name = e.getAttribute("name");
+		DefaultDBTable table = (DefaultDBTable) schema.getTable(name);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("column".equals(childName))
@@ -137,14 +152,13 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	private DBColumn parseColumn(Element e, DefaultDBTable table) {
 		String name = e.getAttribute("name");
 		String typeAndSizeSpec = e.getAttribute("type");
-		DefaultDBColumn column = new DefaultDBColumn(name, typeAndSizeSpec);
+		DefaultDBColumn column = new DefaultDBColumn(name, table, typeAndSizeSpec);
 		String defaultValue = e.getAttribute("default");
 		if (!StringUtil.isEmpty(defaultValue))
 			column.setDefaultValue(defaultValue);
 		String nullableSpec = e.getAttribute("nullable");
 		boolean nullable = (nullableSpec == null || !"false".equals(nullableSpec));
 		column.setNullable(nullable);
-		table.addColumn(column);
 		return column;
 	}
 
@@ -160,6 +174,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String name = e.getAttribute("name");
 		String refereeTableName = e.getAttribute("refereeTable");
 		DBTable refereeTable = schema.getTable(refereeTableName);
+		Assert.notNull(refereeTable, "refereeTable");
 		String colAttr = e.getAttribute("column");
 		String[] columnNames = null;
 		String[] refereeColumnNames = null;
