@@ -32,6 +32,7 @@ import java.util.Arrays;
 import org.databene.commons.ArrayFormat;
 import org.databene.commons.Named;
 import org.databene.commons.NullSafeComparator;
+import org.databene.commons.bean.HashCodeBuilder;
 
 /**
  * Represents a database index.<br/><br/>
@@ -78,7 +79,7 @@ public abstract class DBIndex extends AbstractDBTableComponent implements Named,
     
     @Override
     public int hashCode() {
-    	throw new UnsupportedOperationException("DBIndex.hashCode() is not implemented"); // TODO implement DBIndex.hashCode
+    	return HashCodeBuilder.hashCode(getOwner(), getColumnNames());
     }
     
     @Override
