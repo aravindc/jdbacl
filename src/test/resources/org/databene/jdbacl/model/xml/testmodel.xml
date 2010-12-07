@@ -11,6 +11,7 @@
       </table>
       <table name="table2">
         <column name="id2" type="INT"/>
+        <column name="ref2" type="INT"/>
         <pk name="table2_pk" column="id2"/>
         <fk name="table2_fk2" column="ref2" refereeTable="table1" refereeColumn="id1"/>
       </table>
@@ -37,7 +38,7 @@
         <column name="ref4_1" type="INT"/>
         <column name="ref4_2" type="INT"/>
         <pk name="table4_pk" column="id4"/>
-        <fk name="table4_fk2" refereeTable="table1">
+        <fk name="table4_fk2" refereeTable="table3">
           <columns>
             <column name="ref4_1" refereeColumn="id3_1"/>
             <column name="ref4_2" refereeColumn="id3_2"/>
