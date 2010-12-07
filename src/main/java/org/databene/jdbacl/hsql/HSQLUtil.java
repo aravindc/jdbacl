@@ -46,6 +46,11 @@ public class HSQLUtil {
 	public static final String DEFAULT_USER = "sa";
 	public static final String DEFAULT_PASSWORD = "";
 	public static final String DEFAULT_SCHEMA = "PUBLIC";
+	public static final int DEFAULT_PORT = 9001;
+
+	public static Connection connectInMemoryDB(String dbName, int port) throws SQLException {
+		return connectInMemoryDB(dbName + ":" + port);
+	}
 
 	public static Connection connectInMemoryDB(String dbName) throws SQLException {
 		String driver = DRIVER;
