@@ -54,6 +54,7 @@ import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.DefaultDBColumn;
 import org.databene.jdbacl.model.DefaultDBTable;
+import org.databene.jdbacl.model.DefaultDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -167,7 +168,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	// functional interface --------------------------------------------------------------------------------------------
 	
 	public Database importDatabase() throws ImportFailedException {
-        logger.info("Importing database metadata. Be patient, this may take some time...");
+		if (!lazy)
+			logger.info("Importing database metadata. Be patient, this may take some time...");
         long startTime = System.currentTimeMillis();
         tableNameFilter = new TableNameFilter();
         try {
@@ -178,7 +180,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
             dialect = DatabaseDialectManager.getDialectForProduct(productName);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", connection);
-            database = new Database(productName);
+            database = new DefaultDatabase(productName);
             importCatalogs();
             importSchemas();
             importTables();
@@ -205,7 +207,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	// private helper methods ------------------------------------------------------------------------------------------
 
 	private void importCatalogs() throws SQLException {
-        logger.info("Importing catalogs");
+        logger.debug("Importing catalogs");
         ResultSet catalogSet = metaData.getCatalogs();
         int catalogCount = 0;
         while (catalogSet.next()) {
@@ -224,7 +226,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
     }
 
     private void importSchemas() throws SQLException {
-        logger.info("Importing schemas");
+        logger.debug("Importing schemas");
         int schemaCount = 0;
         ResultSet schemaSet = metaData.getSchemas();
         while (schemaSet.next()) {
@@ -356,8 +358,15 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	                        + columnName + ", " + sqlType + ", " + columnType + ", " + columnSize + ", " + decimalDigits
 	                        + ", " + nullable + ", " + comment + ", " + defaultValue);
 	
+	            DefaultDBTable table = (DefaultDBTable) catalog.getTable(tableName);
+	            if (table == null) {
+	                DBSchema schema = catalog.getSchema(schemaName);
+	                if (schema != null)
+	                    table = (DefaultDBTable) schema.getTable(tableName);
+	            }
+
 	            Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
-	            DefaultDBColumn column = new DefaultDBColumn(columnName, DBColumnType.getInstance(sqlType, columnType), columnSize, fractionDigits);
+	            DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBColumnType.getInstance(sqlType, columnType), columnSize, fractionDigits);
 	            if (!StringUtil.isEmpty(comment))
 	                column.setDoc(comment);
 	            if (!StringUtil.isEmpty(defaultValue)) {
@@ -368,14 +377,6 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	            if (!nullable)
 	                column.setNullable(false);
 	
-	            DefaultDBTable table = (DefaultDBTable) catalog.getTable(tableName);
-	            if (table == null) {
-	                DBSchema schema = catalog.getSchema(schemaName);
-	                if (schema != null)
-	                    table = (DefaultDBTable) schema.getTable(tableName);
-	            }
-	            if (table != null)
-	                table.addColumn(column);
 	            // not used: importVersionColumnInfo(catalogName, table, metaData);
 	        }
     	} catch (SQLException e) {
