@@ -26,6 +26,8 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.Assert;
+
 /**
  * Represents a database not-null constraint.<br/><br/>
  * Created: 06.01.2007 09:00:49
@@ -39,6 +41,8 @@ public class DBNotNullConstraint extends DBConstraint {
 
     public DBNotNullConstraint(DBTable owner, String name, String columnName) {
         super(name, owner);
+        Assert.notNull(owner, "owner");
+        Assert.notNull(columnName, "column name");
         this.columnName = columnName;
     }
 
