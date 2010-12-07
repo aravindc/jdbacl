@@ -26,12 +26,13 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.depend.Dependent;
+import org.databene.commons.iterator.TableRowIterator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -40,33 +41,40 @@ import java.util.Set;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBTable extends CompositeDBObject<DBTableComponent>, Dependent<DBTable> {
+public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableComponent>, Dependent<DBTable> {
 
     String getName();
     String getDoc();
     DBCatalog getCatalog();
     DBSchema getSchema();
-    DBPrimaryKeyConstraint getPrimaryKeyConstraint();
 
     List<DBColumn> getColumns();
     DBColumn[] getColumns(List<String> columnNames);
     DBColumn getColumn(String columnName);
+	void addColumn(DBColumn column);
+    
     List<DBIndex> getIndexes();
     DBIndex getIndex(String indexName);
+	void addIndex(DBIndex dbIndex);
 
+    DBPrimaryKeyConstraint getPrimaryKeyConstraint();
+    void setPrimaryKey(DBPrimaryKeyConstraint dbPrimaryKeyConstraint);
 	String[] getPKColumnNames();
-    Set<DBUniqueConstraint> getUniqueConstraints();
-    Set<DBForeignKeyConstraint> getForeignKeyConstraints();
-    Collection<DBTable> getReferrers();
+
+	Set<DBUniqueConstraint> getUniqueConstraints();
+	void addUniqueConstraint(DBUniqueConstraint dbUniqueConstraint);
+
+	Set<DBForeignKeyConstraint> getForeignKeyConstraints();
+	void addForeignKey(DBForeignKeyConstraint dbForeignKeyConstraint);
+
+	Collection<DBTable> getReferrers();
 	
 	long getRowCount(Connection connection);
-    Iterator<DBRow> allRows(Connection connection) throws SQLException;
-    DBRow queryByPK(Object[] pkParts, Connection connection) throws SQLException;
-    Iterator<DBRow> queryByColumnValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
-
-    void setPrimaryKey(DBPrimaryKeyConstraint dbPrimaryKeyConstraint);
-	void addUniqueConstraint(DBUniqueConstraint dbUniqueConstraint);
-	void addForeignKey(DBForeignKeyConstraint dbForeignKeyConstraint);
-	void addIndex(DBIndex dbIndex);
+    DBRow queryByPK(Object pk, Connection connection) throws SQLException;
+	DBRowIterator allRows(Connection connection) throws SQLException;
+    DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
+    DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException;
+    HeavyweightIterator<Object> queryPKs(Connection connection);
+	TableRowIterator query(String query, Connection connection);
     
 }

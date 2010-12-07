@@ -26,17 +26,26 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.ArrayFormat;
+import org.databene.commons.Assert;
+import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.OrderedSet;
 import org.databene.commons.StringUtil;
+import org.databene.jdbacl.ArrayResultSetIterator;
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.QueryIterator;
+import org.databene.jdbacl.ResultSetConverter;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.commons.bean.HashCodeBuilder;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.commons.depend.Dependent;
+import org.databene.commons.iterator.ConvertingIterator;
+import org.databene.commons.iterator.TableRowIterator;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -122,6 +131,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 	public List<DBTableComponent> getComponents() {
 		List<DBTableComponent> result = new ArrayList<DBTableComponent>();
 		result.addAll(columns.values());
+		result.addAll(uniqueConstraints);
 		result.addAll(foreignKeyConstraints);
 		result.addAll(indexes.values());
 		return result;
@@ -233,31 +243,52 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
     // row operations --------------------------------------------------------------------------------------------------
 
-    public Iterator<DBRow> allRows(Connection connection) throws SQLException {
+    public DBRowIterator allRows(Connection connection) throws SQLException {
         return new DBRowIterator(this, connection, null);
     }
     
+	public DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException {
+        return new DBRowIterator(this, connection, whereClause);
+	}
+
 	public long getRowCount(Connection connection) {
 		Object result = DBUtil.queryScalar("select count(*) from " + name, connection);
 		return ((Number) result).longValue();
 	}
 
-    public DBRow queryByPK(Object[] idParts, Connection connection) throws SQLException {
+	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
     	String[] pkColumnNames = getPrimaryKeyConstraint().getColumnNames();
     	if (pkColumnNames.length == 0)
     		throw new ObjectNotFoundException("Table " + name + " has no primary key");
-		String whereClause = SQLUtil.renderWhereClause(pkColumnNames, idParts);
+    	Object[] pkComponents = (pk.getClass().isArray() ? (Object[]) pk : new Object[] { pk });
+		String whereClause = SQLUtil.renderWhereClause(pkColumnNames, pkComponents);
         DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
         if (!iterator.hasNext())
-        	throw new ObjectNotFoundException("No " + name + " row with id " + idParts); // TODO handle arrays
-		return iterator.next();
+        	throw new ObjectNotFoundException("No " + name + " row with id (" + pkComponents + ")");
+		DBRow result = iterator.next();
+		iterator.close();
+		return result;
     }
     
-    public Iterator<DBRow> queryByColumnValues(String[] columns, Object[] values, Connection connection) throws SQLException {
+    public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
 		String whereClause = SQLUtil.renderWhereClause(columns, values);
         return new DBRowIterator(this, connection, whereClause);
     }
     
+	public HeavyweightIterator<Object> queryPKs(Connection connection) {
+		StringBuilder query = new StringBuilder("select ");
+		query.append(ArrayFormat.format(getPKColumnNames()));
+		query.append(" from ").append(name);
+    	Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 1000); // TODO configurable fetchSize?
+        ResultSetConverter<Object> converter = new ResultSetConverter<Object>(Object.class, true);
+    	return new ConvertingIterator<ResultSet, Object>(rawIterator, converter);
+	}
+
+	public TableRowIterator query(String query, Connection connection) {
+		Assert.notEmpty(query, "query");
+		return new ArrayResultSetIterator(connection, query);
+	}
+
 	// implementation of the 'Dependent' interface ---------------------------------------------------------------------
 
     public int countProviders() {

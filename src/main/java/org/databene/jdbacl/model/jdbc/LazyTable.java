@@ -24,12 +24,13 @@ package org.databene.jdbacl.model.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.bean.HashCodeBuilder;
+import org.databene.commons.iterator.TableRowIterator;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.CompositeDBObject;
@@ -37,6 +38,7 @@ import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBRow;
+import org.databene.jdbacl.model.DBRowIterator;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBTableComponent;
@@ -91,6 +93,10 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getColumns();
     }
 
+	public void addColumn(DBColumn column) {
+		getRealTable().addColumn(column);
+	}
+
 	public DBColumn[] getColumns(List<String> columnNames) {
 	    return getRealTable().getColumns(columnNames);
     }
@@ -127,16 +133,16 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getReferrers();
     }
 	
-	public Iterator<DBRow> queryByColumnValues(String[] columnNames, Object[] values, Connection connection)
+	public DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection)
             throws SQLException {
-	    return getRealTable().queryByColumnValues(columnNames, values, connection);
+	    return getRealTable().queryRowsByCellValues(columnNames, values, connection);
     }
 
 	public DBRow queryByPK(Object[] idParts, Connection connection) throws SQLException {
 	    return getRealTable().queryByPK(idParts, connection);
     }
 
-	public Iterator<DBRow> allRows(Connection connection) throws SQLException {
+	public DBRowIterator allRows(Connection connection) throws SQLException {
 	    return getRealTable().allRows(connection);
     }
 
@@ -184,8 +190,21 @@ public class LazyTable implements DBTable {
 		getRealTable().addForeignKey(fk);
 	}
 
-	public void addIndex(DBIndex dbIndex) {
-		throw new UnsupportedOperationException("DBTable.addIndex() is not implemented"); // TODO implement DBTable.addIndex
+	public void addIndex(DBIndex index) {
+		getRealTable().addIndex(index);
+	}
+
+	public DBRowIterator queryRows(String whereClause, Connection connection)
+			throws SQLException {
+		return getRealTable().queryRows(whereClause, connection);
+	}
+
+	public HeavyweightIterator<Object> queryPKs(Connection connection) {
+		return getRealTable().queryPKs(connection);
+	}
+
+	public TableRowIterator query(String query, Connection connection) {
+		return getRealTable().query(query, connection);
 	}
 
 	public boolean deepEquals(CompositeDBObject<?> other) {
@@ -215,5 +234,10 @@ public class LazyTable implements DBTable {
 	    	return false;
 	    return NullSafeComparator.equals(this.name, that.getName());
     }
+
+	public DBRow queryByPK(Object pk, Connection connection)
+			throws SQLException {
+		throw new UnsupportedOperationException("DBTable.queryByPK() is not implemented"); // TODO implement DBTable.queryByPK
+	}
 
 }
