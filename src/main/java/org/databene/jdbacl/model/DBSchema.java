@@ -27,6 +27,7 @@
 package org.databene.jdbacl.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.databene.commons.Named;
@@ -37,11 +38,12 @@ import org.databene.commons.collection.OrderedNameMap;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema extends AbstractCompositeDBObject<DBTable> implements Named, Serializable {
+public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> implements Named, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
     OrderedNameMap<DBTable> tables;
+    OrderedNameMap<DBTable> packages;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -54,6 +56,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBTable> implements Name
     	if (catalog != null)
     		catalog.addSchema(this);
     	this.tables = OrderedNameMap.createCaseInsensitiveMap();
+    	this.packages = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -78,14 +81,17 @@ public class DBSchema extends AbstractCompositeDBObject<DBTable> implements Name
 
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
-	public List<DBTable> getComponents() {
-		return tables.values();
+	public List<DBPackageComponent> getComponents() {
+		List<DBPackageComponent> result = new ArrayList<DBPackageComponent>();
+		result.addAll(tables.values());
+		result.addAll(packages.values());
+		return result;
 	}
 	
     // table operations ------------------------------------------------------------------------------------------------
 
     public List<DBTable> getTables() {
-        return getComponents();
+        return tables.values();
     }
 
     public DBTable getTable(String tableName) {
