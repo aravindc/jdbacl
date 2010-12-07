@@ -41,7 +41,7 @@ public class DefaultDBColumnTest {
 	@Test
     public void testToString() {
         assertEquals("Column formatting failed", "ID : NUMBER(11,2)",
-                new DefaultDBColumn(null, "ID", DBColumnType.getInstance("NUMBER"), 11, 2).toString());
+                new DefaultDBColumn("ID", null, DBColumnType.getInstance("NUMBER"), 11, 2).toString());
     }
     
 }
