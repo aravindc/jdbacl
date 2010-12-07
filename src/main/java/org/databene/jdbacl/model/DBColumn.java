@@ -61,5 +61,5 @@ public interface DBColumn extends DBTableComponent {
     boolean isVersionColumn();
     void setVersionColumn(boolean versionColumn);
 	
-    boolean isForeignKeyComponent();
+	DBForeignKeyConstraint getForeignKeyConstraint();
 }
