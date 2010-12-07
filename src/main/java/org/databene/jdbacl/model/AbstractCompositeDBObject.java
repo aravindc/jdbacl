@@ -21,12 +21,8 @@
 
 package org.databene.jdbacl.model;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import org.databene.commons.OrderedMap;
 
 /**
  * Abstract implementation of the {@link CompositeDBObject} interface which serves as parent class
@@ -49,46 +45,6 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
     	super(name, owner);
     }
 
-    // sub component operations ----------------------------------------------------------------------------------------
-/*
-	public List<C> getComponents() {
-		List<C> result = new ArrayList<C>();
-		for (Map<String, C> map : components.values())
-			result.addAll(map.values());
-        return result;
-    }
-
-    public C getComponent(Class<? extends DBObject> type, String name) {
-        Map<String, C> typeMap = components.get(type);
-        return (typeMap != null ? typeMap.get(name) : null);
-    }
-
-	public <T extends DBObject> List<T> getComponents(Class<T> type, boolean recursive) {
-		return addSubComponents(type, recursive, new ArrayList<T>());
-	}
-	
-    public void addComponent(C component) {
-        component.setOwner(this);
-        Map<String, C> typeMap = components.get(component.getClass());
-        typeMap.put(component.getName(), component);
-    }
-
-    public void removeComponent(C component) {
-        components.remove(component.getName());
-        component.setOwner(null);
-    }
-
-	@SuppressWarnings("unchecked")
-	private <T extends DBObject> List<T> addSubComponents(Class<T> type, boolean recursive, List<T> result) {
-		for (DBObject component : getComponents()) {
-			if (type.isAssignableFrom(component.getClass()))
-				result.add((T) component);
-			if (recursive && component instanceof CompositeDBObject)
-				addSubComponents(type, true, result);
-		}
-		return result;
-	}
-*/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean deepEquals(CompositeDBObject<?> other) {
 		if (!this.equals(other))
