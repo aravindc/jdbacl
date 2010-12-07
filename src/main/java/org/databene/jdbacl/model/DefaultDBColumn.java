@@ -51,12 +51,12 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public DefaultDBColumn(String name, DBColumnType type) {
-        this(name, type, null);
+    public DefaultDBColumn(String name, DBTable table, DBColumnType type) {
+        this(name, table, type, null);
     }
 
-    public DefaultDBColumn(String name, String typeAndSize) {
-        this(name, null, null);
+    public DefaultDBColumn(String name, DBTable table, String typeAndSize) {
+        this(name, table, null, null);
         Object[] tokens = SQLUtil.parseColumnTypeAndSize(typeAndSize);
         if (tokens.length > 0)
         	this.type = DBColumnType.getInstance((String) tokens[0]);
@@ -66,17 +66,14 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         	this.fractionDigits = (Integer) tokens[2];
     }
 
-    public DefaultDBColumn(String name, DBColumnType type, Integer size) {
-        this(name, type, size, null);
+    public DefaultDBColumn(String name, DBTable table, DBColumnType type, Integer size) {
+        this(name, table, type, size, null);
     }
     
-    public DefaultDBColumn(String name, DBColumnType type, Integer size, Integer fractionDigits) {
-        this(null, name, type, size, fractionDigits);
-    }
-
-    public DefaultDBColumn(DBTable table, String name, DBColumnType type, Integer size, Integer fractionDigits) {
+    public DefaultDBColumn(String name, DBTable table, DBColumnType type, Integer size, Integer fractionDigits) {
     	super(name);
-        setTable(table);
+    	if (table != null)
+    		table.addColumn(this);
         this.name = name;
         this.type = type;
         this.size = size;
@@ -161,9 +158,8 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
             notNullConstraint = null;
         } else {
             // if there needs to be a NotNullConstraint, check if there exists one, first
-            if (this.isNullable()) {
+            if (this.isNullable())
                 this.notNullConstraint = new DBNotNullConstraint(getTable(), null, name);
-            }
         }
     }
 
@@ -175,13 +171,13 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         this.versionColumn = versionColumn;
     }
 
-	public boolean isForeignKeyComponent() {
+	public DBForeignKeyConstraint getForeignKeyConstraint() {
 		for (DBForeignKeyConstraint fk : getTable().getForeignKeyConstraints())
 			if (ArrayUtil.contains(fk.getColumnNames(), name))
-				return true;
-	    return false;
-    }
-
+				return fk;
+	    return null;
+	}
+	
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
 	@Override
