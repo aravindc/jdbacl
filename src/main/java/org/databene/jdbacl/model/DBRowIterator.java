@@ -26,8 +26,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
 
+import org.databene.commons.HeavyweightIterator;
+import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.ResultSetIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.6.3
  * @author Volker Bergmann
  */
-public class DBRowIterator implements Iterator<DBRow> {
+public class DBRowIterator implements HeavyweightIterator<DBRow> {
 	
     private static final Logger SQL_LOGGER = LoggerFactory.getLogger("org.databene.SQL"); 
 
@@ -46,6 +47,7 @@ public class DBRowIterator implements Iterator<DBRow> {
     private ResultSet resultSet;
     private ResultSetMetaData resultSetMetaData;
     private ResultSetIterator resultSetIterator;
+    private boolean closed;
 
 	public DBRowIterator(DBTable table, Connection connection, String whereClause) throws SQLException {
 		this.table = table;
@@ -60,10 +62,16 @@ public class DBRowIterator implements Iterator<DBRow> {
         this.resultSet = statement.executeQuery(sql);
         this.resultSetMetaData = resultSet.getMetaData();
 	    this.resultSetIterator = new ResultSetIterator(resultSet, sql);
+	    this.closed = false;
     }
 
 	public boolean hasNext() {
-		return resultSetIterator.hasNext();
+		if (closed)
+			return false;
+		boolean result = resultSetIterator.hasNext();
+		if (!result)
+			close();
+		return result;
 	}
 
 	public DBRow next() {
@@ -83,6 +91,13 @@ public class DBRowIterator implements Iterator<DBRow> {
 
 	public void remove() {
 		throw new UnsupportedOperationException("remove() is not supported by " + getClass());
+	}
+
+	public void close() {
+		if (!closed) {
+			DBUtil.close(resultSet);
+			closed = true;
+		}
 	}
 
 }
