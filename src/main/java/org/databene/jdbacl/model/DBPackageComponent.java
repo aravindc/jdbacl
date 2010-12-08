@@ -22,9 +22,9 @@
 package org.databene.jdbacl.model;
 
 /**
- * TODO Document class.<br/><br/>
+ * Parent interface for all classes that can be contained in a database package.<br/><br/>
  * Created: 05.12.2010 11:07:07
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
 public interface DBPackageComponent extends DBObject {

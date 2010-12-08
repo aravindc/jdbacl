@@ -27,9 +27,9 @@ import java.util.List;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * TODO Document class.<br/><br/>
+ * Represents a database package.<br/><br/>
  * Created: 05.12.2010 11:06:48
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
 public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> implements DBPackageComponent {

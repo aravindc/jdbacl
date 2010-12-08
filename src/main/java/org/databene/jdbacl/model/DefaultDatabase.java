@@ -30,9 +30,9 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * TODO Document class.<br/><br/>
+ * Default implementation of the {@link Database} interface.<br/><br/>
  * Created: 05.12.2010 16:18:57
- * @since TODO version
+ * @since 0.6.4
  * @author Volker Bergmann
  */
 public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implements Database {
