@@ -40,12 +40,12 @@ public class SqlServerDialect extends DatabaseDialect {
 
 	@Override
     public boolean isDefaultCatalog(String catalog, String user) {
-	    return false; // TODO default catalog for SQL Server
+	    return true;
     }
 
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
-	    return false; // TODO default schema for SQL Server
+	    return "DBO".equals(schema.toUpperCase());
     }
 
 }

@@ -45,12 +45,13 @@ public class DerbyDialect extends DatabaseDialect {
 
 	@Override
     public boolean isDefaultCatalog(String catalog, String user) {
-	    return true; // TODO default catalog for Derby
+	    return true;
     }
 
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
-	    return true; // TODO default schema for Derby
+		schema = schema.toUpperCase();
+	    return schema.equals("APP") || schema.equals(user.toUpperCase());
     }
 
 }

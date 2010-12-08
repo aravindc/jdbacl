@@ -45,12 +45,12 @@ public class DB2Dialect extends DatabaseDialect {
 
 	@Override
     public boolean isDefaultCatalog(String catalog, String user) {
-	    return true; // TODO default catalog for DB2
+	    return true;
     }
 
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
-	    return true; // TODO default schema for DB2
+	    return true;
     }
 
 	@Override
