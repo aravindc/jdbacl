@@ -21,7 +21,6 @@
 
 package org.databene.jdbacl.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -32,6 +31,5 @@ import java.sql.SQLException;
  * @author Volker Bergmann
  */
 public interface DBMetaDataExporter {
-	// TODO not only file export should be supported - setting up a schema in an empty DB could be seen as a kind of export, too
-	void export(Database database, File file) throws IOException, SQLException; 
+	void export(Database database) throws IOException, SQLException; 
 }

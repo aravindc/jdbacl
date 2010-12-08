@@ -56,20 +56,22 @@ import org.xml.sax.helpers.AttributesImpl;
 public class XMLModelExporter implements DBMetaDataExporter {
 	
 	private String encoding;
+	private File file;
 	
 	// constructors ----------------------------------------------------------------------------------------------------
 	
-	public XMLModelExporter() {
-		this(Encodings.UTF_8);
+	public XMLModelExporter(File file) {
+		this(file, Encodings.UTF_8);
 	}
 
-	public XMLModelExporter(String encoding) {
+	public XMLModelExporter(File file, String encoding) {
+		this.file = file;
 		this.encoding = encoding;
 	}
 	
 	// interface -------------------------------------------------------------------------------------------------------
 
-	public void export(Database database, File file) throws IOException, SQLException {
+	public void export(Database database) throws IOException, SQLException {
 		OutputStream out = new FileOutputStream(file);
 		try {
 			SimpleXMLWriter writer = new SimpleXMLWriter(out, encoding);
