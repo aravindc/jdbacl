@@ -39,7 +39,6 @@ public abstract class AbstractModelTest {
 		
 		DefaultDBTable table1 = new DefaultDBTable("table1", schema);
 		DBColumn id1 = new DefaultDBColumn("id1", table1, "int");
-		table1.addColumn(id1); // TODO add owner table to ctor args?
 		DBColumn name1 = new DefaultDBColumn("name1", table1, "int");
 		DBPrimaryKeyConstraint pk1 = new DBPrimaryKeyConstraint(table1, "table1_pk", "id1");
 		DBUniqueConstraint uk1 = new DBUniqueConstraint(table1, "table1_name1_uk", "name1");
