@@ -47,7 +47,6 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 
     protected List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
     protected DBConstraint notNullConstraint;
-//    TODO private DBForeignKeyConstraint fkConstraint;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -82,7 +81,6 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         this.defaultValue = null;
         this.ukConstraints = new ArrayList<DBUniqueConstraint>();
         this.notNullConstraint = null;
-//        this.fkConstraint = null;
         this.versionColumn = false;
     }
 
@@ -194,8 +192,7 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 			&& NullSafeComparator.equals(this.defaultValue, that.getDefaultValue())
 			&& this.versionColumn == that.isVersionColumn()
 			&& this.ukConstraints.equals(that.getUkConstraints())
-			&& NullSafeComparator.equals(notNullConstraint, that.getNotNullConstraint())
-			/*&& NullSafeComparator.equals(this.fkConstraint, that.getForeignKeyConstraint())*/;
+			&& NullSafeComparator.equals(notNullConstraint, that.getNotNullConstraint());
 	}
 	
 	@Override
