@@ -211,6 +211,10 @@ public class LazyTable implements DBTable {
 		return getRealTable().deepEquals(other);
 	}
 
+	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
+		return getRealTable().queryByPK(pk, connection);
+	}
+
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
 	
 	@Override
@@ -234,10 +238,5 @@ public class LazyTable implements DBTable {
 	    	return false;
 	    return NullSafeComparator.equals(this.name, that.getName());
     }
-
-	public DBRow queryByPK(Object pk, Connection connection)
-			throws SQLException {
-		throw new UnsupportedOperationException("DBTable.queryByPK() is not implemented"); // TODO implement DBTable.queryByPK
-	}
 
 }
