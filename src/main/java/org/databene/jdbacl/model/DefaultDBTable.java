@@ -296,7 +296,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     }
 
     public DBTable getProvider(int index) {
-        return foreignKeyConstraints.get(index).getForeignTable();
+        return foreignKeyConstraints.get(index).getRefereeTable();
     }
 
     public boolean requiresProvider(int index) {

@@ -77,7 +77,7 @@ public class DBForeignKeyConstraint extends DBConstraint {
     	return refereeColumnNames[index];
     }
 
-    public DBTable getForeignTable() { // TODO rename to getRefereeTable()
+    public DBTable getRefereeTable() {
         return refereeTable;
     }
 

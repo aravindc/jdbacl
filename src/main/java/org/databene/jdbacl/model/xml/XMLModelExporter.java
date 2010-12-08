@@ -176,7 +176,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			String[] columnNames = fk.getColumnNames();
 			if (columnNames.length == 1)
 				addAttribute("column", columnNames[0], atts);
-			addAttribute("refereeTable", fk.getForeignTable().getName(), atts);
+			addAttribute("refereeTable", fk.getRefereeTable().getName(), atts);
 			String[] refereeColumns = fk.getRefereeColumnNames();
 			if (refereeColumns.length == 1)
 				addAttribute("refereeColumn", refereeColumns[0], atts);
