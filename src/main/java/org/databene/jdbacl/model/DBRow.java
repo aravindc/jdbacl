@@ -73,7 +73,7 @@ public class DBRow implements Serializable {
 			return getCellValues(columnNames);
     }
 
-	public void setFKValues(DBForeignKeyConstraint fkConstraint, Object fkValue) {
+	public void setFKValue(DBForeignKeyConstraint fkConstraint, Object fkValue) {
 		String[] columnNames = fkConstraint.getColumnNames();
 		if (columnNames.length == 1)
 			setCellValue(columnNames[0], fkValue);
@@ -81,6 +81,10 @@ public class DBRow implements Serializable {
 			Object[] cellValues = (Object[]) fkValue;
 			setCellValues(columnNames, cellValues);
 		}
+	}
+
+	public Object[] getFKComponents(DBForeignKeyConstraint fk) {
+		return getCellValues(fk.getColumnNames());
 	}
 
 	public void setCellValues(String[] columnNames, Object[] cellValues) {
