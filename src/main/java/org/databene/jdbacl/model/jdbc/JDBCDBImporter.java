@@ -485,7 +485,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	        OrderedNameMap<DBIndexInfo> tableIndexes = new OrderedNameMap<DBIndexInfo>();
 	        ResultSet indexSet = null;
 	        try {
-		        indexSet = metaData.getIndexInfo(catalog.getName(), null, table.getName(), !importingIndexes, false);
+		        indexSet = metaData.getIndexInfo(catalog.getName(), table.getSchema().getName(), table.getName(), !importingIndexes, false);
 		        //DBUtil.print(indexSet);
 		        while (indexSet.next()) {
 		            String indexName = null;
@@ -538,7 +538,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	            try {
 	                if (indexInfo.unique) {
 	                	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
-	                	boolean isPK = StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames());
+	                	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
 	                	DBUniqueConstraint constraint;
 	                	if (isPK) {
 	                		constraint = pk;
