@@ -73,7 +73,7 @@ public abstract class IdentityModel {
 	public abstract TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper);
 	
 	public String extractNK(Object[] nkPkTuple) {
-		return (String) nkPkTuple[0];
+		return String.valueOf(nkPkTuple[0]);
 	}
 
 	public Object extractPK(Object[] nkPkTuple) {
