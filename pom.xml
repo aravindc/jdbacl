@@ -6,7 +6,7 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.6.4</version>
+    <version>0.6.5</version>
 
     <packaging>jar</packaging>
     <name>databene jdbacl</name>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.databene</groupId>
             <artifactId>databene-commons</artifactId>
-            <version>0.5.4</version>
+            <version>0.5.5</version>
         </dependency>
         
 		<!-- logging -->
