@@ -300,8 +300,8 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     }
 
     public boolean requiresProvider(int index) {
-        String fkColumnName = foreignKeyConstraints.get(index).getForeignKeyColumnNames()[0];
-		return !getColumn(fkColumnName).isNullable();
+        String firstFkColumnName = foreignKeyConstraints.get(index).getForeignKeyColumnNames()[0];
+		return !getColumn(firstFkColumnName).isNullable();
     }
 
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
