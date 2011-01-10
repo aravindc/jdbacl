@@ -92,6 +92,8 @@ public class DBForeignKeyConstraint extends DBConstraint {
     
 	
 	
+	// java.lang.Object overrides --------------------------------------------------------------------------------------
+	
     @Override
 	public int hashCode() {
 		return HashCodeBuilder.hashCode(
