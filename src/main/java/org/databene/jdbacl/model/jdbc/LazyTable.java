@@ -68,6 +68,59 @@ public class LazyTable implements DBTable {
 	    this.name = tableName;
 	    this.doc = doc;
     }
+	
+	
+	
+	// implementation of the meta data part of the 'DBTable' interface -------------------------------------------------
+	
+	public List<DBTableComponent> getComponents() {
+		return getRealTable().getComponents();
+	}
+
+	public CompositeDBObject<?> getOwner() {
+		return getRealTable().getOwner();
+	}
+
+	public void setOwner(CompositeDBObject<?> owner) {
+		getRealTable().setOwner(owner);
+	}
+	
+	public void setPrimaryKey(DBPrimaryKeyConstraint pk) {
+		getRealTable().setPrimaryKey(pk);
+	}
+
+	public void addUniqueConstraint(DBUniqueConstraint uk) {
+		getRealTable().addUniqueConstraint(uk);
+	}
+
+	public void addForeignKey(DBForeignKeyConstraint fk) {
+		getRealTable().addForeignKey(fk);
+	}
+
+	public void addIndex(DBIndex index) {
+		getRealTable().addIndex(index);
+	}
+
+	public DBRowIterator queryRows(String whereClause, Connection connection)
+			throws SQLException {
+		return getRealTable().queryRows(whereClause, connection);
+	}
+
+	public HeavyweightIterator<Object> queryPKs(Connection connection) {
+		return getRealTable().queryPKs(connection);
+	}
+
+	public TableRowIterator query(String query, Connection connection) {
+		return getRealTable().query(query, connection);
+	}
+
+	public boolean deepEquals(CompositeDBObject<?> other) {
+		return getRealTable().deepEquals(other);
+	}
+
+	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
+		return getRealTable().queryByPK(pk, connection);
+	}
 
 	public DBCatalog getCatalog() {
 		return schema.getCatalog();
@@ -145,14 +198,10 @@ public class LazyTable implements DBTable {
 	public DBRowIterator allRows(Connection connection) throws SQLException {
 	    return getRealTable().allRows(connection);
     }
+	
 
-	public DefaultDBTable getRealTable() {
-		if (realTable == null)
-			realTable = importer.importTable(getCatalog(), schema, name, doc);
-	    return realTable;
-    }
-
-	// implementation of the 'Dependent' interface ---------------------------------------------------------------------
+	
+	// implementation of the 'Dependent' part of the 'DBTable' interface -----------------------------------------------
 	
 	public int countProviders() {
 	    return getRealTable().countProviders();
@@ -166,54 +215,15 @@ public class LazyTable implements DBTable {
 	    return getRealTable().requiresProvider(index);
     }
 	
-	public List<DBTableComponent> getComponents() {
-		return getRealTable().getComponents();
-	}
-
-	public CompositeDBObject<?> getOwner() {
-		return getRealTable().getOwner();
-	}
-
-	public void setOwner(CompositeDBObject<?> owner) {
-		getRealTable().setOwner(owner);
-	}
 	
-	public void setPrimaryKey(DBPrimaryKeyConstraint pk) {
-		getRealTable().setPrimaryKey(pk);
-	}
+	
+	// access to the wrapped object ------------------------------------------------------------------------------------
 
-	public void addUniqueConstraint(DBUniqueConstraint uk) {
-		getRealTable().addUniqueConstraint(uk);
-	}
-
-	public void addForeignKey(DBForeignKeyConstraint fk) {
-		getRealTable().addForeignKey(fk);
-	}
-
-	public void addIndex(DBIndex index) {
-		getRealTable().addIndex(index);
-	}
-
-	public DBRowIterator queryRows(String whereClause, Connection connection)
-			throws SQLException {
-		return getRealTable().queryRows(whereClause, connection);
-	}
-
-	public HeavyweightIterator<Object> queryPKs(Connection connection) {
-		return getRealTable().queryPKs(connection);
-	}
-
-	public TableRowIterator query(String query, Connection connection) {
-		return getRealTable().query(query, connection);
-	}
-
-	public boolean deepEquals(CompositeDBObject<?> other) {
-		return getRealTable().deepEquals(other);
-	}
-
-	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
-		return getRealTable().queryByPK(pk, connection);
-	}
+	public DefaultDBTable getRealTable() {
+		if (realTable == null)
+			realTable = importer.importTable(getCatalog(), schema, name, doc);
+	    return realTable;
+    }
 
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
 	
