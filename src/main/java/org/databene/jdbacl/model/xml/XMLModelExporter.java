@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -127,6 +127,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 	private void exportColumn(DBColumn column, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", column.getName());
 		addAttribute("default", column.getDefaultValue(), atts);
+		addAttribute("jdbcType", String.valueOf(column.getType().getJdbcType()), atts);
 		addAttribute("type", SQLUtil.renderColumnTypeWithSize(column), atts);
 		addAttribute("nullable", (column.isNullable() ? null : "false"), atts);
 		writer.startElement("column", atts);

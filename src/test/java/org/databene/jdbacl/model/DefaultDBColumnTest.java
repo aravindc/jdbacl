@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,6 +26,8 @@
 
 package org.databene.jdbacl.model;
 
+import java.sql.Types;
+
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBColumnType;
 import org.junit.Test;
@@ -41,7 +43,7 @@ public class DefaultDBColumnTest {
 	@Test
     public void testToString() {
         assertEquals("Column formatting failed", "ID : NUMBER(11,2)",
-                new DefaultDBColumn("ID", null, DBColumnType.getInstance("NUMBER"), 11, 2).toString());
+                new DefaultDBColumn("ID", null, DBColumnType.getInstance(Types.DECIMAL, "NUMBER"), 11, 2).toString());
     }
     
 }

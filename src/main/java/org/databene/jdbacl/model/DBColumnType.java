@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -42,10 +42,6 @@ public class DBColumnType implements Named, Serializable {
 
 	public static DBColumnType getInstance(int jdbcType, String name) {
         return new DBColumnType(jdbcType, name.toUpperCase());
-    }
-
-    public static DBColumnType getInstance(String name) {
-        return new DBColumnType(Integer.MIN_VALUE, name.toUpperCase());
     }
 
     private String name;

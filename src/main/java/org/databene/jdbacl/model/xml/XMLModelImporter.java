@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -152,7 +152,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	private DBColumn parseColumn(Element e, DefaultDBTable table) {
 		String name = e.getAttribute("name");
 		String typeAndSizeSpec = e.getAttribute("type");
-		DefaultDBColumn column = new DefaultDBColumn(name, table, typeAndSizeSpec);
+		int jdbcType = Integer.parseInt(e.getAttribute("jdbcType"));
+		DefaultDBColumn column = new DefaultDBColumn(name, table, jdbcType, typeAndSizeSpec);
 		String defaultValue = e.getAttribute("default");
 		if (!StringUtil.isEmpty(defaultValue))
 			column.setDefaultValue(defaultValue);

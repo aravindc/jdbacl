@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -54,11 +54,11 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         this(name, table, type, null);
     }
 
-    public DefaultDBColumn(String name, DBTable table, String typeAndSize) {
+    public DefaultDBColumn(String name, DBTable table, int jdbcType, String typeAndSize) {
         this(name, table, null, null);
         Object[] tokens = SQLUtil.parseColumnTypeAndSize(typeAndSize);
         if (tokens.length > 0)
-        	this.type = DBColumnType.getInstance((String) tokens[0]);
+        	this.type = DBColumnType.getInstance(jdbcType, (String) tokens[0]);
         if (tokens.length > 1)
         	this.size = (Integer) tokens[1];
         if (tokens.length > 2)
