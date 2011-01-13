@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -84,7 +85,21 @@ public class DBUtil {
     /** private constructor for preventing instantiation. */
     private DBUtil() {}
     
+    public static JDBCConnectData getConnectData(String environment) throws IOException {
+		String filename = environment + ".env.properties";
+		File file = new File(filename);
+		if (!file.exists())
+			file = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
+		if (!file.exists())
+			throw new ConfigurationError("No environment definition '" + filename + "' found");
+		return JDBCConnectData.parseSingleDbProperties(file.getAbsolutePath());
+    }
+    
 	public static Connection connect(JDBCConnectData data) throws ConnectFailedException {
+		if (StringUtil.isEmpty(data.url))
+			throw new ConfigurationError("No JDBC URL specified");
+		if (StringUtil.isEmpty(data.driver))
+			throw new ConfigurationError("No JDBC driver class name specified");
 	    return connect(data.url, data.driver, data.user, data.password);
     }
 
