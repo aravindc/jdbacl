@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -196,7 +196,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
             throw new ImportFailedException(e);
         } finally {
             long duration = System.currentTimeMillis() - startTime;
-            LOGGER.info("Imported database metadata within " + duration + " ms.");
+            LOGGER.info("Imported" + (lazy ? " core" : "") + " database metadata within " + duration + " ms.");
         }
     }
 
@@ -214,10 +214,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
             String catalogName = catalogSet.getString(1);
             LOGGER.debug("found catalog " + catalogName);
             if ((schemaName == null && user.equalsIgnoreCase(catalogName)) 
-            		|| (schemaName != null && this.catalogName.equalsIgnoreCase(catalogName))
+            		|| (schemaName != null && catalogName.equalsIgnoreCase(this.catalogName))
             		|| catalogName.equalsIgnoreCase(connection.getCatalog()))
                 this.catalogName = catalogName;
-            database.addCatalog(new DBCatalog(catalogName));
+            database.addCatalog(new DBCatalog(StringUtil.emptyToNull(catalogName)));
             catalogCount++;
         }
         if (catalogCount == 0)
@@ -352,7 +352,12 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	            boolean nullable = columnSet.getBoolean(11);
 	            String comment = columnSet.getString(12);
 	            String defaultValue = columnSet.getString(13);
-	
+
+	            // Bug fix 3075401: boolean value generation problem in postgresql 8.4
+	            if (sqlType == Types.BIT && "bool".equals(columnType.toLowerCase()) && productName.toLowerCase().startsWith("postgres")) {
+	            	sqlType = Types.BOOLEAN;
+	            }
+	            
 	            if (LOGGER.isDebugEnabled())
 	            	LOGGER.debug("found column: " + catalogName + ", " + colSchemaName + ", " + tableName + ", "
 	                        + columnName + ", " + sqlType + ", " + columnType + ", " + columnSize + ", " + decimalDigits
