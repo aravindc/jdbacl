@@ -35,8 +35,12 @@ public class IdentityProvider {
 	private OrderedNameMap<IdentityModel> identities = OrderedNameMap.createCaseIgnorantMap();
 	
 	public IdentityModel getIdentity(String tableName) {
+		return getIdentity(tableName, true);
+	}
+
+	public IdentityModel getIdentity(String tableName, boolean required) {
 		IdentityModel result = identities.get(tableName);
-		if (result == null)
+		if (required && (result == null || result instanceof NoIdentity))
 			throw new ObjectNotFoundException("No identity defined for table '" + tableName + "'");
 		return result;
 	}
