@@ -50,7 +50,7 @@ public class NaturalPkIdentity extends IdentityModel {
 		StringBuilder builder = new StringBuilder("select ");
 		builder.append(pkColumns[0]);
 		for (int i = 1; i < pkColumns.length; i++)
-			builder.append(" ||Ê'|' || ").append(pkColumns[i]);
+			builder.append(" || '|' || ").append(pkColumns[i]);
 		for (String columnName : pkColumns)
 			builder.append(", ").append(columnName);
 		builder.append(" from ").append(table.getName());
