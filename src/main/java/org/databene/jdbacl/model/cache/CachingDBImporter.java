@@ -19,7 +19,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.databene.jdbacl.model.buffer;
+package org.databene.jdbacl.model.cache;
 
 import java.io.Closeable;
 import java.io.File;
@@ -36,15 +36,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link DBMetaDataImporter} that acts as a proxy to another DBMetaDataImporter, 
- * adding the feature of buffering its output. The data file is named '&lt;environment&gt;.meta.xml'
+ * adding the feature of caching its output. The data file is named '&lt;environment&gt;.meta.xml'
  * and expires after 12 hrs.<br/><br/>
  * Created: 10.01.2011 14:48:00
  * @since 0.6.5
  * @author Volker Bergmann
  */
-public class BufferedDBImporter implements DBMetaDataImporter, Closeable {
+public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(BufferedDBImporter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporter.class);
 	
 	private static final long TIME_TO_LIVE = Period.HOUR.getMillis() * 12;
 	
@@ -52,16 +52,16 @@ public class BufferedDBImporter implements DBMetaDataImporter, Closeable {
 
 	protected DBMetaDataImporter realImporter;
 	
-	public BufferedDBImporter(DBMetaDataImporter realImporter, String environment) {
+	public CachingDBImporter(DBMetaDataImporter realImporter, String environment) {
 		this.realImporter = realImporter;
 		this.environment = environment;
 	}
 
 	public Database importDatabase() throws ImportFailedException {
-		File file = getBufferFile();
+		File file = getCacheFile();
 		long now = System.currentTimeMillis();
 		if (file.exists() && now - file.lastModified() < TIME_TO_LIVE)
-			return readBufferedData(file);
+			return readCachedData(file);
 		else
 			return importFreshData(file);
 	}
@@ -71,20 +71,24 @@ public class BufferedDBImporter implements DBMetaDataImporter, Closeable {
 			((Closeable) realImporter).close();
 	}
 	
-	// non-public helpers ----------------------------------------------------------------------------------------------
-
-	protected File getBufferFile() {
+	public static File getCacheFile(String environment) {
 		return new File(environment + ".meta.xml");
 	}
 	
-	protected Database readBufferedData(File buffer) throws ImportFailedException {
-		LOGGER.info("Reading buffered database meta data");
-		return new XMLModelImporter(buffer).importDatabase();
+	// non-public helpers ----------------------------------------------------------------------------------------------
+
+	protected File getCacheFile() {
+		return new File(environment + ".meta.xml");
+	}
+	
+	protected Database readCachedData(File cacheFile) throws ImportFailedException {
+		LOGGER.info("Reading cached database meta data");
+		return new XMLModelImporter(cacheFile).importDatabase();
 	}
 
 	protected Database importFreshData(File file) throws ImportFailedException {
 		Database database = realImporter.importDatabase();
-		LOGGER.info("Reading and exporting Database meta data to buffer file");
+		LOGGER.info("Reading and exporting Database meta data to cache file");
 		try {
 			new XMLModelExporter(file).export(database);
 			LOGGER.debug("Database meta data export completed");
