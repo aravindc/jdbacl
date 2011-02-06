@@ -232,7 +232,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
         while (schemaSet.next()) {
             String schemaName = schemaSet.getString(1);
             String catalogName = null;
-            if (schemaSet.getMetaData().getColumnCount() >= 2)
+            int columnCount = schemaSet.getMetaData().getColumnCount();
+			if (columnCount >= 2)
             	catalogName = schemaSet.getString(2);
             if (schemaName.equalsIgnoreCase(this.schemaName) 
             		|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
@@ -240,13 +241,23 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	            if (schemaName.equalsIgnoreCase(this.schemaName))
 	            	this.schemaName = schemaName; // take over capitalization used in the DB
 	            DBSchema schema = new DBSchema(schemaName);
-	            database.getCatalog(catalogName).addSchema(schema);
+	            String catalogNameOfSchema = (columnCount >= 2 ? catalogName : this.catalogName); // PostgreSQL does not necessarily tell you the catalog name
+            	DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
+            	if (catalogOfSchema != null)
+            		catalogOfSchema.addSchema(schema);
+            	else
+            		throw new ObjectNotFoundException("Catalog not found: " + catalogName);
 	            schemaCount++;
             } else
                 LOGGER.debug("ignoring schema {}", schemaName);
         }
-        if (schemaCount == 0)
-        	database.getCatalogs().get(0).addSchema(new DBSchema(null));
+        if (schemaCount == 0) {
+        	// add a default schema if none was reported (e.g. by MySQL)
+        	DBCatalog catalogToUse = database.getCatalog(catalogName);
+        	if (catalogToUse == null)
+        		catalogToUse = database.getCatalogs().get(0);
+       		catalogToUse.addSchema(new DBSchema(null));
+        }
         schemaSet.close();
     }
 
@@ -277,7 +288,17 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
                 LOGGER.debug("importing table: " + tCatalogName + ", " + tSchemaName + ", " + tableName + ", " + tableType + ", " + tableRemarks);
 
             DBCatalog catalog = database.getCatalog(tCatalogName);
-			DBTable table = createTable(catalog, catalog.getSchema(tSchemaName), tableName, tableRemarks, lazy);
+			DBSchema schema;
+            if (catalog != null) {
+            	// that's the expected way
+            	schema = catalog.getSchema(tSchemaName);
+            } else {
+            	// postgres returns no catalog info, so we need to search for the schema in the whole database
+            	schema = database.getSchema(tSchemaName);
+            	catalog = schema.getCatalog();
+            }
+			
+			DBTable table = createTable(catalog, schema, tableName, tableRemarks, lazy);
             importedTables.add(table);
         }
         if (!lazy)
