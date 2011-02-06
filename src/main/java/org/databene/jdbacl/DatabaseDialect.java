@@ -189,7 +189,7 @@ public abstract class DatabaseDialect {
     	DBCatalog catalog = table.getCatalog();
 		if (catalog != null && catalog.getName() != null)
     		appendQuoted(catalog.getName(), builder).append('.');
-    	if (table.getSchema() != null)
+    	if (table.getSchema() != null && table.getSchema().getName() != null)
     		appendQuoted(table.getSchema().getName(), builder).append('.');
     	return appendQuoted(table.getName(), builder);
     }
