@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -44,4 +44,5 @@ public interface Database extends CompositeDBObject<DBCatalog> {
     public Set<DBTable> getTables();
     public DBTable getTable(String name);
 	public void removeTable(String tableName);
+	public DBSchema getSchema(String schemaName);
 }
