@@ -74,6 +74,17 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
         catalog.setOwner(null);
     }
 
+    // schema operations -----------------------------------------------------------------------------------------------
+
+	public DBSchema getSchema(String schemaName) {
+        for (DBCatalog catalog : getCatalogs()) {
+            DBSchema schema = catalog.getSchema(schemaName);
+            if (schema != null)
+            	return schema;
+        }
+        throw new ObjectNotFoundException("Table '" + name + "'");
+	}
+
     // table operations ------------------------------------------------------------------------------------------------
 
     public Set<DBTable> getTables() {
@@ -85,7 +96,7 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
     }
 
     public DBTable getTable(String name) {
-        for (DBCatalog catalog : getComponents())
+        for (DBCatalog catalog : getCatalogs())
             for (DBTable table : catalog.getTables())
             	if (StringUtil.equalsIgnoreCase(table.getName(), name))
             		return table;
