@@ -82,7 +82,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	}
 	
 	protected Database readCachedData(File cacheFile) throws ImportFailedException {
-		LOGGER.info("Reading cached database meta data");
+		LOGGER.info("Reading cached database meta data from file " + cacheFile.getPath());
 		return new XMLModelImporter(cacheFile).importDatabase();
 	}
 
