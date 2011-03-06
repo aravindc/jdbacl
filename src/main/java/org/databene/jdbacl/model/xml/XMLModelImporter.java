@@ -90,7 +90,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	}
 
 	private DBCatalog parseCatalog(Element e, Database db) {
-		String name = e.getAttribute("name");
+		String name = StringUtil.emptyToNull(e.getAttribute("name"));
 		DBCatalog catalog = new DBCatalog(name, db);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
@@ -220,4 +220,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return columnNames;
 	}
 
+	public static void main(String[] args) throws ImportFailedException {
+		Database db = new XMLModelImporter(new File("TG26.meta.xml")).importDatabase();
+		System.out.println(db);
+	}
 }

@@ -214,7 +214,9 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	private AttributesImpl createAttributes(String attributeName, String attributeValue) {
 		AttributesImpl atts = new AttributesImpl();
-		return addAttribute(attributeName, attributeValue, atts);
+		if (attributeValue != null)
+			addAttribute(attributeName, attributeValue, atts);
+		return atts;
 	}
 
 	private AttributesImpl addAttribute(String name, String value, AttributesImpl atts) {
