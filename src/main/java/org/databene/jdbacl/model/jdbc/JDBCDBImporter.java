@@ -384,7 +384,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 	                        + columnName + ", " + sqlType + ", " + columnType + ", " + columnSize + ", " + decimalDigits
 	                        + ", " + nullable + ", " + comment + ", " + defaultValue);
 	
-	            DefaultDBTable table = (DefaultDBTable) catalog.getTable(tableName);
+	            DBTable table = catalog.getTable(tableName);
 	            if (table == null) {
 	                DBSchema schema = catalog.getSchema(schemaName);
 	                if (schema != null)
