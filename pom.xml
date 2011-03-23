@@ -8,6 +8,10 @@
     <artifactId>jdbacl</artifactId>
     <version>0.6.8</version>
 
+    <properties>
+    	<commons_version>0.5.8</commons_version>
+    </properties>
+
     <packaging>jar</packaging>
     <name>databene jdbacl</name>
     <url>http://databene.org/jdbacl</url>
@@ -46,7 +50,7 @@
         <dependency>
             <groupId>org.databene</groupId>
             <artifactId>databene-commons</artifactId>
-            <version>0.5.8</version>
+            <version>${commons_version}</version>
         </dependency>
         
 		<!-- logging -->
@@ -112,6 +116,17 @@
                 <directory>${basedir}/src/demo/resources</directory>
                 <includes>
                     <include>**/*</include>
+                </includes>
+                 <excludes>
+                    <exclude>**/version.properties</exclude>
+                </excludes>
+           </resource>
+
+            <resource>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/version.properties</include>
                 </includes>
             </resource>
 
