@@ -55,6 +55,16 @@ public class DBUtilTest {
 		assertEquals(1, count);
 	}
 	
+	@Test
+	public void testConnectionCount() throws Exception {
+		DBUtil.resetConnectionCount();
+		assertEquals(0, DBUtil.getConnectionCount());
+		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
+		assertEquals(1, DBUtil.getConnectionCount());
+		connection.close();
+		assertEquals(0, DBUtil.getConnectionCount());
+	}
+	
 	// testing checkReadOnly() -----------------------------------------------------------------------------------------
 
 	@Test
