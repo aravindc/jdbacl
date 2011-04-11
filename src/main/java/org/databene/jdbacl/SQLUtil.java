@@ -137,12 +137,18 @@ public class SQLUtil {
     
 	public static boolean mutatesDataOrStructure(String sql) {
 		sql = sql.trim().toLowerCase();
+		// accept ALTER SESSION ...
+		if (sql.trim().startsWith("alter session"))
+			return false;
+		// ...otherwise anything else than SELECT must be a mutation...
 	    if (!sql.startsWith("select"))
 	    	return true;
+	    // ... but a 'select' statement might be a 'select into' which mutates data
 	    StringTokenizer t = new StringTokenizer(sql);
 	    while (t.hasMoreTokens())
 	    	if ("into".equals(t.nextToken()))
 	    		return true;
+	    // OK, where through - it is a plain select statement
 	    return false;
     }
 

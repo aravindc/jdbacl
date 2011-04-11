@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -93,6 +93,10 @@ public class DBUtilTest {
 	@Test(expected = IllegalStateException.class)
 	public void testReadOnly_true_select_into() {
 		DBUtil.checkReadOnly("select into xyz2 from xyz", true);
+	}
+	
+	public void testReadOnly_alter_session() {
+		DBUtil.checkReadOnly("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", true);
 	}
 	
 }
