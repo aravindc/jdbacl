@@ -23,6 +23,7 @@ package org.databene.jdbacl;
 
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.databene.commons.CollectionUtil;
 import org.databene.jdbacl.model.DBColumn;
@@ -134,4 +135,15 @@ public class SQLUtil {
 	    	return String.valueOf(value);
     }
     
+	public static boolean mutatesDataOrStructure(String sql) {
+		sql = sql.trim().toLowerCase();
+	    if (!sql.startsWith("select"))
+	    	return true;
+	    StringTokenizer t = new StringTokenizer(sql);
+	    while (t.hasMoreTokens())
+	    	if ("into".equals(t.nextToken()))
+	    		return true;
+	    return false;
+    }
+
 }
