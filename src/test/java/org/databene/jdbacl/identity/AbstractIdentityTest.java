@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.databene.commons.ConnectFailedException;
 import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.SystemInfo;
@@ -112,7 +113,7 @@ public abstract class AbstractIdentityTest {
 		return new JDBCDBImporter(target, "sa", "PUBLIC", null, false).importDatabase();
 	}
 	
-	protected Connection connectDB(String dbName, int port) throws SQLException {
+	protected Connection connectDB(String dbName, int port) throws ConnectFailedException {
 		return HSQLUtil.connectInMemoryDB(dbName, port);
 	}
 
