@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.ConnectionEventListener;
 
@@ -54,6 +55,7 @@ public class PooledConnectionHandler implements InvocationHandler {
     private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
     
     private static long nextId = 0;
+    private static volatile AtomicInteger connectionCount = new AtomicInteger();
 
     private boolean readOnly;
     private Connection realConnection;
@@ -68,6 +70,7 @@ public class PooledConnectionHandler implements InvocationHandler {
         this.listeners = new ArrayList<ConnectionEventListener>();
         if (jdbcLogger.isDebugEnabled())
             jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
+        connectionCount.incrementAndGet();
     }
 
     // InvocationHandler implementation --------------------------------------------------------------------------------
@@ -115,6 +118,7 @@ public class PooledConnectionHandler implements InvocationHandler {
         try {
             realConnection.close();
             listeners.clear();
+            connectionCount.decrementAndGet();
             if (jdbcLogger.isDebugEnabled())
                 jdbcLogger.debug("Closed connection #" + id + ": " + realConnection);
         } catch (SQLException e) {
@@ -137,10 +141,20 @@ public class PooledConnectionHandler implements InvocationHandler {
         listeners.remove(listener);
     }
     
+    // connection count ------------------------------------------------------------------------------------------------
+    
+    public static int getConnectionCount() {
+    	return connectionCount.get();
+    }
+    
+	public static void resetConnectionCount() {
+		connectionCount.set(0);
+	}
+    
     // private helpers -------------------------------------------------------------------------------------------------
 
     private static synchronized long nextId() {
         return ++nextId;
     }
-    
+
 }

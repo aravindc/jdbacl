@@ -45,6 +45,9 @@ import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.proxy.LoggingPreparedStatementHandler;
+import org.databene.jdbacl.proxy.LoggingStatementHandler;
+import org.databene.jdbacl.proxy.PooledConnectionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +68,6 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import javax.sql.PooledConnection;
 
@@ -85,6 +87,9 @@ public class DBUtil {
     /** private constructor for preventing instantiation. */
     private DBUtil() {}
     
+    
+    // connection handling ---------------------------------------------------------------------------------------------
+    
     public static JDBCConnectData getConnectData(String environment) throws IOException {
 		String filename = environment + ".env.properties";
 		File file = new File(filename);
@@ -100,10 +105,10 @@ public class DBUtil {
 			throw new ConfigurationError("No JDBC URL specified");
 		if (StringUtil.isEmpty(data.driver))
 			throw new ConfigurationError("No JDBC driver class name specified");
-	    return connect(data.url, data.driver, data.user, data.password);
+	    return connect(data.url, data.driver, data.user, data.password, false);
     }
 
-    public static Connection connect(String url, String driverClassName, String user, String password) throws ConnectFailedException {
+    public static Connection connect(String url, String driverClassName, String user, String password, boolean readOnly) throws ConnectFailedException {
 		try {
 			// Instantiate driver
             Class<Driver> driverClass = BeanUtil.forName(driverClassName);
@@ -122,6 +127,7 @@ public class DBUtil {
             if (connection == null)
             	throw new ConnectFailedException("Connecting the database failed silently - " +
             			"probably due to wrong driver (" + driverClassName + ") or wrong URL format (" + url + ")");
+            connection = wrapWithPooledConnection(connection, readOnly);
 			return connection;
         } catch (Exception e) {
 			throw new ConnectFailedException("Connecting " + url + " failed: ", e);
@@ -130,8 +136,8 @@ public class DBUtil {
 
     public static boolean available(String url, String driverClass, String user, String password) {
 		try {
-	    	Connection connection = connect(url, driverClass, user, password);
-	    	DBUtil.close(connection);
+	    	Connection connection = connect(url, driverClass, user, password, false);
+	    	close(connection);
             return true;
         } catch (Exception e) {
             return false;
@@ -148,6 +154,58 @@ public class DBUtil {
             logger.error("Error closing connection", e);
         }
     }
+    
+	public static Connection wrapWithPooledConnection(Connection connection, boolean readOnly) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		return (Connection) Proxy.newProxyInstance(classLoader, 
+				new Class[] { Connection.class, PooledConnection.class }, 
+				new PooledConnectionHandler(connection, readOnly));
+	}
+	
+	public static int getConnectionCount() {
+		return PooledConnectionHandler.getConnectionCount();
+	}
+	
+	public static void resetConnectionCount() {
+		PooledConnectionHandler.resetConnectionCount();
+	}
+	
+    // statement handling ----------------------------------------------------------------------------------------------
+    
+	public static Statement createLoggingStatementHandler(Statement statement, boolean readOnly) {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled() || readOnly)
+	        statement = (Statement) Proxy.newProxyInstance(classLoader, 
+					new Class[] { Statement.class }, 
+					new LoggingStatementHandler(statement, readOnly));
+		return statement;
+	}
+
+	public static PreparedStatement prepareStatement(Connection connection, String sql, boolean readOnly) throws SQLException {
+		return prepareStatement(connection, sql, readOnly, 
+				ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
+	}
+
+	public static PreparedStatement prepareStatement(
+			Connection connection, 
+			String sql, 
+			boolean readOnly,
+			int resultSetType,
+            int resultSetConcurrency,
+            int resultSetHoldability) throws SQLException {
+		jdbcLogger.debug("preparing statement: " + sql);
+		checkReadOnly(sql, readOnly);
+        if (connection instanceof PooledConnection)
+        	connection = ((PooledConnection) connection).getConnection();
+		PreparedStatement statement = connection.prepareStatement(
+				sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled())
+			statement = (PreparedStatement) Proxy.newProxyInstance(classLoader, 
+				new Class[] { PreparedStatement.class }, 
+				new LoggingPreparedStatementHandler(statement, sql));
+		return statement;
+	}
 
     public static void close(Statement statement) {
         if (statement != null) {
@@ -159,6 +217,8 @@ public class DBUtil {
         }
     }
 
+    // ResultSet handling ----------------------------------------------------------------------------------------------
+    
     public static void close(ResultSet resultSet) {
         if (resultSet != null) {
             try {
@@ -231,7 +291,7 @@ public class DBUtil {
             String value = resultSet.getString(1);
             if (resultSet.next())
                 throw new RuntimeException("Expected exactly one row, found more.");
-            resultSet.close();
+            close(resultSet);
             return value;
         } catch (SQLException e) {
             throw new RuntimeException("Database query failed: ", e);
@@ -251,8 +311,8 @@ public class DBUtil {
             Object value = resultSet.getObject(1);
             if (resultSet.next())
                 throw new RuntimeException("Expected exactly one row, found more.");
-            resultSet.close();
-            statement.close();
+            close(resultSet);
+            close(statement);
             return value;
         } catch (SQLException e) {
             throw new RuntimeException("Database query failed: ", e);
@@ -291,7 +351,7 @@ public class DBUtil {
 			        String sql = cmd.toString().trim();
 			        if (sql.length() > 0 && (!ignoreComments || !StringUtil.startsWithIgnoreCase(sql, "COMMENT"))) {
 			        	try {
-				        	if (mutates(sql))
+				        	if (SQLUtil.mutatesDataOrStructure(sql))
 				        		result = executeUpdate(sql, connection);
 				        	else
 				        		result = query(sql, connection);
@@ -310,7 +370,7 @@ public class DBUtil {
 			}
 			return (exception != null ? exception : result);
         } finally {
-			iterator.close();
+			IOUtil.close(iterator);
         }
 	}
 
@@ -326,7 +386,7 @@ public class DBUtil {
             result = statement.executeUpdate(sql);
         } finally {
             if (statement != null)
-                statement.close();
+                close(statement);
         }
         return result;
     }
@@ -342,8 +402,8 @@ public class DBUtil {
 	        	builder.add(AnyConverter.convert(resultSet.getObject(1), componentType));
 	        return builder.toArray();
     	} finally {
-	    	DBUtil.close(resultSet);
-	    	DBUtil.close(statement);
+	    	close(resultSet);
+	    	close(statement);
     	}
     }
 
@@ -355,36 +415,10 @@ public class DBUtil {
 	    	resultSet = statement.executeQuery(query);
 	    	return parseResultSet(resultSet);
     	} finally {
-	    	DBUtil.close(resultSet);
-	    	DBUtil.close(statement);
+	    	close(resultSet);
+	    	close(statement);
     	}
     }
-
-	public static PreparedStatement prepareStatement(Connection connection, String sql, boolean readOnly) throws SQLException {
-		return prepareStatement(connection, sql, readOnly, 
-				ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
-	}
-
-	public static PreparedStatement prepareStatement(
-			Connection connection, 
-			String sql, 
-			boolean readOnly,
-			int resultSetType,
-            int resultSetConcurrency,
-            int resultSetHoldability) throws SQLException {
-		jdbcLogger.debug("preparing statement: " + sql);
-		checkReadOnly(sql, readOnly);
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (connection instanceof PooledConnection)
-        	connection = ((PooledConnection) connection).getConnection();
-		PreparedStatement statement = connection.prepareStatement(
-				sql, resultSetType, resultSetConcurrency, resultSetHoldability);
-		if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled())
-			statement = (PreparedStatement) Proxy.newProxyInstance(classLoader, 
-				new Class[] { PreparedStatement.class }, 
-				new LoggingPreparedStatementHandler(statement, sql));
-		return statement;
-	}
 
 	public static String escape(String text) {
 		return text.replace("'", "''");
@@ -411,13 +445,13 @@ public class DBUtil {
 	        String[][] array = new String[rows.size()][];
 	        return new ResultsWithMetadata(columnNames, rows.toArray(array));
     	} finally {
-	    	DBUtil.close(resultSet);
-	    	DBUtil.close(statement);
+	    	close(resultSet);
+	    	close(statement);
     	}
     }
 
 	public static void checkReadOnly(String sql, boolean readOnly) {
-		if (readOnly && mutates(sql))
+		if (readOnly && SQLUtil.mutatesDataOrStructure(sql))
 			throw new IllegalStateException("Tried to mutate a database with read-only settings: " + sql);
 	}
 
@@ -443,18 +477,6 @@ public class DBUtil {
 	public static boolean equivalent(DBUniqueConstraint uk, DBPrimaryKeyConstraint pk) {
 	    return Arrays.equals(uk.getColumnNames(), pk.getColumnNames());
     }
-    
-    // private helper methods ------------------------------------------------------------------------------------------
 
-	private static boolean mutates(String sql) {
-		sql = sql.trim().toLowerCase();
-	    if (!sql.startsWith("select"))
-	    	return true;
-	    StringTokenizer t = new StringTokenizer(sql);
-	    while (t.hasMoreTokens())
-	    	if ("into".equals(t.nextToken()))
-	    		return true;
-	    return false;
-    }
 
 }
