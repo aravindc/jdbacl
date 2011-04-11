@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -24,11 +24,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.databene.jdbacl;
+package org.databene.jdbacl.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +39,7 @@ import javax.sql.ConnectionEventListener;
 
 import org.databene.commons.BeanUtil;
 import org.databene.commons.LogCategories;
+import org.databene.jdbacl.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
 public class PooledConnectionHandler implements InvocationHandler {
     
     private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
-    private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategories.SQL);
     
     private static long nextId = 0;
 
@@ -107,12 +106,7 @@ public class PooledConnectionHandler implements InvocationHandler {
 
 	private Statement createStatement(Method method, Object[] args) {
 		Statement statement = (Statement) BeanUtil.invoke(realConnection, method, args);
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled() || readOnly)
-	        statement = (Statement) Proxy.newProxyInstance(classLoader, 
-					new Class[] { Statement.class }, 
-					new LoggingStatementHandler(statement, readOnly));
-		return statement;
+        return DBUtil.createLoggingStatementHandler(statement, readOnly);
 	}
 
 	// PooledConnection implementation ---------------------------------------------------------------------------------
