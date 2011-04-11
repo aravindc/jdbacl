@@ -5,6 +5,7 @@ Release Notes jdbacl 0.6.8
 Enhancements
 ------------
 - generic version configuration and dependency verification
+- connection counting
 
 
 Bug fixes
