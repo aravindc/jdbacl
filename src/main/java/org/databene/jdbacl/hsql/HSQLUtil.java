@@ -32,6 +32,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.databene.commons.ConfigurationError;
+import org.databene.commons.ConnectFailedException;
+import org.databene.jdbacl.DBUtil;
 
 /**
  * Provides utility methods for using HSQLDB.<br/><br/>
@@ -48,18 +50,18 @@ public class HSQLUtil {
 	public static final String DEFAULT_SCHEMA = "PUBLIC";
 	public static final int DEFAULT_PORT = 9001;
 
-	public static Connection connectInMemoryDB(String dbName, int port) throws SQLException {
+	public static Connection connectInMemoryDB(String dbName, int port) throws ConnectFailedException {
 		return connectInMemoryDB(dbName + ":" + port);
 	}
 
-	public static Connection connectInMemoryDB(String dbName) throws SQLException {
+	public static Connection connectInMemoryDB(String dbName) throws ConnectFailedException {
 		String driver = DRIVER;
 		try {
 			Class.forName(driver);
         	String url = getInMemoryURL(dbName);
         	String user = DEFAULT_USER;
         	String password = DEFAULT_PASSWORD;
-			return DriverManager.getConnection(url, user, password);
+			return DBUtil.connect(url, DRIVER, user, password, false);
         } catch (ClassNotFoundException e) {
             throw new ConfigurationError("JDBC driver not found: " + driver, e);
         }

@@ -27,8 +27,8 @@
 package org.databene.jdbacl.hsql;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
+import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.DBUtil;
 import org.junit.Test;
 import static junit.framework.Assert.*;
@@ -42,7 +42,7 @@ import static junit.framework.Assert.*;
 public class HSQLUtilTest {
 
 	@Test
-	public void test() throws SQLException {
+	public void test() throws ConnectFailedException {
 		Connection connection = null;
 		try {
 			connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
