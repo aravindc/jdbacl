@@ -98,7 +98,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
 
     public JDBCDBImporter(String url, String driver, String user, String password, 
     		String schemaName, String tablePattern, boolean importingIndexes) throws ConnectFailedException {
-    	this(DBUtil.connect(url, driver, user, password), user, schemaName, tablePattern, importingIndexes);
+    	this(DBUtil.connect(url, driver, user, password, true), user, schemaName, tablePattern, importingIndexes);
     }
 
     public JDBCDBImporter(Connection connection, String user, 
