@@ -224,4 +224,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		Database db = new XMLModelImporter(new File("TG26.meta.xml")).importDatabase();
 		System.out.println(db);
 	}
+
+	public void close() throws IOException {
+		// nothing special to do
+	}
+	
 }
