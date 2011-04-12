@@ -152,4 +152,18 @@ public class SQLUtil {
 	    return false;
     }
 
+	public static boolean isQuery(String sql) {
+		sql = sql.trim().toLowerCase();
+		// anything else than SELECT must be a mutation...
+	    if (!sql.startsWith("select"))
+	    	return false;
+	    // ... but a 'select' statement might be a 'select into'
+	    StringTokenizer t = new StringTokenizer(sql);
+	    while (t.hasMoreTokens())
+	    	if ("into".equals(t.nextToken()))
+	    		return false;
+	    // OK, where through - it is a plain select statement
+	    return true;
+    }
+
 }

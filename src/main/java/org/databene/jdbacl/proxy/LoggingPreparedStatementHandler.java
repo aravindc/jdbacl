@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -40,6 +40,7 @@ import org.databene.commons.LogCategories;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.ArrayConverter;
 import org.databene.commons.converter.ToStringConverter;
+import org.databene.jdbacl.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,10 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 					params[(Integer) args[0] - 1] = null;
 				else if (methodName.startsWith("set") && args != null && args.length >= 2 && args[0] instanceof Integer)
 					params[(Integer) args[0] - 1] = args[1];
-				return BeanUtil.invoke(realStatement, method, args);
+				Object result = BeanUtil.invoke(realStatement, method, args);
+				if (result instanceof ResultSet)
+					result = DBUtil.createLoggingResultSet((ResultSet) result);
+				return result;
 			}
 		} catch (ConfigurationError e) {
 			if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException)

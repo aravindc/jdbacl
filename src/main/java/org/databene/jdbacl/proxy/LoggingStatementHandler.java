@@ -75,10 +75,14 @@ public class LoggingStatementHandler implements InvocationHandler {
 		try {
 			String methodName = method.getName();
 			Method localMethod = BeanUtil.findMethod(this.getClass(), methodName, method.getParameterTypes());
+			Object result;
 			if (localMethod != null)
-				return BeanUtil.invoke(this, localMethod, args);
+				result = BeanUtil.invoke(this, localMethod, args);
 			else
-				return BeanUtil.invoke(realStatement, method, args);
+				result = BeanUtil.invoke(realStatement, method, args);
+			if (result instanceof ResultSet)
+				result = DBUtil.createLoggingResultSet((ResultSet) result);
+			return result;
 		} catch (ConfigurationError e) {
 			if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException)
 				throw e.getCause().getCause();

@@ -46,6 +46,7 @@ import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.proxy.LoggingPreparedStatementHandler;
+import org.databene.jdbacl.proxy.LoggingResultSetHandler;
 import org.databene.jdbacl.proxy.LoggingStatementHandler;
 import org.databene.jdbacl.proxy.PooledConnectionHandler;
 import org.slf4j.Logger;
@@ -162,22 +163,21 @@ public class DBUtil {
 				new PooledConnectionHandler(connection, readOnly));
 	}
 	
-	public static int getConnectionCount() {
-		return PooledConnectionHandler.getConnectionCount();
+	public static int getOpenConnectionCount() {
+		return PooledConnectionHandler.getOpenConnectionCount();
 	}
 	
-	public static void resetConnectionCount() {
-		PooledConnectionHandler.resetConnectionCount();
+	public static void resetOpenConnectionCount() {
+		PooledConnectionHandler.resetOpenConnectionCount();
 	}
 	
     // statement handling ----------------------------------------------------------------------------------------------
     
 	public static Statement createLoggingStatementHandler(Statement statement, boolean readOnly) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled() || readOnly)
-	        statement = (Statement) Proxy.newProxyInstance(classLoader, 
-					new Class[] { Statement.class }, 
-					new LoggingStatementHandler(statement, readOnly));
+        statement = (Statement) Proxy.newProxyInstance(classLoader, 
+			new Class[] { Statement.class }, 
+			new LoggingStatementHandler(statement, readOnly));
 		return statement;
 	}
 
@@ -219,7 +219,14 @@ public class DBUtil {
 
     // ResultSet handling ----------------------------------------------------------------------------------------------
     
-    public static void close(ResultSet resultSet) {
+	public static ResultSet createLoggingResultSet(ResultSet realResultSet) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		return (ResultSet) Proxy.newProxyInstance(classLoader, 
+				new Class[] { ResultSet.class }, 
+				new LoggingResultSetHandler(realResultSet));
+	}
+
+	public static void close(ResultSet resultSet) {
         if (resultSet != null) {
             try {
                 resultSet.close();
@@ -228,6 +235,14 @@ public class DBUtil {
             }
         }
     }
+
+	public static int getOpenResultSetCount() {
+		return LoggingResultSetHandler.getOpenResultSetCount();
+	}
+
+	public static void resetOpenResultSetCount() {
+		LoggingResultSetHandler.resetOpenResultSetCount();
+	}
 
     public static Object parseResultSet(ResultSet resultSet) throws SQLException { 
     	// TODO v0.6 create LoggingResultSet. SQL and JDBC log should happen only in handler classes
@@ -351,10 +366,10 @@ public class DBUtil {
 			        String sql = cmd.toString().trim();
 			        if (sql.length() > 0 && (!ignoreComments || !StringUtil.startsWithIgnoreCase(sql, "COMMENT"))) {
 			        	try {
-				        	if (SQLUtil.mutatesDataOrStructure(sql))
-				        		result = executeUpdate(sql, connection);
-				        	else
+				        	if (SQLUtil.isQuery(sql))
 				        		result = query(sql, connection);
+				        	else
+				        		result = executeUpdate(sql, connection);
 						} catch (SQLException e) {
 							if (errorHandler == null)
 								errorHandler = new ErrorHandler(DBUtil.class);

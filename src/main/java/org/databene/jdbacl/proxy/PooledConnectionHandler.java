@@ -143,11 +143,11 @@ public class PooledConnectionHandler implements InvocationHandler {
     
     // connection count ------------------------------------------------------------------------------------------------
     
-    public static int getConnectionCount() {
+    public static int getOpenConnectionCount() {
     	return connectionCount.get();
     }
     
-	public static void resetConnectionCount() {
+	public static void resetOpenConnectionCount() {
 		connectionCount.set(0);
 	}
     
