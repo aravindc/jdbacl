@@ -58,7 +58,6 @@ import org.databene.jdbacl.model.DefaultDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -68,7 +67,7 @@ import java.util.regex.Pattern;
  * Created: 06.01.2007 19:16:45
  * @author Volker Bergmann
  */
-public final class JDBCDBImporter implements DBMetaDataImporter, Closeable {
+public final class JDBCDBImporter implements DBMetaDataImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCDBImporter.class);
 
