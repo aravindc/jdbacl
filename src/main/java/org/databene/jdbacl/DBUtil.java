@@ -217,6 +217,22 @@ public class DBUtil {
         }
     }
 
+	public static int getOpenStatementCount() {
+		return LoggingStatementHandler.getOpenStatementCount();
+	}
+	
+	public static void resetOpenStatementCount() {
+		LoggingStatementHandler.resetOpenStatementCount();
+	}
+	
+	public static int getOpenPreparedStatementCount() {
+		return LoggingPreparedStatementHandler.getOpenStatementCount();
+	}
+	
+	public static void resetOpenPreparedStatementCount() {
+		LoggingPreparedStatementHandler.resetOpenStatementCount();
+	}
+	
     // ResultSet handling ----------------------------------------------------------------------------------------------
     
 	public static ResultSet createLoggingResultSet(ResultSet realResultSet) {
@@ -224,6 +240,14 @@ public class DBUtil {
 		return (ResultSet) Proxy.newProxyInstance(classLoader, 
 				new Class[] { ResultSet.class }, 
 				new LoggingResultSetHandler(realResultSet));
+	}
+
+	public static Statement getStatement(ResultSet resultSet) {
+		try {
+			return resultSet.getStatement();
+		} catch (SQLException e) {
+			throw new RuntimeException("Error getting statement from result set", e);
+		}
 	}
 
 	public static void close(ResultSet resultSet) {
@@ -235,6 +259,12 @@ public class DBUtil {
             }
         }
     }
+
+	public static void closeResultSetAndStatement(ResultSet resultSet) {
+		Statement statement = DBUtil.getStatement(resultSet);
+		DBUtil.close(resultSet);
+		DBUtil.close(statement);
+	}
 
 	public static int getOpenResultSetCount() {
 		return LoggingResultSetHandler.getOpenResultSetCount();
@@ -492,6 +522,26 @@ public class DBUtil {
 	public static boolean equivalent(DBUniqueConstraint uk, DBPrimaryKeyConstraint pk) {
 	    return Arrays.equals(uk.getColumnNames(), pk.getColumnNames());
     }
+
+	public static void assertAllDbResourcesClosed() {
+		int c = getOpenConnectionCount();
+		int r = getOpenResultSetCount();
+		int s = getOpenStatementCount();
+		int p = getOpenPreparedStatementCount();
+		if (c != 0 || r != 0) {
+			StringBuilder builder = new StringBuilder("There are unclosed database resources: ");
+			if (c != 0)
+				builder.append(c).append(" connection(s)");
+			if (r != 0)
+				builder.append(r).append(" result set(s)");
+			if (s != 0)
+				builder.append(s).append(" statement(s)");
+			if (p != 0)
+				builder.append(s).append(" prepared statement(s)");
+			throw new AssertionError(builder.toString());
+		}
+	}
+
 
 
 }
