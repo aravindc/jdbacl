@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
@@ -60,12 +61,16 @@ public class LoggingStatementHandler implements InvocationHandler {
 	private Statement realStatement;
 	private boolean readOnly;
 	private String sql;
+	private boolean closed;
+	private static volatile AtomicInteger openStatementCount = new AtomicInteger();
 	
 	// constructor -----------------------------------------------------------------------------------------------------
 
 	public LoggingStatementHandler(Statement realStatement, boolean readOnly) {
 		this.realStatement = realStatement;
 		this.readOnly = readOnly;
+		this.closed = false;
+		openStatementCount.incrementAndGet();
 	}
 	
 	// InvocationHandler interface implementation ----------------------------------------------------------------------
@@ -161,6 +166,23 @@ public class LoggingStatementHandler implements InvocationHandler {
 		return realStatement.executeUpdate(sql);
 	}
 	
+	public void close() throws SQLException {
+		if (closed)
+			return;
+		logAll("close", sql);
+		this.closed = true;
+		realStatement.close();
+		openStatementCount.decrementAndGet();
+	}
+	
+    public static int getOpenStatementCount() {
+    	return openStatementCount.get();
+    }
+    
+	public static void resetOpenStatementCount() {
+		openStatementCount.set(0);
+	}
+    
 	// private helpers -------------------------------------------------------------------------------------------------
 	
 	private void logAll(String method, String sql) {

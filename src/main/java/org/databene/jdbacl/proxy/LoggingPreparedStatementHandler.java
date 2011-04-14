@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
@@ -56,6 +57,8 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
     private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategories.SQL); 
     private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
     private static final Converter<Object[], String[]> toStringArrayConverter;
+	private static volatile AtomicInteger openStatementCount = new AtomicInteger();
+	private boolean closed;
     
     static {
     	ToStringConverter toStringConverter = new ToStringConverter("null");
@@ -71,8 +74,10 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 	public LoggingPreparedStatementHandler(PreparedStatement realStatement, String sql) {
 		this.sql = sql;
 		this.realStatement = realStatement;
+		this.closed = false;
 		int paramCount = StringUtil.countChars(sql, '?');
 		params = new Object[paramCount];
+		openStatementCount.incrementAndGet();
 	}
 
 	public Object invoke(Object proxy, Method method, Object[] args)
@@ -182,6 +187,23 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 		return realStatement.executeUpdate(sql);
 	}
 	
+	public void close() throws SQLException {
+		if (closed)
+			return;
+		logAll("close", sql);
+		this.closed = true;
+		realStatement.close();
+		openStatementCount.decrementAndGet();
+	}
+	
+    public static int getOpenStatementCount() {
+    	return openStatementCount.get();
+    }
+    
+	public static void resetOpenStatementCount() {
+		openStatementCount.set(0);
+	}
+    
 	// private helpers -------------------------------------------------------------------------------------------------
 	
 	private void clearParams() {
