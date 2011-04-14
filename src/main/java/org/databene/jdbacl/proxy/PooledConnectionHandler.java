@@ -60,6 +60,7 @@ public class PooledConnectionHandler implements InvocationHandler {
     private boolean readOnly;
     private Connection realConnection;
     private long id;
+    private boolean closed;
     
     // construction ----------------------------------------------------------------------------------------------------
     
@@ -68,6 +69,7 @@ public class PooledConnectionHandler implements InvocationHandler {
         this.id = nextId();
         this.realConnection = realConnection;
         this.listeners = new ArrayList<ConnectionEventListener>();
+        this.closed = false;
         if (jdbcLogger.isDebugEnabled())
             jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
         connectionCount.incrementAndGet();
@@ -115,10 +117,13 @@ public class PooledConnectionHandler implements InvocationHandler {
 	// PooledConnection implementation ---------------------------------------------------------------------------------
     
 	public void close() throws SQLException {
+		if (closed)
+			return;
         try {
             realConnection.close();
             listeners.clear();
             connectionCount.decrementAndGet();
+            closed = true;
             if (jdbcLogger.isDebugEnabled())
                 jdbcLogger.debug("Closed connection #" + id + ": " + realConnection);
         } catch (SQLException e) {
