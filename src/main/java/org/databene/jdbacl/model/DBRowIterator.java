@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -95,7 +95,8 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 
 	public void close() {
 		if (!closed) {
-			DBUtil.close(resultSet);
+			DBUtil.closeResultSetAndStatement(resultSet);
+			resultSet = null;
 			closed = true;
 		}
 	}
