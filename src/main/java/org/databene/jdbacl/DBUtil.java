@@ -80,10 +80,10 @@ import javax.sql.PooledConnection;
  */
 public class DBUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(DBUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DBUtil.class);
 
-    private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
-    private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategories.SQL);
+    private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategories.JDBC);
+    private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategories.SQL);
     
     /** private constructor for preventing instantiation. */
     private DBUtil() {}
@@ -123,7 +123,7 @@ public class DBUtil {
 			    info.put("password", password);
 			
 			// connect
-            jdbcLogger.debug("opening connection to " + url);
+            JDBC_LOGGER.debug("opening connection to " + url);
             Connection connection = driver.connect(url, info);
             if (connection == null)
             	throw new ConnectFailedException("Connecting the database failed silently - " +
@@ -152,7 +152,7 @@ public class DBUtil {
         try {
             connection.close();
         } catch (SQLException e) {
-            logger.error("Error closing connection", e);
+            LOGGER.error("Error closing connection", e);
         }
     }
     
@@ -193,14 +193,14 @@ public class DBUtil {
 			int resultSetType,
             int resultSetConcurrency,
             int resultSetHoldability) throws SQLException {
-		jdbcLogger.debug("preparing statement: " + sql);
+		JDBC_LOGGER.debug("preparing statement: " + sql);
 		checkReadOnly(sql, readOnly);
         if (connection instanceof PooledConnection)
         	connection = ((PooledConnection) connection).getConnection();
 		PreparedStatement statement = connection.prepareStatement(
 				sql, resultSetType, resultSetConcurrency, resultSetHoldability);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		if (sqlLogger.isDebugEnabled() || jdbcLogger.isDebugEnabled())
+		if (SQL_LOGGER.isDebugEnabled() || JDBC_LOGGER.isDebugEnabled())
 			statement = (PreparedStatement) Proxy.newProxyInstance(classLoader, 
 				new Class[] { PreparedStatement.class }, 
 				new LoggingPreparedStatementHandler(statement, sql));
@@ -421,7 +421,7 @@ public class DBUtil {
 
     public static int executeUpdate(String sql, Connection connection) throws SQLException {
     	if (sql == null || sql.trim().length() == 0) {
-    		logger.warn("Empty SQL string in executeUpdate()");
+    		LOGGER.warn("Empty SQL string in executeUpdate()");
     		return 0;
     	}
         int result = 0;
@@ -503,12 +503,12 @@ public class DBUtil {
     public static void logMetaData(Connection connection) {
     	try {
 	        DatabaseMetaData metaData = connection.getMetaData();
-	        jdbcLogger.info("Connected to " + metaData.getDatabaseProductName() + ' ' + metaData.getDatabaseProductVersion());
-	        jdbcLogger.info("Using driver " + metaData.getDriverName() + ' ' + metaData.getDriverVersion());
-	        jdbcLogger.info("JDBC version " + metaData.getJDBCMajorVersion() + '.' + metaData.getJDBCMinorVersion());
+	        JDBC_LOGGER.info("Connected to " + metaData.getDatabaseProductName() + ' ' + metaData.getDatabaseProductVersion());
+	        JDBC_LOGGER.info("Using driver " + metaData.getDriverName() + ' ' + metaData.getDriverVersion());
+	        JDBC_LOGGER.info("JDBC version " + metaData.getJDBCMajorVersion() + '.' + metaData.getJDBCMinorVersion());
 	        
         } catch (SQLException e) {
-        	logger.error("Failed to fetch metadata from connection " + connection);
+        	LOGGER.error("Failed to fetch metadata from connection " + connection);
         }
     }
 
@@ -523,7 +523,7 @@ public class DBUtil {
 	    return Arrays.equals(uk.getColumnNames(), pk.getColumnNames());
     }
 
-	public static void assertAllDbResourcesClosed() {
+	public static void assertAllDbResourcesClosed(boolean critical) {
 		int c = getOpenConnectionCount();
 		int r = getOpenResultSetCount();
 		int s = getOpenStatementCount();
@@ -533,12 +533,15 @@ public class DBUtil {
 			if (c != 0)
 				builder.append(c).append(" connection(s)");
 			if (r != 0)
-				builder.append(r).append(" result set(s)");
+				builder.append(builder.length() > 0 ? ", " : "").append(r).append(" result set(s)");
 			if (s != 0)
-				builder.append(s).append(" statement(s)");
+				builder.append(builder.length() > 0 ? ", " : "").append(s).append(" statement(s)");
 			if (p != 0)
-				builder.append(s).append(" prepared statement(s)");
-			throw new AssertionError(builder.toString());
+				builder.append(builder.length() > 0 ? ", " : "").append(s).append(" prepared statement(s)");
+			if (critical)
+				throw new AssertionError(builder.toString());
+			else
+				LOGGER.warn(builder.toString());
 		}
 	}
 
