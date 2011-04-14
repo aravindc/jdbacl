@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Wraps a ResultSet into the semantic of a {@link HeavyweightIterator}.
@@ -120,14 +119,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
         hasNext = false;
     	if (resultSet == null)
     		return;
-        try {
-            Statement statement = resultSet.getStatement();
-            DBUtil.close(resultSet);
-            resultSet = null;
-            DBUtil.close(statement);
-        } catch (SQLException e) {
-            logger.error("Error closing ResultSet", e);
-        }
+    	DBUtil.closeResultSetAndStatement(resultSet);
+    	resultSet = null;
     }
     
     // java.lang.Object overrides --------------------------------------------------------------------------------------
