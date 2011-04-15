@@ -40,6 +40,7 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.converter.AnyConverter;
 import org.databene.commons.converter.ToStringConverter;
+import org.databene.commons.debug.Debug;
 import org.databene.commons.depend.DependencyModel;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
@@ -167,8 +168,11 @@ public class DBUtil {
 		return PooledConnectionHandler.getOpenConnectionCount();
 	}
 	
-	public static void resetOpenConnectionCount() {
-		PooledConnectionHandler.resetOpenConnectionCount();
+	public static void resetMonitors() {
+		LoggingPreparedStatementHandler.resetMonitors();
+		LoggingResultSetHandler.resetMonitors();
+		LoggingStatementHandler.resetMonitors();
+		PooledConnectionHandler.resetMonitors();
 	}
 	
     // statement handling ----------------------------------------------------------------------------------------------
@@ -221,25 +225,17 @@ public class DBUtil {
 		return LoggingStatementHandler.getOpenStatementCount();
 	}
 	
-	public static void resetOpenStatementCount() {
-		LoggingStatementHandler.resetOpenStatementCount();
-	}
-	
 	public static int getOpenPreparedStatementCount() {
 		return LoggingPreparedStatementHandler.getOpenStatementCount();
 	}
 	
-	public static void resetOpenPreparedStatementCount() {
-		LoggingPreparedStatementHandler.resetOpenStatementCount();
-	}
-	
     // ResultSet handling ----------------------------------------------------------------------------------------------
     
-	public static ResultSet createLoggingResultSet(ResultSet realResultSet) {
+	public static ResultSet createLoggingResultSet(ResultSet realResultSet, Statement statement) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		return (ResultSet) Proxy.newProxyInstance(classLoader, 
 				new Class[] { ResultSet.class }, 
-				new LoggingResultSetHandler(realResultSet));
+				new LoggingResultSetHandler(realResultSet, statement));
 	}
 
 	public static Statement getStatement(ResultSet resultSet) {
@@ -268,10 +264,6 @@ public class DBUtil {
 
 	public static int getOpenResultSetCount() {
 		return LoggingResultSetHandler.getOpenResultSetCount();
-	}
-
-	public static void resetOpenResultSetCount() {
-		LoggingResultSetHandler.resetOpenResultSetCount();
 	}
 
     public static Object parseResultSet(ResultSet resultSet) throws SQLException { 
@@ -524,27 +516,40 @@ public class DBUtil {
     }
 
 	public static void assertAllDbResourcesClosed(boolean critical) {
-		int c = getOpenConnectionCount();
-		int r = getOpenResultSetCount();
-		int s = getOpenStatementCount();
-		int p = getOpenPreparedStatementCount();
-		if (c != 0 || r != 0) {
-			StringBuilder builder = new StringBuilder("There are unclosed database resources: ");
-			if (c != 0)
-				builder.append(c).append(" connection(s)");
-			if (r != 0)
-				builder.append(builder.length() > 0 ? ", " : "").append(r).append(" result set(s)");
-			if (s != 0)
-				builder.append(builder.length() > 0 ? ", " : "").append(s).append(" statement(s)");
-			if (p != 0)
-				builder.append(builder.length() > 0 ? ", " : "").append(s).append(" prepared statement(s)");
+		boolean success = true;
+		String message = null;
+		if (Debug.active()) {
+			success &= PooledConnectionHandler.assertAllConnectionsClosed(false);
+			success &= LoggingPreparedStatementHandler.assertAllStatementsClosed(false);
+			success &= LoggingStatementHandler.assertAllStatementsClosed(false);
+			success &= LoggingResultSetHandler.assertAllResultSetsClosed(false);
+			if (!success)
+				message = "There are unclosed database resources";
+		} else {
+			int c = getOpenConnectionCount();
+			int r = getOpenResultSetCount();
+			int s = getOpenStatementCount();
+			int p = getOpenPreparedStatementCount();
+			success = (c == 0 && r == 0 && s == 0 && p == 0);
+			if (!success) {
+				StringBuilder builder = new StringBuilder();
+				if (c != 0)
+					builder.append(c).append(" connection(s)");
+				if (r != 0)
+					builder.append(builder.length() > 0 ? ", " : "").append(r).append(" result set(s)");
+				if (s != 0)
+					builder.append(builder.length() > 0 ? ", " : "").append(s).append(" statement(s)");
+				if (p != 0)
+					builder.append(builder.length() > 0 ? ", " : "").append(s).append(" prepared statement(s)");
+				message = "There are unclosed database resources: " + builder.toString();
+			}
+		}
+		if (!success) {
 			if (critical)
-				throw new AssertionError(builder.toString());
+				throw new AssertionError(message);
 			else
-				LOGGER.warn(builder.toString());
+				LOGGER.warn(message);
 		}
 	}
-
-
 
 }

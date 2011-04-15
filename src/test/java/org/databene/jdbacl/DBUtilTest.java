@@ -57,7 +57,7 @@ public class DBUtilTest {
 	
 	@Test
 	public void testConnectionCount() throws Exception {
-		DBUtil.resetOpenConnectionCount();
+		DBUtil.resetMonitors();
 		assertEquals(0, DBUtil.getOpenConnectionCount());
 		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
 		assertEquals(1, DBUtil.getOpenConnectionCount());
