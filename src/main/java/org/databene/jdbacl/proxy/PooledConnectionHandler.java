@@ -40,6 +40,8 @@ import javax.sql.ConnectionEventListener;
 
 import org.databene.commons.BeanUtil;
 import org.databene.commons.LogCategories;
+import org.databene.commons.debug.Debug;
+import org.databene.commons.debug.ResourceMonitor;
 import org.databene.jdbacl.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +57,9 @@ public class PooledConnectionHandler implements InvocationHandler {
     private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
     
     private static long nextId = 0;
-    private static volatile AtomicInteger connectionCount = new AtomicInteger();
+
+    private static volatile AtomicInteger openConnectionCount;
+    private static ResourceMonitor openConnectionMonitor;
 
     private boolean readOnly;
     private Connection realConnection;
@@ -63,6 +67,12 @@ public class PooledConnectionHandler implements InvocationHandler {
     private boolean closed;
     
     // construction ----------------------------------------------------------------------------------------------------
+    
+    static {
+    	openConnectionCount = new AtomicInteger();
+    	if (Debug.active())
+    		openConnectionMonitor = new ResourceMonitor();
+    }
     
     public PooledConnectionHandler(Connection realConnection, boolean readOnly) {
     	this.readOnly = readOnly;
@@ -72,7 +82,9 @@ public class PooledConnectionHandler implements InvocationHandler {
         this.closed = false;
         if (jdbcLogger.isDebugEnabled())
             jdbcLogger.debug("Created connection #" + id + ": " + realConnection);
-        connectionCount.incrementAndGet();
+        openConnectionCount.incrementAndGet();
+    	if (openConnectionMonitor != null)
+    		openConnectionMonitor.register(this);
     }
 
     // InvocationHandler implementation --------------------------------------------------------------------------------
@@ -122,7 +134,9 @@ public class PooledConnectionHandler implements InvocationHandler {
         try {
             realConnection.close();
             listeners.clear();
-            connectionCount.decrementAndGet();
+            openConnectionCount.decrementAndGet();
+        	if (openConnectionMonitor != null)
+        		openConnectionMonitor.unregister(this);
             closed = true;
             if (jdbcLogger.isDebugEnabled())
                 jdbcLogger.debug("Closed connection #" + id + ": " + realConnection);
@@ -149,13 +163,19 @@ public class PooledConnectionHandler implements InvocationHandler {
     // connection count ------------------------------------------------------------------------------------------------
     
     public static int getOpenConnectionCount() {
-    	return connectionCount.get();
+    	return openConnectionCount.get();
     }
     
-	public static void resetOpenConnectionCount() {
-		connectionCount.set(0);
+	public static void resetMonitors() {
+		openConnectionCount.set(0);
+		if (openConnectionMonitor != null)
+			openConnectionMonitor.reset();
 	}
     
+	public static boolean assertAllConnectionsClosed(boolean critical) {
+		return openConnectionMonitor.assertNoRegistrations(critical);
+	}
+
     // private helpers -------------------------------------------------------------------------------------------------
 
     private static synchronized long nextId() {

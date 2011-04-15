@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.LogCategories;
+import org.databene.commons.debug.Debug;
+import org.databene.commons.debug.ResourceMonitor;
 import org.databene.jdbacl.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,21 +58,32 @@ public class LoggingStatementHandler implements InvocationHandler {
     private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategories.SQL); 
     private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
 
-	// attributes ------------------------------------------------------------------------------------------------------
+	private static volatile AtomicInteger openStatementCount;
+    private static ResourceMonitor openStatementMonitor;
+
+    // attributes ------------------------------------------------------------------------------------------------------
 
 	private Statement realStatement;
 	private boolean readOnly;
 	private String sql;
 	private boolean closed;
-	private static volatile AtomicInteger openStatementCount = new AtomicInteger();
+	
 	
 	// constructor -----------------------------------------------------------------------------------------------------
 
+    static {
+    	openStatementCount = new AtomicInteger();
+    	if (Debug.active())
+    		openStatementMonitor = new ResourceMonitor();
+    }
+    
 	public LoggingStatementHandler(Statement realStatement, boolean readOnly) {
 		this.realStatement = realStatement;
 		this.readOnly = readOnly;
 		this.closed = false;
 		openStatementCount.incrementAndGet();
+		if (openStatementMonitor != null)
+			openStatementMonitor.register(this);
 	}
 	
 	// InvocationHandler interface implementation ----------------------------------------------------------------------
@@ -86,7 +99,7 @@ public class LoggingStatementHandler implements InvocationHandler {
 			else
 				result = BeanUtil.invoke(realStatement, method, args);
 			if (result instanceof ResultSet)
-				result = DBUtil.createLoggingResultSet((ResultSet) result);
+				result = DBUtil.createLoggingResultSet((ResultSet) result, (Statement) proxy);
 			return result;
 		} catch (ConfigurationError e) {
 			if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException)
@@ -171,18 +184,26 @@ public class LoggingStatementHandler implements InvocationHandler {
 			return;
 		logAll("close", sql);
 		this.closed = true;
-		realStatement.close();
 		openStatementCount.decrementAndGet();
+		if (openStatementMonitor != null)
+			openStatementMonitor.unregister(this);
+		realStatement.close();
 	}
 	
     public static int getOpenStatementCount() {
     	return openStatementCount.get();
     }
     
-	public static void resetOpenStatementCount() {
+	public static void resetMonitors() {
 		openStatementCount.set(0);
+		if (openStatementMonitor != null)
+			openStatementMonitor.reset();
 	}
     
+	public static boolean assertAllStatementsClosed(boolean critical) {
+		return openStatementMonitor.assertNoRegistrations(critical);
+	}
+
 	// private helpers -------------------------------------------------------------------------------------------------
 	
 	private void logAll(String method, String sql) {
@@ -195,7 +216,7 @@ public class LoggingStatementHandler implements InvocationHandler {
 	
 	@Override
 	public String toString() {
-		return sql;
+		return "Statement (" + sql + ")";
 	}
 
 }

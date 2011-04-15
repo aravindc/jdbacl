@@ -41,6 +41,8 @@ import org.databene.commons.LogCategories;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.ArrayConverter;
 import org.databene.commons.converter.ToStringConverter;
+import org.databene.commons.debug.Debug;
+import org.databene.commons.debug.ResourceMonitor;
 import org.databene.jdbacl.DBUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +58,17 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 	
     private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategories.SQL); 
     private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
+
+	private static volatile AtomicInteger openStatementCount;
+    private static ResourceMonitor openStatementMonitor;
+    
     private static final Converter<Object[], String[]> toStringArrayConverter;
-	private static volatile AtomicInteger openStatementCount = new AtomicInteger();
 	private boolean closed;
     
     static {
+    	openStatementCount = new AtomicInteger();
+    	if (Debug.active())
+    		openStatementMonitor = new ResourceMonitor();
     	ToStringConverter toStringConverter = new ToStringConverter("null");
     	toStringConverter.setCharQuote("'");
     	toStringConverter.setStringQuote("'");
@@ -78,6 +86,8 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 		int paramCount = StringUtil.countChars(sql, '?');
 		params = new Object[paramCount];
 		openStatementCount.incrementAndGet();
+		if (openStatementMonitor != null)
+			openStatementMonitor.register(this);
 	}
 
 	public Object invoke(Object proxy, Method method, Object[] args)
@@ -94,7 +104,7 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 					params[(Integer) args[0] - 1] = args[1];
 				Object result = BeanUtil.invoke(realStatement, method, args);
 				if (result instanceof ResultSet)
-					result = DBUtil.createLoggingResultSet((ResultSet) result);
+					result = DBUtil.createLoggingResultSet((ResultSet) result, (PreparedStatement) proxy);
 				return result;
 			}
 		} catch (ConfigurationError e) {
@@ -194,16 +204,24 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 		this.closed = true;
 		realStatement.close();
 		openStatementCount.decrementAndGet();
+		if (openStatementMonitor != null)
+			openStatementMonitor.unregister(this);
 	}
 	
     public static int getOpenStatementCount() {
     	return openStatementCount.get();
     }
     
-	public static void resetOpenStatementCount() {
+	public static void resetMonitors() {
 		openStatementCount.set(0);
+		if (openStatementMonitor != null)
+			openStatementMonitor.reset();
 	}
     
+	public static boolean assertAllStatementsClosed(boolean critical) {
+		return openStatementMonitor.assertNoRegistrations(critical);
+	}
+
 	// private helpers -------------------------------------------------------------------------------------------------
 	
 	private void clearParams() {
@@ -222,7 +240,7 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 	public String toString() {
 		String[] paramStrings = toStringArrayConverter.convert(params);
 		// TODO v1.0 use DatabaseDialect to render arbitrary data types
-		return StringUtil.replaceTokens(sql, "?", paramStrings);
+		return "PreparedStatement (" + StringUtil.replaceTokens(sql, "?", paramStrings) + ")";
 	}
 
 }

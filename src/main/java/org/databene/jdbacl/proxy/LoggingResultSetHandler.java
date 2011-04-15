@@ -26,11 +26,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.LogCategories;
+import org.databene.commons.debug.Debug;
+import org.databene.commons.debug.ResourceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,17 +47,28 @@ public class LoggingResultSetHandler implements InvocationHandler {
 
     private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategories.JDBC);
     
-    private static volatile AtomicInteger openResultSetCount = new AtomicInteger();
+    private static volatile AtomicInteger openResultSetCount;
+    private static ResourceMonitor openResultSetMonitor;
 
 	// attributes ------------------------------------------------------------------------------------------------------
 
 	private ResultSet realResultSet;
+	private Statement statement;
 	
 	// constructor -----------------------------------------------------------------------------------------------------
 
-	public LoggingResultSetHandler(ResultSet realResultSet) {
+	static {
+		openResultSetCount = new AtomicInteger();
+    	if (Debug.active())
+    		openResultSetMonitor = new ResourceMonitor();
+	}
+	
+	public LoggingResultSetHandler(ResultSet realResultSet, Statement statement) {
 		this.realResultSet = realResultSet;
+		this.statement = statement;
 		openResultSetCount.incrementAndGet();
+		if (openResultSetMonitor != null)
+			openResultSetMonitor.register(this);
 		JDBC_LOGGER.debug("created result set {}", this);
 	}
 	
@@ -66,7 +80,13 @@ public class LoggingResultSetHandler implements InvocationHandler {
 			String methodName = method.getName();
 			if ("close".equals(methodName)) {
 				openResultSetCount.decrementAndGet();
+				if (openResultSetMonitor != null)
+					openResultSetMonitor.unregister(this);
 				JDBC_LOGGER.debug("closing result set {}", this);
+			} else if ("toString".equals(methodName)) {
+				return "ResultSet (" + statement + ")";
+			} else if ("getStatement".equals(methodName)) {
+				return statement;
 			}
 			return BeanUtil.invoke(realResultSet, method, args);
 		} catch (ConfigurationError e) {
@@ -83,8 +103,14 @@ public class LoggingResultSetHandler implements InvocationHandler {
 		return openResultSetCount.get();
 	}
 
-	public static void resetOpenResultSetCount() {
+	public static void resetMonitors() {
 		openResultSetCount.set(0);
+		if (openResultSetMonitor != null)
+			openResultSetMonitor.reset();
+	}
+
+	public static boolean assertAllResultSetsClosed(boolean critical) {
+		return openResultSetMonitor.assertNoRegistrations(critical);
 	}
 	
 }
