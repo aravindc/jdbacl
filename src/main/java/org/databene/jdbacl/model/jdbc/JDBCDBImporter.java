@@ -240,7 +240,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            if (schemaName.equalsIgnoreCase(this.schemaName))
 	            	this.schemaName = schemaName; // take over capitalization used in the DB
 	            DBSchema schema = new DBSchema(schemaName);
-	            String catalogNameOfSchema = (columnCount >= 2 ? catalogName : this.catalogName); // PostgreSQL does not necessarily tell you the catalog name
+	            String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName : this.catalogName); // PostgreSQL and SQL Server does not necessarily tell you the catalog name
             	DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
             	if (catalogOfSchema != null)
             		catalogOfSchema.addSchema(schema);
