@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -216,6 +216,14 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
         return foreignKeyConstraints;
     }
+
+	public DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames) {
+		for (DBForeignKeyConstraint fk : foreignKeyConstraints)
+			if (StringUtil.equalsIgnoreCase(fk.getColumnNames(), columnNames))
+				return fk;
+		throw new ObjectNotFoundException("Table '" + name + "' has no foreign key " +
+				"with the columns (" + ArrayFormat.format(columnNames) + ")");
+	}
 
     public void addForeignKey(DBForeignKeyConstraint constraint) {
     	constraint.setTable(this);

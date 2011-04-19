@@ -158,6 +158,10 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getForeignKeyConstraints();
     }
 
+	public DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames) {
+	    return getRealTable().getForeignKeyConstraint(columnNames);
+	}
+
 	public DBIndex getIndex(String indexName) {
 	    return getRealTable().getIndex(indexName);
     }
