@@ -356,23 +356,24 @@ public class DBUtil {
         }
     }
 
-    public static Object runScript(
+    public static DBExecutionResult runScript(
     		String scriptUri, String encoding, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) 
     			throws IOException {
 		BufferedReader reader = IOUtil.getReaderForURI(scriptUri, encoding);
 		return runScript(reader, connection, ignoreComments, errorHandler);
     }
 
-    public static Object runScript(String scriptText, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+    public static DBExecutionResult runScript(String scriptText, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
     	StringReader reader = new StringReader(scriptText);
 		return runScript(reader, connection, ignoreComments, errorHandler);
     }
 
-	private static Object runScript(
+	private static DBExecutionResult runScript( // TODO test result.changedStructure
 			Reader reader, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
 		ReaderLineIterator iterator = new ReaderLineIterator(reader);
 		SQLScriptException exception = null;
 		Object result = null;
+		Boolean changedStructure = false;
 		try {
 			StringBuilder cmd = new StringBuilder();
 			while (iterator.hasNext()) {
@@ -390,8 +391,15 @@ public class DBUtil {
 			        	try {
 				        	if (SQLUtil.isQuery(sql))
 				        		result = query(sql, connection);
-				        	else
+				        	else {
 				        		result = executeUpdate(sql, connection);
+				        		if (!Boolean.TRUE.equals(changedStructure)) {
+				        			// if we are not already certain that structure was changed, check it
+					        		Boolean tmp = SQLUtil.mutatesStructure(sql);
+					        		if (!(changedStructure == null && Boolean.FALSE.equals(tmp)))
+					        			changedStructure = tmp; // merge results using the worse one (true worse than null worse than false)
+				        		}
+				        	}
 						} catch (SQLException e) {
 							if (errorHandler == null)
 								errorHandler = new ErrorHandler(DBUtil.class);
@@ -405,7 +413,8 @@ public class DBUtil {
 			        cmd.delete(0, cmd.length());
 			    }
 			}
-			return (exception != null ? exception : result);
+			Object returnedValue = (exception != null ? exception : result);
+			return new DBExecutionResult(returnedValue, changedStructure);
         } finally {
 			IOUtil.close(iterator);
         }
