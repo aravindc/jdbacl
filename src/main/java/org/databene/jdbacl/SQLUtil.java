@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.databene.commons.CollectionUtil;
+import org.databene.commons.StringUtil;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBTable;
 
@@ -39,6 +40,19 @@ public class SQLUtil {
 	
 	private static final Set<String> NO_SIZE_TYPES = CollectionUtil.toSet(
 			"DATE", "BLOB", "CLOB", "NCLOB");
+
+	private static final Set<String> DDL_STATEMENTS = CollectionUtil.toSet(
+			"create table", "alter table", "drop table",
+			"create unique index", "drop index", "alter index",
+			"rename",
+			"create materialized view", "alter materialized view", "drop materialized view" 
+			);
+	
+	private static final Set<String> DML_STATEMENTS = CollectionUtil.toSet(
+			"insert", "update", "delete", "truncate", "select into");
+	
+	private static final Set<String> PROCEDURE_CALLS = CollectionUtil.toSet(
+			"exec", "call");
 	
 	public static Object[] parseColumnTypeAndSize(String spec) {
 		int lparen = spec.indexOf('(');
@@ -135,22 +149,54 @@ public class SQLUtil {
 	    	return String.valueOf(value);
     }
     
-	public static boolean mutatesDataOrStructure(String sql) {
-		sql = sql.trim().toLowerCase();
-		// accept ALTER SESSION ...
+	public static Boolean mutatesDataOrStructure(String sql) {
+		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
+		
+		// ALTER SESSION does not change data or structure
 		if (sql.trim().startsWith("alter session"))
 			return false;
-		// ...otherwise anything else than SELECT must be a mutation...
-	    if (!sql.startsWith("select"))
-	    	return true;
-	    // ... but a 'select' statement might be a 'select into' which mutates data
-	    StringTokenizer t = new StringTokenizer(sql);
-	    while (t.hasMoreTokens())
-	    	if ("into".equals(t.nextToken()))
-	    		return true;
-	    // OK, where through - it is a plain select statement
+
+		// check if structure is changed...
+		if (Boolean.TRUE.equals(mutatesStructure(sql)))
+			return true;
+		else if (isQuery(sql))
+			return false;
+		else if (isDML(sql))
+			return true;
+		return null;
+    }
+
+	public static Boolean mutatesStructure(String sql) {
+	    if (isDDL(sql))
+	   		return true;
+	    if (isProcedureCall(sql))
+    		return null;
 	    return false;
     }
+	
+	public static boolean isDDL(String sql) {
+		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
+	    for (String ddl : DDL_STATEMENTS)
+	    	if (sql.startsWith(ddl))
+	    		return true;
+	    return false;
+	}
+	
+	public static boolean isDML(String sql) {
+		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
+	    for (String ddl : DML_STATEMENTS)
+	    	if (sql.startsWith(ddl))
+	    		return true;
+	    return false;
+	}
+	
+	public static boolean isProcedureCall(String sql) {
+		sql = sql.trim().toLowerCase();
+	    for (String call : PROCEDURE_CALLS)
+	    	if (sql.startsWith(call))
+	    		return true;
+	    return false;
+	}
 
 	public static boolean isQuery(String sql) {
 		sql = sql.trim().toLowerCase();
@@ -162,7 +208,7 @@ public class SQLUtil {
 	    while (t.hasMoreTokens())
 	    	if ("into".equals(t.nextToken()))
 	    		return false;
-	    // OK, where through - it is a plain select statement
+	    // it is a plain select statement
 	    return true;
     }
 

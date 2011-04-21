@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -36,11 +36,110 @@ import org.junit.Test;
  */
 public class SQLUtilTest {
 
+	private static final String CALL = "call myprocedure";
+
+	private static final String INSERT = "insert into users (id, name) values (1, 'Alice')";
+	private static final String UPDATE = "UPDATE users set name='xxx' where name = 'Alice'";
+	private static final String DELETE = "DELETE users where name = 'Alice'";
+	private static final String TRUNCATE = "TRUNCATE users";
+	
+	private static final String ALTER_SESSION = "ALTER SESSION BLABLA";
+	
+	private static final String QUERY = "select * from users";
+	
+	private static final String ALTER_TABLE = "ALTER TABLE users";
+	private static final String DROP_TABLE = "drop table users";
+	private static final String CREATE_TABLE = "Create Table USERS";
+
 	@Test
 	public void testParseColumnTypeAndSize() {
 		checkParsing("int", "int" );
 		checkParsing("number(11)", "number", 11);
 		checkParsing("number(8, 2)", "number", 8, 2);
+	}
+	
+	@Test
+	public void testIsQuery() {
+		assertFalse(SQLUtil.isQuery(CREATE_TABLE));
+		assertFalse(SQLUtil.isQuery(DROP_TABLE));
+		assertFalse(SQLUtil.isQuery(ALTER_TABLE));
+		assertTrue(SQLUtil.isQuery(QUERY));
+		assertFalse(SQLUtil.isQuery(ALTER_SESSION));
+		assertFalse(SQLUtil.isQuery(INSERT));
+		assertFalse(SQLUtil.isQuery(UPDATE));
+		assertFalse(SQLUtil.isQuery(DELETE));
+		assertFalse(SQLUtil.isQuery(TRUNCATE));
+		assertFalse(SQLUtil.isQuery(CALL));
+	}
+
+	@Test
+	public void testIsDDL() {
+		assertTrue(SQLUtil.isDDL(CREATE_TABLE));
+		assertTrue(SQLUtil.isDDL(DROP_TABLE));
+		assertTrue(SQLUtil.isDDL(ALTER_TABLE));
+		assertFalse(SQLUtil.isDDL(QUERY));
+		assertFalse(SQLUtil.isDDL(ALTER_SESSION));
+		assertFalse(SQLUtil.isDDL(INSERT));
+		assertFalse(SQLUtil.isDDL(UPDATE));
+		assertFalse(SQLUtil.isDDL(DELETE));
+		assertFalse(SQLUtil.isDDL(TRUNCATE));
+		assertFalse(SQLUtil.isDDL(CALL));
+	}
+
+	@Test
+	public void testIsDML() {
+		assertFalse(SQLUtil.isDML(CREATE_TABLE));
+		assertFalse(SQLUtil.isDML(DROP_TABLE));
+		assertFalse(SQLUtil.isDML(ALTER_TABLE));
+		assertFalse(SQLUtil.isDML(QUERY));
+		assertFalse(SQLUtil.isDML(ALTER_SESSION));
+		assertTrue(SQLUtil.isDML(INSERT));
+		assertTrue(SQLUtil.isDML(UPDATE));
+		assertTrue(SQLUtil.isDML(DELETE));
+		assertTrue(SQLUtil.isDML(TRUNCATE));
+		assertFalse(SQLUtil.isDML(CALL));
+	}
+
+	@Test
+	public void testIsProcedureCall() {
+		assertFalse(SQLUtil.isProcedureCall(CREATE_TABLE));
+		assertFalse(SQLUtil.isProcedureCall(DROP_TABLE));
+		assertFalse(SQLUtil.isProcedureCall(ALTER_TABLE));
+		assertFalse(SQLUtil.isProcedureCall(QUERY));
+		assertFalse(SQLUtil.isProcedureCall(ALTER_SESSION));
+		assertFalse(SQLUtil.isProcedureCall(INSERT));
+		assertFalse(SQLUtil.isProcedureCall(UPDATE));
+		assertFalse(SQLUtil.isProcedureCall(DELETE));
+		assertFalse(SQLUtil.isProcedureCall(TRUNCATE));
+		assertTrue(SQLUtil.isProcedureCall(CALL));
+	}
+
+	@Test
+	public void testMutatesStructure() {
+		assertTrue(SQLUtil.mutatesStructure(CREATE_TABLE));
+		assertTrue(SQLUtil.mutatesStructure(DROP_TABLE));
+		assertTrue(SQLUtil.mutatesStructure(ALTER_TABLE));
+		assertFalse(SQLUtil.mutatesStructure(QUERY));
+		assertFalse(SQLUtil.mutatesStructure(ALTER_SESSION));
+		assertFalse(SQLUtil.mutatesStructure(INSERT));
+		assertFalse(SQLUtil.mutatesStructure(UPDATE));
+		assertFalse(SQLUtil.mutatesStructure(DELETE));
+		assertFalse(SQLUtil.mutatesStructure(TRUNCATE));
+		assertNull(SQLUtil.mutatesStructure(CALL));
+	}
+
+	@Test
+	public void testMutatesDataOrStructure() {
+		assertTrue(SQLUtil.mutatesDataOrStructure(CREATE_TABLE));
+		assertTrue(SQLUtil.mutatesDataOrStructure(DROP_TABLE));
+		assertTrue(SQLUtil.mutatesDataOrStructure(ALTER_TABLE));
+		assertFalse(SQLUtil.mutatesDataOrStructure(QUERY));
+		assertFalse(SQLUtil.mutatesDataOrStructure(ALTER_SESSION));
+		assertTrue(SQLUtil.mutatesDataOrStructure(INSERT));
+		assertTrue(SQLUtil.mutatesDataOrStructure(UPDATE));
+		assertTrue(SQLUtil.mutatesDataOrStructure(DELETE));
+		assertTrue(SQLUtil.mutatesDataOrStructure(TRUNCATE));
+		assertNull(SQLUtil.mutatesDataOrStructure(CALL));
 	}
 
 	public void checkParsing(String spec, Object... expected) {
