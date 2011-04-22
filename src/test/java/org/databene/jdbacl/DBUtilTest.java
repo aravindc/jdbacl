@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.util.Arrays;
 
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.Encodings;
 import org.databene.commons.ErrorHandler;
 import org.databene.jdbacl.hsql.HSQLUtil;
 
@@ -44,10 +45,14 @@ import static junit.framework.Assert.*;
  */
 public class DBUtilTest {
 
+	String SCRIPT_FILE = "org/databene/jdbacl/create_tables.hsql.sql";
+
 	@Test
 	public void testRunScript() throws Exception {
 		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
-		DBUtil.runScript("org/databene/jdbacl/create_tables.hsql.sql", "iso-8859-1", connection, true, new ErrorHandler(getClass()));
+		ErrorHandler errorHandler = new ErrorHandler(getClass());
+		DBExecutionResult result = DBUtil.runScript(SCRIPT_FILE, Encodings.ISO_8859_1, connection, true, errorHandler);
+		assertTrue(result.changedStructure);
 		Object[][] rows = (Object[][]) DBUtil.query("select * from T1", connection);
 		assertEquals(1, rows.length);
 		assertTrue(Arrays.equals(ArrayUtil.buildArrayOfType(Object.class, 1, "R&B"), rows[0]));
@@ -94,7 +99,8 @@ public class DBUtilTest {
 	public void testReadOnly_true_select_into() {
 		DBUtil.checkReadOnly("select into xyz2 from xyz", true);
 	}
-	
+
+	@Test
 	public void testReadOnly_alter_session() {
 		DBUtil.checkReadOnly("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", true);
 	}
