@@ -359,17 +359,27 @@ public class DBUtil {
     public static DBExecutionResult runScript(
     		String scriptUri, String encoding, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) 
     			throws IOException {
+		return runScript(scriptUri, encoding, ';', connection, ignoreComments, errorHandler);
+    }
+
+    public static DBExecutionResult runScript(
+    		String scriptUri, String encoding, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) 
+    			throws IOException {
 		BufferedReader reader = IOUtil.getReaderForURI(scriptUri, encoding);
-		return runScript(reader, connection, ignoreComments, errorHandler);
+		return runScript(reader, separator, connection, ignoreComments, errorHandler);
     }
 
     public static DBExecutionResult runScript(String scriptText, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
-    	StringReader reader = new StringReader(scriptText);
-		return runScript(reader, connection, ignoreComments, errorHandler);
+		return runScript(scriptText, ';', connection, ignoreComments, errorHandler);
     }
 
-	private static DBExecutionResult runScript( // TODO test result.changedStructure
-			Reader reader, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+    public static DBExecutionResult runScript(String scriptText, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+    	StringReader reader = new StringReader(scriptText);
+		return runScript(reader, separator, connection, ignoreComments, errorHandler);
+    }
+
+	private static DBExecutionResult runScript(
+			Reader reader, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
 		ReaderLineIterator iterator = new ReaderLineIterator(reader);
 		SQLScriptException exception = null;
 		Object result = null;
@@ -383,9 +393,10 @@ public class DBUtil {
 			    if (cmd.length() > 0)
 			        cmd.append('\n');
 			    cmd.append(line);
-			    if (line.endsWith(";") || !iterator.hasNext()) {
-			    	if (line.endsWith(";"))
-			    		cmd.delete(cmd.length() - 1, cmd.length()); // delete the trailing ';'
+			    boolean lineEndsWithSeparator = (line.length() > 0 && StringUtil.lastChar(line) == separator);
+			    if (lineEndsWithSeparator || !iterator.hasNext()) {
+			    	if (lineEndsWithSeparator)
+			    		cmd.delete(cmd.length() - 1, cmd.length()); // delete trailing separators
 			        String sql = cmd.toString().trim();
 			        if (sql.length() > 0 && (!ignoreComments || !StringUtil.startsWithIgnoreCase(sql, "COMMENT"))) {
 			        	try {
