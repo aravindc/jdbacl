@@ -73,15 +73,16 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	public void export(Database database) throws IOException, SQLException {
 		OutputStream out = new FileOutputStream(file);
+		SimpleXMLWriter writer = null;
 		try {
-			SimpleXMLWriter writer = new SimpleXMLWriter(out, encoding);
+			writer = new SimpleXMLWriter(out, encoding);
 			writer.startDocument();
 			exportDatabase(database, writer);
 			writer.endDocument();
 		} catch (SAXException e) {
 			throw new RuntimeException("Error exporting database " + database, e);
 		} finally {
-			IOUtil.close(out);
+			IOUtil.close(writer);
 		}
 	}
 	
