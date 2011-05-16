@@ -76,8 +76,8 @@ public abstract class AbstractTableMapper {
 	// helpers ---------------------------------------------------------------------------------------------------------
 	
 	private void populate() {
-		LOGGER.debug("Populating key mapper for table {}", identity.getTable().getName());
 		this.state = MapperState.POPULATING;
+		LOGGER.debug("Populating key mapper for table {} on database {}", identity.getTable().getName(), dbId);
 	    HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, dbId, root);
 	    while (iterator.hasNext()) {
 	    	Object[] nkPkTuple = iterator.next();
