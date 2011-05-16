@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.Period;
+import org.databene.commons.SystemInfo;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.xml.XMLModelExporter;
@@ -46,11 +47,11 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporter.class);
 	
+	private static final String CACHE_FILE_SUFFIX = ".meta.xml";
 	private static final long TIME_TO_LIVE = Period.HOUR.getMillis() * 12;
 	
-	protected String environment;
-
 	protected DBMetaDataImporter realImporter;
+	protected String environment;
 	
 	public CachingDBImporter(DBMetaDataImporter realImporter, String environment) {
 		this.realImporter = realImporter;
@@ -72,13 +73,14 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	}
 	
 	public static File getCacheFile(String environment) {
-		return new File(environment + ".meta.xml");
+		String cacheDirectory = SystemInfo.getUserHome() + File.separator + "databene" + File.separator + "cache";
+		return new File(cacheDirectory, environment + CACHE_FILE_SUFFIX);
 	}
 	
 	// non-public helpers ----------------------------------------------------------------------------------------------
 
 	protected File getCacheFile() {
-		return new File(environment + ".meta.xml");
+		return getCacheFile(environment);
 	}
 	
 	protected Database readCachedData(File cacheFile) throws ImportFailedException {
