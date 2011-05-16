@@ -25,6 +25,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
+import org.databene.commons.FileUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.Period;
 import org.databene.commons.SystemInfo;
@@ -92,10 +93,11 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 		Database database = realImporter.importDatabase();
 		LOGGER.info("Reading and exporting Database meta data to cache file");
 		try {
+			FileUtil.ensureDirectoryExists(file.getParentFile());
 			new XMLModelExporter(file).export(database);
 			LOGGER.debug("Database meta data export completed");
 		} catch (Exception e) {
-			LOGGER.error("Error writing database meta data file " + file, e);
+			LOGGER.error("Error writing database meta data file " + file + ": " + e.getMessage());
 		}
 		return database;
 	}
