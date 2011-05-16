@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -29,6 +29,8 @@ import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.bean.ObjectOrArray;
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.KeyMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parent for classes that map the primary key values of the rows of one table in one database 
@@ -38,6 +40,8 @@ import org.databene.jdbacl.identity.KeyMapper;
  * @author Volker Bergmann
  */
 public abstract class AbstractTableMapper {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTableMapper.class);
 
 	protected KeyMapper root;
 	protected Connection connection;
@@ -72,6 +76,7 @@ public abstract class AbstractTableMapper {
 	// helpers ---------------------------------------------------------------------------------------------------------
 	
 	private void populate() {
+		LOGGER.debug("Populating key mapper for table {}", identity.getTable().getName());
 		this.state = MapperState.POPULATING;
 	    HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, dbId, root);
 	    while (iterator.hasNext()) {
