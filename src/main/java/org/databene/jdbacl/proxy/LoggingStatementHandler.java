@@ -35,11 +35,13 @@ import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.databene.commons.BeanUtil;
+import org.databene.commons.CollectionUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.LogCategories;
 import org.databene.commons.debug.Debug;
 import org.databene.commons.debug.ResourceMonitor;
 import org.databene.jdbacl.DBUtil;
+import org.databene.profile.Profiler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,12 +96,20 @@ public class LoggingStatementHandler implements InvocationHandler {
 			String methodName = method.getName();
 			Method localMethod = BeanUtil.findMethod(this.getClass(), methodName, method.getParameterTypes());
 			Object result;
+			boolean profile = methodName.startsWith("execute") && "true".equals(System.getProperty("profile"));
+			long startTime = 0;
+			if (profile)
+				startTime = System.nanoTime();
 			if (localMethod != null)
 				result = BeanUtil.invoke(this, localMethod, args);
 			else
 				result = BeanUtil.invoke(realStatement, method, args);
 			if (result instanceof ResultSet)
 				result = DBUtil.createLoggingResultSet((ResultSet) result, (Statement) proxy);
+			if (profile) {
+				long duration = (System.nanoTime() - startTime) / 1000000;
+				Profiler.defaultInstance().addSample(CollectionUtil.toList("SQL", sql), duration);
+			}
 			return result;
 		} catch (ConfigurationError e) {
 			if (e.getCause() instanceof InvocationTargetException && e.getCause().getCause() instanceof SQLException)
