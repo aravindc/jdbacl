@@ -56,7 +56,7 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     }
 
     public DBCatalog(String name, Database owner) {
-        super(name, owner);
+        super(name, "catalog", owner);
         if (owner != null)
         	owner.addCatalog(this);
         this.schemas = OrderedNameMap.createCaseInsensitiveMap();

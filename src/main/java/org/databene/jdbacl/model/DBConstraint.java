@@ -47,8 +47,8 @@ public abstract class DBConstraint extends AbstractDBTableComponent implements N
     /**
      * @param name the constraint name - it may be null
      */
-    public DBConstraint(String name, DBTable owner) {
-    	super(name, owner);
+    public DBConstraint(String name, String objectType, DBTable owner) {
+    	super(name, objectType, owner);
     }
 
     /**

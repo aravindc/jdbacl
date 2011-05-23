@@ -37,12 +37,12 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
 	
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public AbstractCompositeDBObject(String name) {
-    	this(name, null);
+    public AbstractCompositeDBObject(String name, String type) {
+    	this(name, type, null);
     }
 
-    public AbstractCompositeDBObject(String name, CompositeDBObject<?> owner) {
-    	super(name, owner);
+    public AbstractCompositeDBObject(String name, String type, CompositeDBObject<?> owner) {
+    	super(name, type, owner);
     }
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

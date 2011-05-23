@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -48,7 +48,7 @@ public abstract class DBIndex extends AbstractDBTableComponent implements Named,
     }
 
     public DBIndex(String name, DBTable table) {
-        super(name, table);
+        super(name, "index", table);
         table.addIndex(this);
     }
 

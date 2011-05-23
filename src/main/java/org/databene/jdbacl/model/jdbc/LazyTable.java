@@ -73,6 +73,10 @@ public class LazyTable implements DBTable {
 	
 	// implementation of the meta data part of the 'DBTable' interface -------------------------------------------------
 	
+	public String getObjectType() {
+		return "table";
+	}
+
 	public List<DBTableComponent> getComponents() {
 		return getRealTable().getComponents();
 	}
@@ -150,7 +154,7 @@ public class LazyTable implements DBTable {
 		getRealTable().addColumn(column);
 	}
 
-	public DBColumn[] getColumns(List<String> columnNames) {
+	public DBColumn[] getColumns(String[] columnNames) {
 	    return getRealTable().getColumns(columnNames);
     }
 

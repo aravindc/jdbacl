@@ -70,7 +70,7 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
     }
     
     public DefaultDBColumn(String name, DBTable table, DBColumnType type, Integer size, Integer fractionDigits) {
-    	super(name);
+    	super(name, "column");
     	if (table != null)
     		table.addColumn(this);
         this.name = name;

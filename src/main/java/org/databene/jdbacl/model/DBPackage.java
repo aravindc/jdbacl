@@ -46,7 +46,7 @@ public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> imp
     }
 
     public DBPackage(String name, CompositeDBObject<? extends DBObject> parent) {
-    	super(name);
+    	super(name, "package");
     	if (parent instanceof DBPackage)
 			((DBPackage) parent).addPackage(this);
     	this.tables = OrderedNameMap.createCaseInsensitiveMap();

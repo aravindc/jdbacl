@@ -27,7 +27,6 @@
 package org.databene.jdbacl.model;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents a database.<br/><br/>
@@ -41,8 +40,9 @@ public interface Database extends CompositeDBObject<DBCatalog> {
     public void addCatalog(DBCatalog catalog);
     public void removeCatalog(DBCatalog catalog);
 
-    public Set<DBTable> getTables();
+    public List<DBTable> getTables();
     public DBTable getTable(String name);
+    public DBTable getTable(String name, boolean required);
 	public void removeTable(String tableName);
 	public DBSchema getSchema(String schemaName);
 }

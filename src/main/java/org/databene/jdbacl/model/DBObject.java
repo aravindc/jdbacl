@@ -33,6 +33,7 @@ import org.databene.commons.Named;
  * @author Volker Bergmann
  */
 public interface DBObject extends Named, Serializable {
+    public String getObjectType();
     public String getDoc();
     public CompositeDBObject<?> getOwner();
 	public void setOwner(CompositeDBObject<?> owner);

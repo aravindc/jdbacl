@@ -82,7 +82,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     }
 
     public DefaultDBTable(String name, DBSchema schema) {
-        super(name, schema);
+        super(name, "table", schema);
         if (schema != null)
         	schema.addTable(this);
         this.doc = null;
@@ -143,15 +143,15 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
         return columns.values();
     }
 
-    public DBColumn[] getColumns(List<String> columnNames) {
-        List<DBColumn> list = new ArrayList<DBColumn>(columnNames.size());
+    public DBColumn[] getColumns(String[] columnNames) {
+        List<DBColumn> list = new ArrayList<DBColumn>(columnNames.length);
         for (String columnName : columnNames) {
             DBColumn column = getColumn(columnName);
             if (column == null)
                 throw new IllegalArgumentException("Table '" + name + "' does not have a column '" + columnName + "'");
             list.add(column);
         }
-        DBColumn[] array = new DBColumn[columnNames.size()];
+        DBColumn[] array = new DBColumn[columnNames.length];
         return list.toArray(array);
     }
 

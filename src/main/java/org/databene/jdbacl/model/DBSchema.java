@@ -52,7 +52,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
     }
 
     public DBSchema(String name, DBCatalog catalog) {
-    	super(name);
+    	super(name, "schema");
     	if (catalog != null)
     		catalog.addSchema(this);
     	this.tables = OrderedNameMap.createCaseInsensitiveMap();

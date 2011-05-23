@@ -35,18 +35,20 @@ public abstract class AbstractDBObject implements DBObject {
 	private static final long serialVersionUID = -9344600767967258L;
 	
 	protected String name;
+	protected String objectType;
 	protected String doc;
 	protected CompositeDBObject<?> owner;
 	
 	// constructors ----------------------------------------------------------------------------------------------------
     
-	public AbstractDBObject(String name) {
-		this.name = name;
+	public AbstractDBObject(String name, String objectType) {
+		this(name, objectType, null);
 	}
 
 	@SuppressWarnings({ "rawtypes"})
-	public AbstractDBObject(String name, CompositeDBObject owner) {
+	public AbstractDBObject(String name, String objectType, CompositeDBObject owner) {
 		this.name = name;
+		this.objectType = objectType;
 		this.owner = owner;
 	}
 
@@ -56,6 +58,10 @@ public abstract class AbstractDBObject implements DBObject {
         return name;
     }
 
+    public String getObjectType() {
+    	return objectType;
+    }
+    
     public void setName(String name) {
         this.name = name;
     }

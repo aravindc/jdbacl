@@ -50,7 +50,7 @@ public class DBForeignKeyConstraint extends DBConstraint {
     
     public DBForeignKeyConstraint(String name, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
-        super(name, owner);
+        super(name, "foreign key", owner);
         Assert.notNull(refereeTable, "refereeTable");
         this.fkColumnNames = fkColumnNames;
         this.refereeTable = refereeTable;

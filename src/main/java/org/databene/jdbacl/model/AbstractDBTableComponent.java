@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -31,12 +31,12 @@ public abstract class AbstractDBTableComponent extends AbstractDBObject implemen
 
 	private static final long serialVersionUID = 3009611143703482138L;
 
-	public AbstractDBTableComponent(String name) {
-		this(name, null);
+	public AbstractDBTableComponent(String name, String type) {
+		this(name, type, null);
 	}
 	
-	public AbstractDBTableComponent(String name, DBTable owner) {
-		super(name, owner);
+	public AbstractDBTableComponent(String name, String type, DBTable owner) {
+		super(name, type, owner);
 	}
 
     public DBTable getTable() {

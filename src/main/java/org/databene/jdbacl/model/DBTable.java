@@ -49,7 +49,7 @@ public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableCo
     DBSchema getSchema();
 
     List<DBColumn> getColumns();
-    DBColumn[] getColumns(List<String> columnNames);
+    DBColumn[] getColumns(String[] columnNames);
     DBColumn getColumn(String columnName);
 	void addColumn(DBColumn column);
     

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,9 +21,8 @@
 
 package org.databene.jdbacl.model;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
@@ -44,7 +43,7 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
     // constructors ----------------------------------------------------------------------------------------------------
 
     public DefaultDatabase(String name) {
-        super(name);
+        super(name, "database");
         this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
     }
 
@@ -87,24 +86,31 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 
     // table operations ------------------------------------------------------------------------------------------------
 
-    public Set<DBTable> getTables() {
-    	Set<DBTable> tables = new HashSet<DBTable>();
+    public List<DBTable> getTables() {
+    	List<DBTable> tables = new ArrayList<DBTable>();
         for (DBCatalog catalog : getComponents())
             for (DBTable table : catalog.getTables())
             	tables.add(table);
         return tables;
     }
 
-    public DBTable getTable(String name) {
+	public DBTable getTable(String name) {
+		return getTable(name, true);
+	}
+
+    public DBTable getTable(String name, boolean required) {
         for (DBCatalog catalog : getCatalogs())
             for (DBTable table : catalog.getTables())
             	if (StringUtil.equalsIgnoreCase(table.getName(), name))
             		return table;
-        throw new ObjectNotFoundException("Table '" + name + "'");
+        if (required)
+        	throw new ObjectNotFoundException("Table '" + name + "'");
+        else
+        	return null;
     }
     
 	public void removeTable(String tableName) {
-		DBTable table = getTable(tableName);
+		DBTable table = getTable(tableName, true);
 		table.getSchema().removeTable(table);
     }
 
