@@ -472,8 +472,7 @@ public class DBUtil {
 	    	resultSet = statement.executeQuery(query);
 	    	return parseResultSet(resultSet);
     	} finally {
-	    	close(resultSet);
-	    	close(statement);
+	    	closeResultSetAndStatement(resultSet);
     	}
     }
 
