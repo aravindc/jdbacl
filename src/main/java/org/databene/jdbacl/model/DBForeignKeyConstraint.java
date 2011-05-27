@@ -39,7 +39,7 @@ import org.databene.commons.bean.HashCodeBuilder;
  * Created: 06.01.2007 09:00:59
  * @author Volker Bergmann
  */
-public class DBForeignKeyConstraint extends DBConstraint {
+public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnObject {
 
     private static final long serialVersionUID = -7488054587082654132L;
     

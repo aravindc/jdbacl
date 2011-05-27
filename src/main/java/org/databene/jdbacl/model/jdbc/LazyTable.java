@@ -142,6 +142,10 @@ public class LazyTable implements DBTable {
 	    return doc;
     }
 
+	public String[] getColumnNames() {
+		return getRealTable().getColumnNames();
+	}
+
 	public DBColumn getColumn(String columnName) {
 	    return getRealTable().getColumn(columnName);
     }

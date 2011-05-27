@@ -28,7 +28,9 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.ArrayFormat;
 import org.databene.commons.Assert;
+import org.databene.commons.CollectionUtil;
 import org.databene.commons.HeavyweightIterator;
+import org.databene.commons.NameUtil;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.OrderedSet;
@@ -139,6 +141,10 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
     // column operations -----------------------------------------------------------------------------------------------
 
+	public String[] getColumnNames() {
+		return CollectionUtil.toArray(NameUtil.getNames(columns.values()), String.class);
+	}
+	
     public List<DBColumn> getColumns() {
         return columns.values();
     }

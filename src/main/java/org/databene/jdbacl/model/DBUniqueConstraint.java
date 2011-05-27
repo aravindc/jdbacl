@@ -32,7 +32,7 @@ package org.databene.jdbacl.model;
  * Created: 06.01.2007 09:00:37
  * @author Volker Bergmann
  */
-public class DBUniqueConstraint extends DBConstraint {
+public class DBUniqueConstraint extends DBConstraint implements MultiColumnObject {
 
     private static final long serialVersionUID = -8241121848879185421L;
     

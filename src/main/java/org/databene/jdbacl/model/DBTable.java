@@ -41,7 +41,7 @@ import java.util.Set;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableComponent>, Dependent<DBTable> {
+public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableComponent>, Dependent<DBTable>, MultiColumnObject {
 
     String getName();
     String getDoc();
