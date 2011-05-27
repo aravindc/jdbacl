@@ -31,7 +31,6 @@ import java.util.Set;
 
 import org.databene.commons.Encodings;
 import org.databene.commons.IOUtil;
-import org.databene.commons.StringUtil;
 import org.databene.commons.xml.SimpleXMLWriter;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBCatalog;
@@ -46,6 +45,7 @@ import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+import static org.databene.commons.xml.SimpleXMLWriter.*;
 
 /**
  * Saves a database meta data model as XML file.<br/><br/>
@@ -148,7 +148,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	public void writeColumnGroup(String[] pkColumnNames, SimpleXMLWriter writer)
 			throws SAXException {
-		writer.startElement("columns", null);
+		writer.startElement("columns");
 		for (String pkColumnName : pkColumnNames) {
 			AttributesImpl colAtts = createAttributes("name", pkColumnName);
 			writer.startElement("column", colAtts);
@@ -186,7 +186,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 				addAttribute("refereeColumn", refereeColumns[0], atts);
 			writer.startElement("fk", atts);
 			if (columnNames.length > 1) {
-				writer.startElement("columns", null);
+				writer.startElement("columns");
 				for (String columnName : columnNames) {
 					AttributesImpl colAtts = createAttributes("name", columnName);
 					addAttribute("refereeColumn", fk.columnReferencedBy(columnName), colAtts);
@@ -211,19 +211,6 @@ public class XMLModelExporter implements DBMetaDataExporter {
 				writeColumnGroup(columnNames, writer);
 			writer.endElement("index");
 		}
-	}
-
-	private AttributesImpl createAttributes(String attributeName, String attributeValue) {
-		AttributesImpl atts = new AttributesImpl();
-		if (attributeValue != null)
-			addAttribute(attributeName, attributeValue, atts);
-		return atts;
-	}
-
-	private AttributesImpl addAttribute(String name, String value, AttributesImpl atts) {
-		if (!StringUtil.isEmpty(value)) 
-			atts.addAttribute("", "", name, "CDATA", value);
-		return atts;
 	}
 
 }
