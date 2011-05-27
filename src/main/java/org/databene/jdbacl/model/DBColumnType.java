@@ -28,7 +28,9 @@ package org.databene.jdbacl.model;
 
 import java.io.Serializable;
 import java.sql.Types;
+import java.util.Set;
 
+import org.databene.commons.CollectionUtil;
 import org.databene.commons.Named;
 
 /**
@@ -39,6 +41,14 @@ import org.databene.commons.Named;
 public class DBColumnType implements Named, Serializable {
 
     private static final long serialVersionUID = 7725335502838132325L;
+    
+    private static final Set<Integer> ALPHA_TYPES = CollectionUtil.toSet(
+    	Types.CHAR, Types.CLOB, Types.LONGVARCHAR, Types.LONGNVARCHAR, Types.NCHAR, Types.NCLOB, Types.NVARCHAR, Types.VARCHAR
+    );
+
+    private static final Set<Integer> NUMBER_TYPES = CollectionUtil.toSet(
+        	Types.BIGINT, Types.DECIMAL, Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC, Types.SMALLINT, Types.TINYINT
+        );
 
 	public static DBColumnType getInstance(int jdbcType, String name) {
         return new DBColumnType(jdbcType, name.toUpperCase());
@@ -48,11 +58,7 @@ public class DBColumnType implements Named, Serializable {
     private int jdbcType;
 
     // constructors ----------------------------------------------------------------------------------------------------
-/*
-    private DBColumnType() {
-        this(null);
-    }
-*/
+
     private DBColumnType(int sqlType, String name) {
     	if (name.equals("NCLOB"))
     		sqlType = Types.NCLOB;
@@ -72,18 +78,19 @@ public class DBColumnType implements Named, Serializable {
     }
 
     public boolean isLOB() {
-        return name.endsWith("CLOB") || 
-        	"BLOB".equals(name);
+        return jdbcType == Types.BLOB || jdbcType == Types.CLOB || jdbcType == Types.NCLOB || 
+        	name.endsWith("CLOB") || "BLOB".equals(name);
     }
 
     public boolean isAlpha() {
-        return jdbcType == Types.VARCHAR || 
-        	jdbcType == Types.CHAR || 
-        	jdbcType == Types.CLOB || 
-        	jdbcType == Types.LONGVARCHAR || 
-        	name.endsWith("VARCHAR2") || 
-        	name.endsWith("CLOB");
+    	if (ALPHA_TYPES.contains(jdbcType)) // standard types
+    		return true;
+        return name.endsWith("VARCHAR2") || name.endsWith("CLOB"); // fixes for Oracle
     }
+
+	public boolean isNumber() {
+        return NUMBER_TYPES.contains(jdbcType);
+	}
 
 	public boolean isTemporal() {
 	    return jdbcType == Types.DATE || 
