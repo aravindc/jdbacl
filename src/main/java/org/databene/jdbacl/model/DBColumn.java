@@ -52,7 +52,7 @@ public interface DBColumn extends DBTableComponent {
     
     List<DBUniqueConstraint> getUkConstraints();
     
-    DBConstraint getNotNullConstraint();
+    DBNotNullConstraint getNotNullConstraint();
     void addUkConstraint(DBUniqueConstraint constraint);
     
     boolean isNullable();

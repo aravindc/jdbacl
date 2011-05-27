@@ -46,7 +46,7 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
     protected boolean versionColumn;
 
     protected List<DBUniqueConstraint> ukConstraints; // constraints may be unnamed, so a Map does not make sense
-    protected DBConstraint notNullConstraint;
+    protected DBNotNullConstraint notNullConstraint;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -138,11 +138,11 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         this.ukConstraints.add(constraint);
     }
 
-    public DBConstraint getNotNullConstraint() {
+    public DBNotNullConstraint getNotNullConstraint() {
         return notNullConstraint;
     }
 
-    public void setNotNullConstraint(DBConstraint notNullConstraint) {
+    public void setNotNullConstraint(DBNotNullConstraint notNullConstraint) {
         this.notNullConstraint = notNullConstraint;
     }
 
