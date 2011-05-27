@@ -25,10 +25,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.databene.commons.ArrayFormat;
 import org.databene.commons.CollectionUtil;
 import org.databene.commons.StringUtil;
 import org.databene.jdbacl.model.DBColumn;
+import org.databene.jdbacl.model.DBConstraint;
+import org.databene.jdbacl.model.DBForeignKeyConstraint;
+import org.databene.jdbacl.model.DBNotNullConstraint;
+import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.DBUniqueConstraint;
 
 /**
  * Provides utility methods for creating SQL queries and commands.<br/><br/>
@@ -100,7 +106,8 @@ public class SQLUtil {
 	    
 	    // nullability
 	    if (!column.isNullable())
-	    	builder.append(" NOT NULL");
+	    	builder.append(" NOT");
+    	builder.append(" NULL");
 	    
 	    return builder.toString();
     }
@@ -210,6 +217,85 @@ public class SQLUtil {
 	    		return false;
 	    // it is a plain select statement
 	    return true;
+    }
+
+	public static String constraintDescription(DBConstraint constraint) {
+		if (constraint instanceof DBPrimaryKeyConstraint)
+			return pkDescription((DBPrimaryKeyConstraint) constraint);
+		else if (constraint instanceof DBUniqueConstraint)
+			return ukDescription((DBUniqueConstraint) constraint);
+		else if (constraint instanceof DBForeignKeyConstraint)
+			return fkDescription((DBForeignKeyConstraint) constraint);
+		else if (constraint instanceof DBForeignKeyConstraint)
+			return fkDescription((DBForeignKeyConstraint) constraint);
+		else if (constraint instanceof DBNotNullConstraint)
+			return notNullDescription((DBNotNullConstraint) constraint);
+		else
+			throw new UnsupportedOperationException("Unknown constraint type: " + 
+					constraint.getClass());
+	}
+	
+	private static String notNullDescription(DBNotNullConstraint constraint) {
+		return constraint.getColumnNames()[0] + " NOT NULL";
+	}
+
+	public static String pkDescription(DBPrimaryKeyConstraint pk) {
+		StringBuilder builder = new StringBuilder();
+		if (pk.getName() != null)
+			builder.append("CONSTRAINT " + quoteNameIfNecessary(pk.getName()) + ' ');
+		builder.append("PRIMARY KEY (");
+		builder.append(ArrayFormat.format(pk.getColumnNames()));
+		builder.append(')');
+		return builder.toString();
+	}
+	
+	public static String ukDescription(DBUniqueConstraint uk) {
+		StringBuilder builder = new StringBuilder();
+		if (uk.getName() != null)
+			builder.append("CONSTRAINT " + quoteNameIfNecessary(uk.getName()) + ' ');
+		builder.append("UNIQUE (");
+		builder.append(ArrayFormat.format(uk.getColumnNames()));
+		builder.append(')');
+	    return builder.toString();
+    }
+
+	public static String fkDescription(DBForeignKeyConstraint fk) {
+	    StringBuilder builder = new StringBuilder();
+		if (fk.getName() != null)
+			builder.append("CONSTRAINT " + quoteNameIfNecessary(fk.getName()));
+		builder.append(" FOREIGN KEY (").append(ArrayFormat.format(fk.getColumnNames()));
+		builder.append(") REFERENCES ").append(fk.getRefereeTable());
+		builder.append(" (").append(ArrayFormat.format(fk.getRefereeColumnNames())).append(");");
+	    return builder.toString();
+	}
+	
+	public static String leftJoin(String refererAlias, String[] refererColumns, 
+			String refereeTable, String refereeAlias, String[] refereeColumns) {
+		StringBuilder builder = new StringBuilder("left join ");
+		builder.append(refereeTable).append(" ").append(refereeAlias).append(" on "); 
+		for (int i = 0; i < refererColumns.length; i++) {
+			if (i > 0)
+				builder.append(" and ");
+			builder.append(refererAlias).append('.').append(refererColumns[i]);
+			builder.append(" = ").append(refereeAlias).append('.').append(refereeColumns[i]);
+		}
+		return builder.toString();
+	}
+
+	public static StringBuilder addRequiredCondition(String condition, StringBuilder builder) {
+		if (builder.length() > 0)
+			builder.append(" and ");
+		return builder.append(condition);
+	}
+
+	public static StringBuilder addOptionalCondition(String condition, StringBuilder builder) {
+		if (builder.length() > 0)
+			builder.append(" or ");
+		return builder.append(condition);
+	}
+
+	private static String quoteNameIfNecessary(String name) {
+		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
     }
 
 }
