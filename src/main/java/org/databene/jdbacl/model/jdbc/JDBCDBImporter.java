@@ -296,9 +296,12 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             	schema = database.getSchema(tSchemaName);
             	catalog = schema.getCatalog();
             }
-			
-			DBTable table = createTable(catalog, schema, tableName, tableRemarks, lazy);
-            importedTables.add(table);
+			if (catalog != null && schema != null) {
+				DBTable table = createTable(catalog, schema, tableName, tableRemarks, lazy);
+	            importedTables.add(table);
+			} else {
+				LOGGER.warn("ignoring table " + tableName);
+			}
         }
         if (!lazy)
         	for (DBTable table : importedTables)
@@ -324,9 +327,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		if (lazy) {
 			table = new LazyTable(this, schema, tableName, remarks);
 		} else {
-			DefaultDBTable dTable = new DefaultDBTable(tableName);
+			DefaultDBTable dTable = new DefaultDBTable(tableName, schema);
 			dTable.setDoc(remarks);
-			dTable.setSchema(schema);
 			table = dTable;
 		}
         if (schema != null)
