@@ -613,19 +613,28 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         ResultSet resultSet = null;
         try {
 	        resultSet = metaData.getImportedKeys(catalogName, schemaName, tableName);
-	        List<ImportedKey> importedKeys = new ArrayList<ImportedKey>();
+	        List<ImportedKey> keyList = new ArrayList<ImportedKey>();
+	        Map<String, ImportedKey> keysByName = OrderedNameMap.createCaseIgnorantMap();
 	        ImportedKey recent = null;
 	        while (resultSet.next()) {
 	            ImportedKey cursor = ImportedKey.parse(resultSet, catalog, schema, table);
 	            if (cursor == null) 
 	            	continue;
-	            if (cursor.key_seq > 1) {
-	                recent.addForeignKeyColumn(cursor.fkcolumn_name, cursor.pkcolumn_name);
-	            } else
-	                importedKeys.add(cursor);
+	            if (cursor.key_seq == 1) {
+	            	if (cursor.fk_name != null)
+	            		keysByName.put(cursor.fk_name, cursor);
+            		keyList.add(cursor);
+	            } else {
+	            	// additional column for a composite FK with columns defined before
+		            if (cursor.fk_name != null)
+		            	keysByName.get(cursor.fk_name).addForeignKeyColumn(cursor.fkcolumn_name, cursor.pkcolumn_name);
+		            else // some systems may not report an fk constraint name
+		            	recent.addForeignKeyColumn(cursor.fkcolumn_name, cursor.pkcolumn_name);
+	            }
 	            recent = cursor;
 	        }
-	        for (ImportedKey key : importedKeys) {
+	        // build DBForeignKeyConstraint objects from the gathered information
+	        for (ImportedKey key : keyList) {
 	            int n = key.getForeignKeyColumnNames().size();
 	            String[] columnNames = new String[n];
 	            String[] refereeColumnNames = new String[n];
