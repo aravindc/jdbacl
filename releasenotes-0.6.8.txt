@@ -10,3 +10,4 @@ Enhancements
 
 Bug fixes
 ---------
+- Bug fix: Importing multiple foreign keys with multiple columns fails
