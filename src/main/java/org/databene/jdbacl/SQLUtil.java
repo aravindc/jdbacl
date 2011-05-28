@@ -32,9 +32,11 @@ import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBConstraint;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBNotNullConstraint;
+import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
+import org.databene.jdbacl.model.MultiColumnObject;
 
 /**
  * Provides utility methods for creating SQL queries and commands.<br/><br/>
@@ -240,33 +242,30 @@ public class SQLUtil {
 	}
 
 	public static String pkDescription(DBPrimaryKeyConstraint pk) {
-		StringBuilder builder = new StringBuilder();
-		if (pk.getName() != null)
-			builder.append("CONSTRAINT " + quoteNameIfNecessary(pk.getName()) + ' ');
-		builder.append("PRIMARY KEY (");
-		builder.append(ArrayFormat.format(pk.getColumnNames()));
-		builder.append(')');
-		return builder.toString();
+		return constraintName(pk) + "PRIMARY KEY " + pk.getTable().getName() + colsInParens(pk);
+	}
+
+	public static String pkSpec(DBPrimaryKeyConstraint pk) {
+		return constraintName(pk) + "PRIMARY KEY " + colsInParens(pk);
 	}
 	
 	public static String ukDescription(DBUniqueConstraint uk) {
-		StringBuilder builder = new StringBuilder();
-		if (uk.getName() != null)
-			builder.append("CONSTRAINT " + quoteNameIfNecessary(uk.getName()) + ' ');
-		builder.append("UNIQUE (");
-		builder.append(ArrayFormat.format(uk.getColumnNames()));
-		builder.append(')');
-	    return builder.toString();
+		return constraintName(uk) + "UNIQUE " + uk.getTable().getName() + colsInParens(uk);
+    }
+
+	public static String ukSpec(DBUniqueConstraint uk) {
+		return constraintName(uk) + "UNIQUE " + colsInParens(uk);
     }
 
 	public static String fkDescription(DBForeignKeyConstraint fk) {
-	    StringBuilder builder = new StringBuilder();
-		if (fk.getName() != null)
-			builder.append("CONSTRAINT " + quoteNameIfNecessary(fk.getName()));
-		builder.append(" FOREIGN KEY (").append(ArrayFormat.format(fk.getColumnNames()));
-		builder.append(") REFERENCES ").append(fk.getRefereeTable());
-		builder.append(" (").append(ArrayFormat.format(fk.getRefereeColumnNames())).append(");");
-	    return builder.toString();
+		return constraintName(fk) + "FK " + 
+			fk.getTable().getName() + colsInParens(fk) + " -> " +
+			fk.getRefereeTable() + colsInParens(fk.getRefereeColumnNames());
+	}
+	
+	public static String fkSpec(DBForeignKeyConstraint fk) {
+		return constraintName(fk) + " FOREIGN KEY " + colsInParens(fk.getColumnNames()) +
+			" REFERENCES " + fk.getRefereeTable() + colsInParens(fk.getRefereeColumnNames());
 	}
 	
 	public static String leftJoin(String refererAlias, String[] refererColumns, 
@@ -294,8 +293,31 @@ public class SQLUtil {
 		return builder.append(condition);
 	}
 
+	public static String ownerDotComponent(DBObject object) {
+		return (object.getOwner() != null ? object.getOwner() + "." : "") + object.getName();
+	}
+
+	public static void appendConstraintName(DBConstraint constraint, StringBuilder builder) {
+		if (constraint.getName() != null)
+			builder.append("CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ');
+	}
+	
+	public static String constraintName(DBConstraint constraint) {
+		return (constraint.getName() != null ? 
+				"CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ' : 
+				"");
+	}
+	
 	private static String quoteNameIfNecessary(String name) {
 		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
     }
+
+	private static Object colsInParens(MultiColumnObject object) {
+		return colsInParens(object.getColumnNames());
+	}
+
+	private static Object colsInParens(String[] columnNames) {
+		return '(' + ArrayFormat.format(columnNames) + ')';
+	}
 
 }
