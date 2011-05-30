@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -30,20 +30,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.databene.commons.Named;
-import org.databene.commons.collection.OrderedNameMap;
-
 /**
  * Represents a JDBC database schema.<br/><br/>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> implements Named, Serializable {
+public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> implements Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
-    OrderedNameMap<DBTable> tables;
-    OrderedNameMap<DBTable> packages;
+    PackageAndTableSupport support;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -55,8 +51,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
     	super(name, "schema");
     	if (catalog != null)
     		catalog.addSchema(this);
-    	this.tables = OrderedNameMap.createCaseInsensitiveMap();
-    	this.packages = OrderedNameMap.createCaseInsensitiveMap();
+    	this.support = new PackageAndTableSupport();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -68,7 +63,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
     public Database getDatabase() {
         return getCatalog().getDatabase();
     }
-
+    
     // catalog operations ----------------------------------------------------------------------------------------------
 
     public DBCatalog getCatalog() {
@@ -83,27 +78,35 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
 
 	public List<DBPackageComponent> getComponents() {
 		List<DBPackageComponent> result = new ArrayList<DBPackageComponent>();
-		result.addAll(tables.values());
-		result.addAll(packages.values());
+		result.addAll(support.getTables());
+		result.addAll(support.getPackages());
 		return result;
 	}
 	
     // table operations ------------------------------------------------------------------------------------------------
 
     public List<DBTable> getTables() {
-        return tables.values();
+        return getTables(false);
+    }
+
+    public List<DBTable> getTables(boolean recursive) {
+		return getTables(recursive, new ArrayList<DBTable>());
+    }
+
+    public List<DBTable> getTables(boolean recursive, List<DBTable> result) {
+		return support.getTables(recursive, result);
     }
 
     public DBTable getTable(String tableName) {
-        return tables.get(tableName);
+        return support.getTable(tableName);
     }
 
     public void addTable(DBTable table) {
-        tables.put(table.getName(), table);
+    	support.addTable(table);
     }
 
     public void removeTable(DBTable table) {
-        tables.remove(table.getName());
+        support.removeTable(table);
     }
 
 }
