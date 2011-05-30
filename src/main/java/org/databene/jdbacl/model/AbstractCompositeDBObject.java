@@ -45,12 +45,14 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
     	super(name, type, owner);
     }
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public boolean deepEquals(CompositeDBObject<?> other) {
-		if (!this.equals(other))
+	@SuppressWarnings({ "rawtypes" })
+	public boolean isIdentical(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || !(this.getObjectType().equals(other.getObjectType())))
 			return false;
 		List<? extends DBObject> thisComponents = this.getComponents();
-		List<? extends DBObject> otherComponents = other.getComponents();
+		List<? extends DBObject> otherComponents = ((CompositeDBObject<?>) other).getComponents();
 		if (thisComponents.size() != otherComponents.size())
 			return false;
 		Iterator<C> componentIterator = this.getComponents().iterator();
@@ -60,7 +62,7 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
 			if ((component instanceof CompositeDBObject)) {
 				if (!(otherComponent instanceof CompositeDBObject))
 					return false;
-				if (!((CompositeDBObject) component).deepEquals((CompositeDBObject) otherComponent))
+				if (!((CompositeDBObject) component).isIdentical((CompositeDBObject) otherComponent))
 					return false;
 			} else if (!component.equals(otherComponent))
 				return false;

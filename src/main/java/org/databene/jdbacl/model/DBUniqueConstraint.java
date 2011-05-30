@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -25,6 +25,10 @@
  */
 
 package org.databene.jdbacl.model;
+
+import java.util.Arrays;
+
+import org.databene.commons.NullSafeComparator;
 
 /**
  * Represents a unique constraint on one or the combination of several columns of one table.<br/>
@@ -53,5 +57,16 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
     public String[] getColumnNames() {
         return columnNames;
     }
+
+	public boolean isIdentical(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || !(other instanceof DBUniqueConstraint))
+			return false;
+		DBUniqueConstraint that = (DBUniqueConstraint) other;
+		return NullSafeComparator.equals(this.name, that.name)
+			&& Arrays.equals(this.columnNames, that.columnNames)
+			&& NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
+	}
 
 }

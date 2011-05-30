@@ -210,4 +210,23 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         return builder.toString();
     }
 
+	public boolean isIdentical(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || !(other instanceof DBColumn))
+			return false;
+		return this.name.equals(other.getName()) && isEquivalent(other);
+	}
+
+	public boolean isEquivalent(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || !(other instanceof DBColumn))
+			return false;
+		DBColumn that = (DBColumn) other;
+		return this.type.equals(that.getType()) 
+			&& NullSafeComparator.equals(this.size, that.getSize())
+			&& NullSafeComparator.equals(this.fractionDigits, that.getFractionDigits());
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -27,6 +27,7 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.Assert;
+import org.databene.commons.NullSafeComparator;
 
 /**
  * Represents a database not-null constraint.<br/><br/>
@@ -51,4 +52,14 @@ public class DBNotNullConstraint extends DBConstraint {
         return new String[] { columnName };
     }
 
+    public boolean isIdentical(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || !(other instanceof DBNotNullConstraint))
+			return false;
+		DBNotNullConstraint that = (DBNotNullConstraint) other;
+		return NullSafeComparator.equals(this.name, that.name)
+			&& columnName.equals(that.columnName)
+			&& NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
+    }
 }

@@ -36,6 +36,7 @@ import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.CompositeDBObject;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBIndex;
+import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBRow;
 import org.databene.jdbacl.model.DBRowIterator;
@@ -116,10 +117,6 @@ public class LazyTable implements DBTable {
 
 	public TableRowIterator query(String query, Connection connection) {
 		return getRealTable().query(query, connection);
-	}
-
-	public boolean deepEquals(CompositeDBObject<?> other) {
-		return getRealTable().deepEquals(other);
 	}
 
 	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
@@ -227,8 +224,12 @@ public class LazyTable implements DBTable {
 	    return getRealTable().requiresProvider(index);
     }
 	
+	public boolean isIdentical(DBObject other) {
+		return getRealTable().isIdentical(other);
+	}
 	
 	
+		
 	// access to the wrapped object ------------------------------------------------------------------------------------
 
 	public DefaultDBTable getRealTable() {

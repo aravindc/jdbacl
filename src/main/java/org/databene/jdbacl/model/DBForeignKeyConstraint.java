@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -90,19 +90,22 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
 		return refereeColumnNames;
     }
     
+	public boolean isIdentical(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || !(other instanceof DBForeignKeyConstraint))
+			return false;
+		DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
+		return NullSafeComparator.equals(this.name, that.name)
+			&& Arrays.equals(fkColumnNames, that.fkColumnNames)
+			&& Arrays.equals(refereeColumnNames, that.refereeColumnNames)
+			&& NullSafeComparator.equals(refereeTable.getName(), that.refereeTable.getName());
+	}
+
 	
 	
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
 	
-    @Override
-	public int hashCode() {
-		return HashCodeBuilder.hashCode(
-				super.hashCode(), 
-				Arrays.hashCode(fkColumnNames), 
-				Arrays.hashCode(refereeColumnNames), 
-				refereeTable.hashCode());
-	}
-
 	@Override
 	public boolean equals(Object other) {
 		if (this == other)
@@ -110,10 +113,16 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
 		if (other == null || getClass() != other.getClass())
 			return false;
 		DBForeignKeyConstraint that = (DBForeignKeyConstraint) other;
-		return NullSafeComparator.equals(this.name, that.name)
-			&& Arrays.equals(fkColumnNames, that.fkColumnNames)
-			&& Arrays.equals(refereeColumnNames, that.refereeColumnNames)
-			&& NullSafeComparator.equals(refereeTable, that.refereeTable);
+		return this.isIdentical(that) && NullSafeComparator.equals(refereeTable, that.refereeTable);
+	}
+
+    @Override
+	public int hashCode() {
+		return HashCodeBuilder.hashCode(
+				super.hashCode(), 
+				Arrays.hashCode(fkColumnNames), 
+				Arrays.hashCode(refereeColumnNames), 
+				refereeTable.hashCode());
 	}
 
 	@Override

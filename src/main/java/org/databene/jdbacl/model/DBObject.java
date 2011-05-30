@@ -46,4 +46,7 @@ public interface DBObject extends Named, Serializable {
     /** sets the owner of the DBObject instance. */
 	public void setOwner(CompositeDBObject<?> owner);
 	
+	/** tells if an object has the same definition as another one. */
+	public boolean isIdentical(DBObject other);
+	
 }
