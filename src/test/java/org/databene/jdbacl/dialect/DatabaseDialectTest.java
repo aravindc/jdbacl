@@ -32,10 +32,12 @@ import java.util.Date;
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.DatabeneTestUtil;
 import org.databene.commons.JDBCConnectData;
+import org.databene.commons.NameUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.TimeUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
@@ -97,8 +99,9 @@ public abstract class DatabaseDialectTest {
 		Connection connection = DBUtil.connect(data);
 		try {
 			dialect.createSequence(sequenceName, 23, connection);
-			String[] sequences = dialect.querySequences(connection);
-			assertTrue(StringUtil.containsIgnoreCase(sequenceName, sequences));
+			DBSequence[] sequences = dialect.querySequences(connection);
+			String[] sequenceNames = NameUtil.getNames(sequences);
+			assertTrue(StringUtil.containsIgnoreCase(sequenceName, sequenceNames));
 			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection));
 		} finally {
 			DBUtil.executeUpdate(dialect.renderDropSequence(sequenceName), connection);
