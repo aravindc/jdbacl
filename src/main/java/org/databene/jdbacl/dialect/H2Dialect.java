@@ -26,6 +26,7 @@ import java.sql.SQLException;
 
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBSequence;
 
 /**
  * {@link DatabaseDialect} implementation for the H2 database.
@@ -54,10 +55,14 @@ public class H2Dialect extends DatabaseDialect {
     }
 
 	@Override
-    public String[] querySequences(Connection connection) throws SQLException {
+    public DBSequence[] querySequences(Connection connection) throws SQLException {
         String query = "select SEQUENCE_NAME from INFORMATION_SCHEMA.SEQUENCES";
         // TODO v0.7 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
-        return DBUtil.queryScalarArray(query, String.class, connection);
+        String[] sequenceNames = DBUtil.queryScalarArray(query, String.class, connection);
+        DBSequence[] sequences = new DBSequence[sequenceNames.length];
+        for (int i = 0; i < sequenceNames.length; i++)
+        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO information details
+		return sequences;
 	}
 
 	@Override

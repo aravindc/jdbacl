@@ -26,11 +26,17 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 
+import org.databene.commons.ArrayBuilder;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBSequence;
 
 /**
  * Implements generic database concepts for Oracle.<br/><br/>
@@ -70,4 +76,23 @@ public class OracleDialect extends DatabaseDialect {
 		return MessageFormat.format(TIMESTAMP_MESSAGE, renderedTimestamp);
     }
 
+	@Override
+	public DBSequence[] querySequences(Connection connection) throws SQLException {
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
+				"cycle_flag, order_flag, cache_size, last_number from user_sequences");
+		ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+		while (resultSet.next()) {
+			DBSequence sequence = new DBSequence(resultSet.getString(1), null);
+			sequence.setMinValue(resultSet.getLong(2));
+			sequence.setMaxValue(resultSet.getLong(3));
+			sequence.setIncrement(resultSet.getInt(4));
+			sequence.setCycle("Y".equals(resultSet.getString(5)));
+			sequence.setOrder("Y".equals(resultSet.getString(6)));
+			sequence.setCache(resultSet.getLong(7));
+			sequence.setLastNumber(resultSet.getLong(8));
+		}
+		return builder.toArray();
+	}
+	
 }

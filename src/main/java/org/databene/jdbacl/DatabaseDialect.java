@@ -39,6 +39,7 @@ import org.databene.commons.ArrayUtil;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBCatalog;
+import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public abstract class DatabaseDialect {
     	return sequenceSupported;
     }
 
-    public String[] querySequences(Connection connection) throws SQLException {
+    public DBSequence[] querySequences(Connection connection) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
 

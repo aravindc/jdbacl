@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import org.databene.commons.StringUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBSequence;
 
 /**
  * {@link DatabaseDialect} implementation for the Firebird database.<br/>
@@ -85,10 +86,14 @@ public class FirebirdDialect extends DatabaseDialect {
     }
     
     @Override
-    public String[] querySequences(Connection connection) throws SQLException {
+    public DBSequence[] querySequences(Connection connection) throws SQLException {
         String query = "select * from RDB$GENERATORS where RDB$GENERATOR_NAME NOT LIKE '%$%'";
-        String[] sequences = DBUtil.queryScalarArray(query, String.class, connection);
-		return StringUtil.trimAll(sequences);
+        String[] sequenceNames = DBUtil.queryScalarArray(query, String.class, connection);
+		sequenceNames = StringUtil.trimAll(sequenceNames);
+        DBSequence[] sequences = new DBSequence[sequenceNames.length];
+        for (int i = 0; i < sequenceNames.length; i++)
+        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO information details
+		return sequences;
     }
     
     @Override

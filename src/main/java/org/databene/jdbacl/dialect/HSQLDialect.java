@@ -31,6 +31,7 @@ import java.sql.SQLException;
 
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBSequence;
 
 /**
  * Implements generic database concepts for HSQL<br/><br/>
@@ -58,9 +59,13 @@ public class HSQLDialect extends DatabaseDialect {
     }
 
 	@Override
-    public String[] querySequences(Connection connection) throws SQLException {
+    public DBSequence[] querySequences(Connection connection) throws SQLException {
         String query = "select sequence_name from information_schema.system_sequences";
-        return DBUtil.queryScalarArray(query, String.class, connection);
+        String[] sequenceNames = DBUtil.queryScalarArray(query, String.class, connection);
+        DBSequence[] sequences = new DBSequence[sequenceNames.length];
+        for (int i = 0; i < sequenceNames.length; i++)
+        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO information details
+		return sequences;
 	}
 
 	@Override
