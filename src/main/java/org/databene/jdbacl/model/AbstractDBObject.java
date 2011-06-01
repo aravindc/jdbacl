@@ -100,8 +100,10 @@ public abstract class AbstractDBObject implements DBObject {
 			return true;
 		if (obj == null || !DBObject.class.isAssignableFrom(obj.getClass()))
 			return false;
-		AbstractDBObject that = (AbstractDBObject) obj;
-		return NullSafeComparator.equals(this.name, that.name);
+		DBObject that = (DBObject) obj;
+		return NullSafeComparator.equals(this.name, that.getName()) && 
+			NullSafeComparator.equals(this.objectType, that.getObjectType()) &&
+			NullSafeComparator.equals(this.owner, that.getOwner());
 	}
 	
 }
