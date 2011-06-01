@@ -44,6 +44,8 @@ public class DBCheckConstraint extends DBConstraint implements MultiColumnObject
 	public DBCheckConstraint(String name, DBTable owner, String condition) {
 		super(name, "check constraint", owner);
 		this.condition = condition;
+		if (owner != null)
+        	owner.addCheckConstraint(this);
 		// TODO parse condition
 	}
 	
