@@ -72,6 +72,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     private OrderedSet<DBForeignKeyConstraint> foreignKeyConstraints;
     private OrderedNameMap<DBIndex> indexes;
     private Set<DBTable> referrers;
+	private List<DBCheckConstraint> checkConstraints;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -91,6 +92,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
         this.columns = OrderedNameMap.createCaseInsensitiveMap();
         this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
         this.foreignKeyConstraints = new OrderedSet<DBForeignKeyConstraint>();
+        this.checkConstraints = new ArrayList<DBCheckConstraint>();
         this.indexes = OrderedNameMap.createCaseInsensitiveMap();
         this.referrers = new HashSet<DBTable>();
     }
@@ -253,6 +255,17 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 	public String[] getPKColumnNames() {
 		DBPrimaryKeyConstraint pk = getPrimaryKeyConstraint();
 		return (pk != null ? pk.getColumnNames() : EMPTY_ARRAY);
+	}
+
+    // check constraint operations -------------------------------------------------------------------------------------
+
+	public List<DBCheckConstraint> getCheckConstraints() {
+		return checkConstraints;
+	}
+
+	public void addCheckConstraint(DBCheckConstraint checkConstraint) {
+		checkConstraint.setTable(this);
+		this.checkConstraints.add(checkConstraint);
 	}
 
     // row operations --------------------------------------------------------------------------------------------------

@@ -39,7 +39,9 @@ import org.databene.commons.collection.OrderedNameMap;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.DatabaseDialectManager;
+import org.databene.jdbacl.dialect.OracleDialect;
 import org.databene.jdbacl.model.DBCatalog;
+import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBColumnType;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
@@ -79,6 +81,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     boolean importingIndexes;
 	boolean importingUKs = true;
 	boolean importingSequences = false;
+	boolean importingChecks = true;
 	boolean lazy = false;
 	
     final Connection connection;
@@ -196,6 +199,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                importIndexes();
             	importPrimaryKeys();
 	            importImportedKeys();
+	            if (importingChecks)
+	            	importChecks();
             }
             return database;
         } catch (SQLException e) {
@@ -604,6 +609,24 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                importImportedKeys((DefaultDBTable) table);
 	                count++;
 	            }
+    }
+
+    private void importChecks() throws SQLException {
+        LOGGER.info("Importing checks");
+        int count = 0;
+        if (dialect instanceof OracleDialect) {
+	        for (DBCatalog catalog : database.getCatalogs())
+		        for (DBSchema schema : catalog.getSchemas()) {
+		        	OracleDialect oraDialect = (OracleDialect) dialect;
+					DBCheckConstraint[] newChecks = oraDialect.queryCheckConstraints(connection, schema.getName());
+					for (DBCheckConstraint newCheck : newChecks) {
+		                if (!tableSupported(newCheck.getTableName()))
+		                	continue;
+		                schema.getTable(newCheck.getTableName()).addCheckConstraint(newCheck);
+					}
+	                count++;
+	            }
+        }
     }
 
     private boolean tableSupported(String tableName) {

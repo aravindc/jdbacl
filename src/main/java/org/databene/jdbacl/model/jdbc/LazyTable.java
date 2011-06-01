@@ -32,6 +32,7 @@ import org.databene.commons.NullSafeComparator;
 import org.databene.commons.bean.HashCodeBuilder;
 import org.databene.commons.iterator.TableRowIterator;
 import org.databene.jdbacl.model.DBCatalog;
+import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.CompositeDBObject;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
@@ -165,6 +166,14 @@ public class LazyTable implements DBTable {
 
 	public DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames) {
 	    return getRealTable().getForeignKeyConstraint(columnNames);
+	}
+
+	public List<DBCheckConstraint> getCheckConstraints() {
+		return getRealTable().getCheckConstraints();
+	}
+
+	public void addCheckConstraint(DBCheckConstraint checkConstraint) {
+		getRealTable().addCheckConstraint(checkConstraint);
 	}
 
 	public DBIndex getIndex(String indexName) {

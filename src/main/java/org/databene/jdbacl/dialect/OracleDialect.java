@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -33,10 +33,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.util.regex.Pattern;
 
 import org.databene.commons.ArrayBuilder;
+import org.databene.commons.NullSafeComparator;
+import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
+import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBSequence;
 
 /**
@@ -51,6 +56,7 @@ public class OracleDialect extends DatabaseDialect {
 	private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
     private static final String TIMESTAMP_MESSAGE = "to_timestamp(''{0}'', ''yyyy-mm-dd HH24:mi:ss.FF'')";
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
+    private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
 
 	public OracleDialect() {
 	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN);
@@ -95,6 +101,37 @@ public class OracleDialect extends DatabaseDialect {
 			builder.add(sequence);
 		}
 		return builder.toArray();
+	}
+	
+	public DBCheckConstraint[] queryCheckConstraints(Connection connection, String schemaName) throws SQLException {
+		Statement statement = connection.createStatement();
+		String query = "select owner, constraint_name, table_name, search_condition " +
+				"from user_constraints where constraint_type = 'C'";
+		if (schemaName != null)
+			query += " and owner = '" + schemaName.toUpperCase() + "'";
+		ResultSet resultSet = statement.executeQuery(query);
+		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<DBCheckConstraint>(DBCheckConstraint.class);
+		while (resultSet.next()) {
+			String ownerName = resultSet.getString("owner");
+			if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
+				String constraintName = resultSet.getString("constraint_name");
+				String tableName = resultSet.getString("table_name");
+				String condition = resultSet.getString("search_condition");
+				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
+					DBCheckConstraint constraint = new DBCheckConstraint(constraintName, tableName, condition);
+					builder.add(constraint);
+				}
+			}
+		}
+		return builder.toArray();
+	}
+	
+	public static void main(String[] args) throws Exception {
+		DBCheckConstraint[] cc = new OracleDialect().queryCheckConstraints(DBUtil.connect("oracle"), null);
+		System.out.println("Check Constraints:");
+		for (DBCheckConstraint c : cc)
+			System.out.println(c);
+		System.out.println(cc.length + " check constraints found");
 	}
 	
 }

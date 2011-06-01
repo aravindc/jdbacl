@@ -62,7 +62,10 @@ public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableCo
 	String[] getPKColumnNames();
 
 	Set<DBUniqueConstraint> getUniqueConstraints();
-	void addUniqueConstraint(DBUniqueConstraint dbUniqueConstraint);
+	void addUniqueConstraint(DBUniqueConstraint uniqueConstraint);
+
+	List<DBCheckConstraint> getCheckConstraints();
+	void addCheckConstraint(DBCheckConstraint checkConstraint);
 
 	Set<DBForeignKeyConstraint> getForeignKeyConstraints();
 	DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames);

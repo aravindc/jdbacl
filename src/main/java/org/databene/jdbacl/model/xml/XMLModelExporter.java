@@ -34,6 +34,7 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.xml.SimpleXMLWriter;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBCatalog;
+import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBIndex;
@@ -124,6 +125,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			exportPK(pk, writer);
 		exportFks(table.getForeignKeyConstraints(), writer);
 		exportUKs(table.getUniqueConstraints(), writer);
+		exportChecks(table.getCheckConstraints(), writer);
 		exportIndexes(table.getIndexes(), writer);
 		writer.endElement("table");
 	}
@@ -173,6 +175,16 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			if (columnNames.length > 1)
 				writeColumnGroup(columnNames, writer);
 			writer.endElement("uk");
+		}
+	}
+
+	private void exportChecks(List<DBCheckConstraint> checks, SimpleXMLWriter writer) 
+			throws SAXException {
+		for (DBCheckConstraint check : checks) {
+			AttributesImpl atts = createAttributes("name", check.getName());
+			addAttribute("definition", check.getCondition(), atts);
+			writer.startElement("check", atts);
+			writer.endElement("check");
 		}
 	}
 

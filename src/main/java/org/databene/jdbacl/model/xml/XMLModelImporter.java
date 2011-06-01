@@ -33,6 +33,7 @@ import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.xml.XMLUtil;
 import org.databene.jdbacl.model.DBCatalog;
+import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBIndex;
@@ -145,6 +146,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 				parseUK(child, table);
 			else if ("fk".equals(childName))
 				parseFK(child, table, schema);
+			else if ("check".equals(childName))
+				parseCheck(child, table);
 			else if ("index".equals(childName))
 				parseIndex(child, table);
 			else
@@ -197,6 +200,10 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, owner, columnNames, refereeTable, refereeColumnNames);
 		return fk;
 
+	}
+
+	private DBCheckConstraint parseCheck(Element e, DefaultDBTable table) {
+		return new DBCheckConstraint(e.getAttribute("name"), table, e.getAttribute("definition"));
 	}
 
 	private DBIndex parseIndex(Element e, DefaultDBTable table) {
