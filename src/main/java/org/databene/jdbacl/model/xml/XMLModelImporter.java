@@ -24,6 +24,7 @@ package org.databene.jdbacl.model.xml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.Assert;
@@ -227,16 +228,16 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		DBSequence sequence = new DBSequence(e.getAttribute("name"), schema);
 		String start = e.getAttribute("start");
 		if (!StringUtil.isEmpty(start))
-			sequence.setStart(Long.parseLong(start));
+			sequence.setStart(new BigInteger(start));
 		String increment = e.getAttribute("increment");
 		if (!StringUtil.isEmpty(increment))
-			sequence.setIncrement(Long.parseLong(increment));
+			sequence.setIncrement(new BigInteger(increment));
 		String maxValue = e.getAttribute("maxValue");
 		if (!StringUtil.isEmpty(maxValue))
-			sequence.setMaxValue(Long.parseLong(maxValue));
+			sequence.setMaxValue(new BigInteger(maxValue));
 		String minValue = e.getAttribute("minValue");
 		if (!StringUtil.isEmpty(minValue))
-			sequence.setMinValue(Long.parseLong(minValue));
+			sequence.setMinValue(new BigInteger(minValue));
 		String cycle = e.getAttribute("cycle");
 		if (!StringUtil.isEmpty(cycle))
 			sequence.setCycle(Boolean.parseBoolean(cycle));

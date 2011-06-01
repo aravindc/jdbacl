@@ -21,6 +21,8 @@
 
 package org.databene.jdbacl.model;
 
+import java.math.BigInteger;
+
 import org.databene.commons.NullSafeComparator;
 
 /**
@@ -35,10 +37,10 @@ public class DBSequence extends AbstractDBObject {
 
 	private static final long CACHE_DEFAULT = 20; // TODO this applies only for Oracle
 	
-	private long start = 1;
-	private long increment = 1;
-	private Long maxValue = null;
-	private Long minValue = null;
+	private BigInteger start = BigInteger.ONE;
+	private BigInteger increment = BigInteger.ONE;
+	private BigInteger maxValue = null;
+	private BigInteger minValue = null;
 	private boolean cycle = false;
 	private long cache = CACHE_DEFAULT;
 	private boolean order = false;
@@ -48,51 +50,51 @@ public class DBSequence extends AbstractDBObject {
 		super(name, "sequence", owner);
 	}
 
-	public long getStart() {
+	public BigInteger getStart() {
 		return start;
 	}
 
-	public Long getStartIfNotDefault() {
-		return (this.start != 1 ? this.start : null);
+	public BigInteger getStartIfNotDefault() {
+		return (BigInteger.ONE.equals(this.start) ? null : this.start);
 	}
 
-	public void setStart(long start) {
+	public void setStart(BigInteger start) {
 		this.start = start;
 	}
 
-	public long getIncrement() {
+	public BigInteger getIncrement() {
 		return increment;
 	}
 	
-	public Long getIncrementIfNotDefault() {
-		return (increment != 1 ? increment : null);
+	public BigInteger getIncrementIfNotDefault() {
+		return (BigInteger.ONE.equals(increment) ?  null : increment);
 	}
 	
-	public void setIncrement(long increment) {
+	public void setIncrement(BigInteger increment) {
 		this.increment = increment;
 	}
 
-	public Long getMaxValue() {
+	public BigInteger getMaxValue() {
 		return maxValue;
 	}
 
-	public Long getMaxValueIfNotDefault() {
+	public BigInteger getMaxValueIfNotDefault() {
 		return maxValue;
 	}
 
-	public void setMaxValue(Long maxValue) {
+	public void setMaxValue(BigInteger maxValue) {
 		this.maxValue = maxValue;
 	}
 
-	public Long getMinValue() {
+	public BigInteger getMinValue() {
 		return minValue;
 	}
 
-	public Long getMinValueIfNotDefault() {
+	public BigInteger getMinValueIfNotDefault() {
 		return minValue;
 	}
 
-	public void setMinValue(Long minValue) {
+	public void setMinValue(BigInteger minValue) {
 		this.minValue = minValue;
 	}
 
@@ -158,9 +160,9 @@ public class DBSequence extends AbstractDBObject {
 
 	public String createDDL() {
 		StringBuilder builder = new StringBuilder("create sequence ").append(name);
-		if (start != 1)
+		if (!BigInteger.ONE.equals(start))
 			builder.append(" start with ").append(start);
-		if (increment != 1)
+		if (!BigInteger.ONE.equals(increment))
 			builder.append(" increment by ").append(increment);
 		if (maxValue != null)
 			builder.append(" maxvalue ").append(maxValue);

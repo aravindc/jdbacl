@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -84,13 +85,14 @@ public class OracleDialect extends DatabaseDialect {
 		ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
 		while (resultSet.next()) {
 			DBSequence sequence = new DBSequence(resultSet.getString(1), null);
-			sequence.setMinValue(resultSet.getLong(2));
-			sequence.setMaxValue(resultSet.getLong(3));
-			sequence.setIncrement(resultSet.getInt(4));
+			sequence.setMinValue(new BigInteger(resultSet.getString(2)));
+			sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
+			sequence.setIncrement(new BigInteger(resultSet.getString(4)));
 			sequence.setCycle("Y".equals(resultSet.getString(5)));
 			sequence.setOrder("Y".equals(resultSet.getString(6)));
 			sequence.setCache(resultSet.getLong(7));
 			sequence.setLastNumber(resultSet.getLong(8));
+			builder.add(sequence);
 		}
 		return builder.toArray();
 	}
