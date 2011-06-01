@@ -78,6 +78,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     Pattern excludeTables;
     boolean importingIndexes;
 	boolean importingUKs = true;
+	boolean importingSequences = false;
 	boolean lazy = false;
 	
     final Connection connection;
@@ -151,6 +152,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	public void setImportingUKs(boolean importingUKs) {
 		this.importingUKs  = importingUKs;
     }
+	
+	public void setImportingSequences(boolean importingSequences) {
+		this.importingSequences = importingSequences;
+	}
 
     public void setSchemaName(String schemaName) {
 	    this.schemaName = schemaName;
@@ -183,6 +188,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             importCatalogs();
             importSchemas();
             importTables();
+            if (importingSequences)
+            	importSequences();
             if (!lazy) {
             	importColumns();
 	            if (importingIndexes || importingUKs)
@@ -683,15 +690,24 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
      }
 
     class TableNameFilter implements Filter<String> {
-
 		public boolean accept(String tableName) {
 			if (tableName.contains("$") || (excludeTables != null && excludeTables.matcher(tableName).matches()))
 				return false;
 		    return (includeTables == null || includeTables.matcher(tableName).matches());
 
         }
-    	
     }
+    
+	private void importSequences() {
+		try {
+			if (dialect.isSequenceSupported())
+				dialect.querySequences(connection);
+		} catch (Exception e) {
+			LOGGER.error("Error importing sequences", e);
+		}
+	}
+
+
     
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
