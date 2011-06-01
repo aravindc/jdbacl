@@ -112,7 +112,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			String childName = child.getNodeName();
 			if ("table".equals(childName))
 				parseTableName(child, schema);
-			else
+			else if (!"sequence".equals(childName))
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
 		for (Element child : children) {
