@@ -156,6 +156,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		this.importingUKs  = importingUKs;
     }
 	
+	public void setImportingChecks(boolean importingChecks) {
+		this.importingChecks = importingChecks;
+	}
+	
 	public void setImportingSequences(boolean importingSequences) {
 		this.importingSequences = importingSequences;
 	}

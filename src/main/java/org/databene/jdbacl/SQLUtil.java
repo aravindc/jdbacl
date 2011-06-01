@@ -28,6 +28,7 @@ import java.util.StringTokenizer;
 import org.databene.commons.ArrayFormat;
 import org.databene.commons.CollectionUtil;
 import org.databene.commons.StringUtil;
+import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBConstraint;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
@@ -232,11 +233,17 @@ public class SQLUtil {
 			return fkDescription((DBForeignKeyConstraint) constraint);
 		else if (constraint instanceof DBNotNullConstraint)
 			return notNullDescription((DBNotNullConstraint) constraint);
+		else if (constraint instanceof DBCheckConstraint)
+			return checkDescription((DBCheckConstraint) constraint);
 		else
 			throw new UnsupportedOperationException("Unknown constraint type: " + 
 					constraint.getClass());
 	}
 	
+	private static String checkDescription(DBCheckConstraint constraint) {
+		return "CHECK " + constraint.getCondition();
+	}
+
 	private static String notNullDescription(DBNotNullConstraint constraint) {
 		return constraint.getColumnNames()[0] + " NOT NULL";
 	}
