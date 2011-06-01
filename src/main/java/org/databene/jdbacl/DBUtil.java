@@ -102,6 +102,15 @@ public class DBUtil {
 		return JDBCConnectData.parseSingleDbProperties(file.getAbsolutePath());
     }
     
+	public static Connection connect(String environment) throws ConnectFailedException {
+		try {
+			JDBCConnectData connectData = DBUtil.getConnectData(environment);
+		    return connect(connectData);
+		} catch (IOException e) {
+			throw new ConfigurationError("Error reading environment settings: " + environment);
+		}
+    }
+
 	public static Connection connect(JDBCConnectData data) throws ConnectFailedException {
 		if (StringUtil.isEmpty(data.url))
 			throw new ConfigurationError("No JDBC URL specified");
