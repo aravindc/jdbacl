@@ -45,7 +45,6 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
     	super(name, type, owner);
     }
 
-	@SuppressWarnings({ "rawtypes" })
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;
@@ -59,12 +58,7 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
 		for (int i = 0; i < thisComponents.size(); i++) {
 			C component = componentIterator.next();
 			DBObject otherComponent = otherComponents.get(i);
-			if ((component instanceof CompositeDBObject)) {
-				if (!(otherComponent instanceof CompositeDBObject))
-					return false;
-				if (!((CompositeDBObject) component).isIdentical((CompositeDBObject) otherComponent))
-					return false;
-			} else if (!component.equals(otherComponent))
+			if (!component.isIdentical(otherComponent))
 				return false;
 		}
 		return true;
