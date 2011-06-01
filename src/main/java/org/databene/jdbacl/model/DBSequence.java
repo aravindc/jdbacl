@@ -46,8 +46,10 @@ public class DBSequence extends AbstractDBObject {
 	private boolean order = false;
 	private long lastNumber = 0;
 
-	public DBSequence(String name, CompositeDBObject<?> owner) {
+	public DBSequence(String name, DBSchema owner) {
 		super(name, "sequence", owner);
+        if (owner != null)
+        	owner.addSequence(this);
 	}
 
 	public BigInteger getStart() {
