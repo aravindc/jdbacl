@@ -40,6 +40,7 @@ import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBMetaDataExporter;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBSchema;
+import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
@@ -108,6 +109,8 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.startElement("schema", atts);
 		for (DBTable table : schema.getTables())
 			exportTable(table, writer);
+		for (DBSequence sequence : schema.getSequences(true))
+			exportSequence(sequence, writer);
 		writer.endElement("schema");
 	}
 
@@ -211,6 +214,24 @@ public class XMLModelExporter implements DBMetaDataExporter {
 				writeColumnGroup(columnNames, writer);
 			writer.endElement("index");
 		}
+	}
+
+	private void exportSequence(DBSequence sequence, SimpleXMLWriter writer) throws SAXException {
+		AttributesImpl atts = createAttributes("name", sequence.getName());
+		addIfNotNull("start", sequence.getStartIfNotDefault(), atts);
+		addIfNotNull("increment", sequence.getIncrementIfNotDefault(), atts);
+		addIfNotNull("maxValue", sequence.getMaxValueIfNotDefault(), atts);
+		addIfNotNull("minValue", sequence.getMinValueIfNotDefault(), atts);
+		addIfNotNull("cycle", sequence.getCycleIfNotDefault(), atts);
+		addIfNotNull("cache", sequence.getCacheIfNotDefault(), atts);
+		addIfNotNull("order", sequence.getOrderIfNotDefault(), atts);
+		writer.startElement("sequence", atts);
+		writer.endElement("sequence");
+	}
+
+	private void addIfNotNull(String name, Object value, AttributesImpl atts) {
+		if (value != null)
+			addAttribute(name, value.toString(), atts);
 	}
 
 }

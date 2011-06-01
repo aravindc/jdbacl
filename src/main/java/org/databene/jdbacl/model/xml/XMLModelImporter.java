@@ -39,6 +39,7 @@ import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBNonUniqueIndex;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBSchema;
+import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.DBUniqueIndex;
@@ -117,6 +118,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			String childName = child.getNodeName();
 			if ("table".equals(childName))
 				parseTableStructure(child, schema);
+			else if ("sequence".equals(childName))
+				parseSequence(child, schema);
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
@@ -220,13 +223,39 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return columnNames;
 	}
 
-	public static void main(String[] args) throws ImportFailedException {
-		Database db = new XMLModelImporter(new File("TG26.meta.xml")).importDatabase();
-		System.out.println(db);
+	private DBSequence parseSequence(Element e, DBSchema schema) {
+		DBSequence sequence = new DBSequence(e.getAttribute("name"), schema);
+		String start = e.getAttribute("start");
+		if (!StringUtil.isEmpty(start))
+			sequence.setStart(Long.parseLong(start));
+		String increment = e.getAttribute("increment");
+		if (!StringUtil.isEmpty(increment))
+			sequence.setIncrement(Long.parseLong(increment));
+		String maxValue = e.getAttribute("maxValue");
+		if (!StringUtil.isEmpty(maxValue))
+			sequence.setMaxValue(Long.parseLong(maxValue));
+		String minValue = e.getAttribute("minValue");
+		if (!StringUtil.isEmpty(minValue))
+			sequence.setMinValue(Long.parseLong(minValue));
+		String cycle = e.getAttribute("cycle");
+		if (!StringUtil.isEmpty(cycle))
+			sequence.setCycle(Boolean.parseBoolean(cycle));
+		String cache = e.getAttribute("cache");
+		if (!StringUtil.isEmpty(cache))
+			sequence.setCache(Long.parseLong(cache));
+		String order = e.getAttribute("order");
+		if (!StringUtil.isEmpty(order))
+			sequence.setOrder(Boolean.parseBoolean(order));
+		return sequence;
 	}
 
 	public void close() throws IOException {
 		// nothing special to do
 	}
 	
+	public static void main(String[] args) throws ImportFailedException {
+		Database db = new XMLModelImporter(new File("TG26.meta.xml")).importDatabase();
+		System.out.println(db);
+	}
+
 }

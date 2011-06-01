@@ -99,4 +99,10 @@ public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> imp
         support.removeTable(table);
     }
 
+    // sequence operations ---------------------------------------------------------------------------------------------
+    
+	public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
+		return support.getSequences(recursive, result);
+	}
+
 }

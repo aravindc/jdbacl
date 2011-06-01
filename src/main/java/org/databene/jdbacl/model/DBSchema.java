@@ -109,4 +109,8 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
         support.removeTable(table);
     }
 
+	public List<DBSequence> getSequences(boolean recursive) {
+		return support.getSequences(recursive);
+	}
+
 }

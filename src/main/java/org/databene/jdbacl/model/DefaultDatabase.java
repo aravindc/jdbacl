@@ -88,7 +88,7 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 
     public List<DBTable> getTables() {
     	List<DBTable> tables = new ArrayList<DBTable>();
-        for (DBCatalog catalog : getComponents())
+        for (DBCatalog catalog : getCatalogs())
             for (DBTable table : catalog.getTables())
             	tables.add(table);
         return tables;
@@ -113,5 +113,13 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 		DBTable table = getTable(tableName, true);
 		table.getSchema().removeTable(table);
     }
+
+	public List<DBSequence> getSequences() {
+    	List<DBSequence> sequences = new ArrayList<DBSequence>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBSequence table : catalog.getSequences())
+            	sequences.add(table);
+        return sequences;
+	}
 
 }

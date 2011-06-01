@@ -35,13 +35,17 @@ import org.databene.commons.collection.OrderedNameMap;
  */
 public class PackageAndTableSupport {
 
-    OrderedNameMap<DBPackage> packages;
+	private OrderedNameMap<DBPackage> packages;
 	private OrderedNameMap<DBTable> tables;
+	private OrderedNameMap<DBSequence> sequences;
 	
     public PackageAndTableSupport() {
     	this.packages = OrderedNameMap.createCaseInsensitiveMap();
 		this.tables = OrderedNameMap.createCaseInsensitiveMap();
+		this.sequences = OrderedNameMap.createCaseInsensitiveMap();
     }
+
+    // package operations ----------------------------------------------------------------------------------------------
 
     public void addPackage(DBPackage dbPackage) {
 		packages.put(dbPackage.getName(), dbPackage);
@@ -51,6 +55,8 @@ public class PackageAndTableSupport {
 		return packages.values();
 	}
     
+    // table operations ------------------------------------------------------------------------------------------------
+
     public List<DBTable> getTables() {
         return getTables(false);
     }
@@ -77,6 +83,24 @@ public class PackageAndTableSupport {
 
     public void removeTable(DBTable table) {
         tables.remove(table.getName());
+    }
+    
+    // sequence operations ---------------------------------------------------------------------------------------------
+
+    public void addSequence(DBSequence sequence) {
+    	this.sequences.put(sequence.getName(), sequence);
+    }
+    
+	public List<DBSequence> getSequences(boolean recursive) {
+		return getSequences(recursive, new ArrayList<DBSequence>());
+	}
+
+    public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
+    	result.addAll(sequences.values());
+    	if (recursive)
+    		for (DBPackage subPackage : packages.values())
+    			subPackage.getSequences(recursive, result);
+		return result;
     }
 
 }

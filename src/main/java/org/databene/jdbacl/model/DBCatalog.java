@@ -117,14 +117,14 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     
     public List<DBTable> getTables() {
     	List<DBTable> tables = new ArrayList<DBTable>();
-        for (DBSchema schema : getComponents())
+        for (DBSchema schema : getSchemas())
             for (DBTable table : schema.getTables())
             	tables.add(table);
         return tables;
     }
 
     public DBTable getTable(String name) {
-        for (DBSchema schema : getComponents())
+        for (DBSchema schema : getSchemas())
             for (DBTable table : schema.getTables())
             	if (table.getName().equals(name))
             		return table;
@@ -135,5 +135,13 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
 		DBTable table = getTable(tableName);
 		table.getSchema().removeTable(table);
     }
+
+	public List<DBSequence> getSequences() {
+    	List<DBSequence> sequences = new ArrayList<DBSequence>();
+        for (DBSchema schema : getSchemas())
+            for (DBSequence table : schema.getSequences(true))
+            	sequences.add(table);
+        return sequences;
+	}
 
 }
