@@ -105,18 +105,21 @@ public class OracleDialect extends DatabaseDialect {
 	
 	public DBCheckConstraint[] queryCheckConstraints(Connection connection, String schemaName) throws SQLException {
 		Statement statement = connection.createStatement();
+		statement.setFetchSize(300);
 		String query = "select owner, constraint_name, table_name, search_condition " +
 				"from user_constraints where constraint_type = 'C'";
 		if (schemaName != null)
 			query += " and owner = '" + schemaName.toUpperCase() + "'";
 		ResultSet resultSet = statement.executeQuery(query);
 		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<DBCheckConstraint>(DBCheckConstraint.class);
+		//int count = 0;
 		while (resultSet.next()) {
 			String ownerName = resultSet.getString("owner");
 			if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
 				String constraintName = resultSet.getString("constraint_name");
 				String tableName = resultSet.getString("table_name");
 				String condition = resultSet.getString("search_condition");
+				//System.out.println(++count + " " + ownerName + "."+ tableName + ": " + condition);
 				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
 					DBCheckConstraint constraint = new DBCheckConstraint(constraintName, tableName, condition);
 					builder.add(constraint);
@@ -127,7 +130,7 @@ public class OracleDialect extends DatabaseDialect {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		DBCheckConstraint[] cc = new OracleDialect().queryCheckConstraints(DBUtil.connect("oracle"), null);
+		DBCheckConstraint[] cc = new OracleDialect().queryCheckConstraints(DBUtil.connect(args[0]), null);
 		System.out.println("Check Constraints:");
 		for (DBCheckConstraint c : cc)
 			System.out.println(c);
