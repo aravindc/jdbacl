@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -27,10 +27,8 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.ArrayFormat;
-import org.databene.commons.Named;
 import org.databene.commons.bean.HashCodeBuilder;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -38,7 +36,7 @@ import java.util.Arrays;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public abstract class DBConstraint extends AbstractDBTableComponent implements Named, Serializable {
+public abstract class DBConstraint extends AbstractDBTableComponent implements MultiColumnObject {
 
     private static final long serialVersionUID = 3768329019450975632L;
     
