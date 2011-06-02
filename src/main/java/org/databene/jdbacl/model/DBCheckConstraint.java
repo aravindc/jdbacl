@@ -21,13 +21,15 @@
 
 package org.databene.jdbacl.model;
 
+import org.databene.commons.StringUtil;
+
 /**
  * TODO Document class.<br/><br/>
  * Created: 01.06.2011 12:40:30
  * @since TODO version
  * @author Volker Bergmann
  */
-public class DBCheckConstraint extends DBConstraint implements MultiColumnObject {
+public class DBCheckConstraint extends DBConstraint {
 	
 	private static final long serialVersionUID = 3766067048212751458L;
 	
@@ -59,7 +61,14 @@ public class DBCheckConstraint extends DBConstraint implements MultiColumnObject
 		if (other == null || !(other instanceof DBCheckConstraint))
 			return false;
 		DBCheckConstraint that = (DBCheckConstraint) other;
-		return this.condition.equals(that.getCondition());
+		return this.name.equals(that.getName()) 
+			&& this.condition.equals(that.getCondition());
+	}
+
+	public boolean isEquivalent(DBCheckConstraint that) {
+		// TODO parse and compare conditions
+		return this.tableName.equals(that.tableName) 
+			&& StringUtil.normalizeSpace(this.condition).equals(StringUtil.normalizeSpace(that.getCondition()));
 	}
 
 	public String getCondition() {
