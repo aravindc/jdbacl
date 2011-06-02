@@ -26,11 +26,9 @@
 
 package org.databene.jdbacl.model;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import org.databene.commons.ArrayFormat;
-import org.databene.commons.Named;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.bean.HashCodeBuilder;
 
@@ -39,7 +37,7 @@ import org.databene.commons.bean.HashCodeBuilder;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public abstract class DBIndex extends AbstractDBTableComponent implements Named, Serializable {
+public abstract class DBIndex extends AbstractDBTableComponent implements MultiColumnObject {
 
 	private static final long serialVersionUID = -1656761838194962745L;
 	
