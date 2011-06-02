@@ -124,7 +124,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		if (pk != null)
 			exportPK(pk, writer);
 		exportFks(table.getForeignKeyConstraints(), writer);
-		exportUKs(table.getUniqueConstraints(), writer);
+		exportUKs(table.getUniqueConstraints(false), writer);
 		exportChecks(table.getCheckConstraints(), writer);
 		exportIndexes(table.getIndexes(), writer);
 		writer.endElement("table");
