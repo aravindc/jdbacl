@@ -125,7 +125,6 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
     public void setPrimaryKey(DBPrimaryKeyConstraint constraint) {
         this.pk = constraint;
-        this.uniqueConstraints.add(constraint);
     }
 
     public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
@@ -197,11 +196,17 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
     // uniqueConstraint operations -------------------------------------------------------------------------------------
 
-    public Set<DBUniqueConstraint> getUniqueConstraints() {
-        return uniqueConstraints;
+    public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
+    	if (!includePK)
+    		return uniqueConstraints;
+    	Set<DBUniqueConstraint> result = new HashSet<DBUniqueConstraint>(uniqueConstraints);
+    	result.add(pk);
+    	return result;
     }
 
 	public DBUniqueConstraint getUniqueConstraint(String[] columnNames) {
+		if (pk != null && StringUtil.equalsIgnoreCase(columnNames, pk.getColumnNames()))
+			return pk;
 		for (DBUniqueConstraint constraint : uniqueConstraints)
 			if (StringUtil.equalsIgnoreCase(columnNames, constraint.getColumnNames()))
 				return constraint;

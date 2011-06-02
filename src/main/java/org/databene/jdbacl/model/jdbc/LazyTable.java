@@ -196,8 +196,8 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getRowCount(connection);
     }
 
-	public Set<DBUniqueConstraint> getUniqueConstraints() {
-	    return getRealTable().getUniqueConstraints();
+	public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
+	    return getRealTable().getUniqueConstraints(includePK);
     }
 
 	public Collection<DBTable> getReferrers() {
