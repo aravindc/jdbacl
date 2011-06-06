@@ -33,7 +33,7 @@ import org.databene.commons.collection.OrderedNameMap;
  * @since TODO version
  * @author Volker Bergmann
  */
-public class PackageAndTableSupport {
+public class PackageAndTableSupport implements TableHolder, SequenceHolder {
 
 	private OrderedNameMap<DBPackage> packages;
 	private OrderedNameMap<DBTable> tables;

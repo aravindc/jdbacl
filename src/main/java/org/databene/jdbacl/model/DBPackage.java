@@ -30,7 +30,7 @@ import java.util.List;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> implements DBPackageComponent {
+public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> implements DBPackageComponent, TableHolder, SequenceHolder {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
@@ -101,6 +101,10 @@ public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> imp
 
     // sequence operations ---------------------------------------------------------------------------------------------
     
+	public List<DBSequence> getSequences(boolean recursive) {
+		return support.getSequences(recursive);
+	}
+
 	public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
 		return support.getSequences(recursive, result);
 	}

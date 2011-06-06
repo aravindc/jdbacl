@@ -33,7 +33,7 @@ import java.util.List;
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public interface Database extends CompositeDBObject<DBCatalog> {
+public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, SequenceHolder {
 	
     public List<DBCatalog> getCatalogs() ;
     public DBCatalog getCatalog(String catalogName);

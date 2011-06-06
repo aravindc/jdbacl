@@ -35,7 +35,7 @@ import java.util.List;
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> implements Serializable {
+public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> implements TableHolder, SequenceHolder, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     

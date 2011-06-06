@@ -86,7 +86,13 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 
     // table operations ------------------------------------------------------------------------------------------------
 
-    public List<DBTable> getTables() {
+	public List<DBTable> getTables() {
+		return getTables(true);
+	}
+
+	public List<DBTable> getTables(boolean recursive) {
+		if (!recursive)
+			return new ArrayList<DBTable>();
     	List<DBTable> tables = new ArrayList<DBTable>();
         for (DBCatalog catalog : getCatalogs())
             for (DBTable table : catalog.getTables())
@@ -115,6 +121,12 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
     }
 
 	public List<DBSequence> getSequences() {
+		return getSequences(true);
+	}
+
+	public List<DBSequence> getSequences(boolean recursive) {
+		if (!recursive)
+			return new ArrayList<DBSequence>();
     	List<DBSequence> sequences = new ArrayList<DBSequence>();
         for (DBCatalog catalog : getCatalogs())
             for (DBSequence table : catalog.getSequences())
