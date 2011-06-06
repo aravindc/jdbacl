@@ -193,8 +193,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			Element colsElement = XMLUtil.getChildElement(e, false, true, "columns");
 			Element[] colElements = XMLUtil.getChildElements(colsElement, false, "column");
 			for (Element colElement : colElements) {
-				columnNames = ArrayUtil.append(columnNames, colElement.getAttribute("name"));
-				refereeColumnNames = ArrayUtil.append(refereeColumnNames, colElement.getAttribute("refereeColumn"));
+				columnNames = ArrayUtil.append(colElement.getAttribute("name"), columnNames);
+				refereeColumnNames = ArrayUtil.append(colElement.getAttribute("refereeColumn"), refereeColumnNames);
 			}
 		}
 		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, owner, columnNames, refereeTable, refereeColumnNames);
@@ -226,7 +226,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			Element colsElement = XMLUtil.getChildElement(e, false, true, "columns");
 			Element[] colElements = XMLUtil.getChildElements(colsElement, false, "column");
 			for (Element colElement : colElements)
-				columnNames = ArrayUtil.append(columnNames, colElement.getAttribute("name"));
+				columnNames = ArrayUtil.append(colElement.getAttribute("name"), columnNames);
 		}
 		return columnNames;
 	}

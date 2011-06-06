@@ -144,7 +144,7 @@ public abstract class DatabaseDialect {
         StringBuilder builder = new StringBuilder("update ");
         appendQualifiedTableName(table, builder).append(" set");
         for (int i = 0; i < columnInfos.size(); i++) {
-        	if (!ArrayUtil.contains(pkColumnNames, columnInfos.get(i).name)) {
+        	if (!ArrayUtil.contains(columnInfos.get(i).name, pkColumnNames)) {
 	            builder.append(" ");
 	            appendColumnName(columnInfos.get(i).name, builder);
 	            builder.append("=?");

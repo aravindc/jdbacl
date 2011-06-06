@@ -171,7 +171,7 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 
 	public DBForeignKeyConstraint getForeignKeyConstraint() {
 		for (DBForeignKeyConstraint fk : getTable().getForeignKeyConstraints())
-			if (ArrayUtil.contains(fk.getColumnNames(), name))
+			if (ArrayUtil.contains(name, fk.getColumnNames()))
 				return fk;
 	    return null;
 	}
