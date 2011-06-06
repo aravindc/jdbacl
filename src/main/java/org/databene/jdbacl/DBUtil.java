@@ -42,6 +42,7 @@ import org.databene.commons.converter.AnyConverter;
 import org.databene.commons.converter.ToStringConverter;
 import org.databene.commons.debug.Debug;
 import org.databene.commons.depend.DependencyModel;
+import org.databene.jdbacl.model.DBConstraint;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
@@ -578,6 +579,13 @@ public class DBUtil {
 			else
 				LOGGER.warn(message);
 		}
+	}
+
+	public static boolean containsMandatoryColumn(DBConstraint fk) {
+		for (String columnName : fk.getColumnNames())
+			if (!fk.getTable().getColumn(columnName).isNullable())
+				return true;
+		return false;
 	}
 
 }
