@@ -77,7 +77,7 @@ public class DBCheckConstraint extends DBConstraint {
 
 	@Override
 	public String[] getColumnNames() {
-		throw new UnsupportedOperationException("DBConstraint.getColumnNames() is not implemented"); // TODO implement DBConstraint.getColumnNames
+		return new String[0]; // TODO implement DBConstraint.getColumnNames
 	}
 
 	@Override
