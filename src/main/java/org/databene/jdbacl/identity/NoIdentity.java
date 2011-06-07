@@ -27,9 +27,9 @@ import org.databene.commons.iterator.TableRowIterator;
 import org.databene.jdbacl.model.DBTable;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link IdentityModel} implementation that represents a missing identity definition.<br/><br/>
  * Created: 20.01.2011 16:24:48
- * @since TODO version
+ * @since 0.6.8
  * @author Volker Bergmann
  */
 public class NoIdentity extends IdentityModel {

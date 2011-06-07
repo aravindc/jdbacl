@@ -26,9 +26,9 @@ import java.math.BigInteger;
 import org.databene.commons.NullSafeComparator;
 
 /**
- * TODO Document class.<br/><br/>
+ * Represents a database sequence.<br/><br/>
  * Created: 31.05.2011 17:55:05
- * @since TODO version
+ * @since 0.6.8
  * @author Volker Bergmann
  */
 public class DBSequence extends AbstractDBObject {

@@ -28,9 +28,9 @@ import java.util.List;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * TODO Document class.<br/><br/>
+ * Helper implementation for {@link TableHolder} and {@link SequenceHolder}.<br/><br/>
  * Created: 30.05.2011 09:34:30
- * @since TODO version
+ * @since 0.6.8
  * @author Volker Bergmann
  */
 public class PackageAndTableSupport implements TableHolder, SequenceHolder {

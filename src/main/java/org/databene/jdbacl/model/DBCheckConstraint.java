@@ -24,9 +24,9 @@ package org.databene.jdbacl.model;
 import org.databene.commons.StringUtil;
 
 /**
- * TODO Document class.<br/><br/>
+ * Represents a database check constraint.<br/><br/>
  * Created: 01.06.2011 12:40:30
- * @since TODO version
+ * @since 0.6.8
  * @author Volker Bergmann
  */
 public class DBCheckConstraint extends DBConstraint {

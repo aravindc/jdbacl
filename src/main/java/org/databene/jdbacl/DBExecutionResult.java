@@ -22,9 +22,10 @@
 package org.databene.jdbacl;
 
 /**
- * TODO Document class.<br/><br/>
+ * Wrapper class for database results which tracks the information 
+ * if the according command changed the database structure.<br/><br/>
  * Created: 21.04.2011 10:15:25
- * @since TODO version
+ * @since 0.6.8
  * @author Volker Bergmann
  */
 public class DBExecutionResult {

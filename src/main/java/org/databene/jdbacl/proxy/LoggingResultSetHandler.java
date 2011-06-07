@@ -38,9 +38,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link InvocationHandler} for the {@link ResultSet} interface 
+ * that logs certain calls to the category {@link LogCategories#JDBC}.<br/>
+ * <br/>
  * Created: 12.04.2011 14:02:38
- * @since TODO version
+ * @since 0.6.8
  * @author Volker Bergmann
  */
 public class LoggingResultSetHandler implements InvocationHandler {
