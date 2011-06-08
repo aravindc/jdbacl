@@ -241,7 +241,7 @@ public class SQLUtil {
 	}
 	
 	private static String checkDescription(DBCheckConstraint constraint) {
-		return "CHECK " + constraint.getCondition();
+		return "CHECK " + constraint.getConditionText();
 	}
 
 	private static String notNullDescription(DBNotNullConstraint constraint) {

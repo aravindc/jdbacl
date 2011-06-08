@@ -182,7 +182,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			throws SAXException {
 		for (DBCheckConstraint check : checks) {
 			AttributesImpl atts = createAttributes("name", check.getName());
-			addAttribute("definition", check.getCondition(), atts);
+			addAttribute("definition", check.getConditionText(), atts);
 			writer.startElement("check", atts);
 			writer.endElement("check");
 		}
