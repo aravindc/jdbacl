@@ -19,7 +19,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.databene.jdbacl;
+package org.databene.jdbacl.sql;
 
 import static org.junit.Assert.*;
 
