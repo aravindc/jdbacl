@@ -49,6 +49,8 @@ import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.DefaultDBColumn;
 import org.databene.jdbacl.model.DefaultDBTable;
 import org.databene.jdbacl.model.DefaultDatabase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -59,6 +61,8 @@ import org.w3c.dom.Element;
  * @author Volker Bergmann
  */
 public class XMLModelImporter implements DBMetaDataImporter {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(XMLModelImporter.class);
 
 	private File file;
 	
@@ -199,11 +203,16 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		}
 		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, owner, columnNames, refereeTable, refereeColumnNames);
 		return fk;
-
 	}
 
 	private DBCheckConstraint parseCheck(Element e, DefaultDBTable table) {
-		return new DBCheckConstraint(e.getAttribute("name"), table, e.getAttribute("definition"));
+		try {
+			return new DBCheckConstraint(e.getAttribute("name"), table, e.getAttribute("definition"));
+		} catch (Exception ex) {
+			LOGGER.error("Error parsing check constraint", ex);
+			return null;
+		}
+		
 	}
 
 	private DBIndex parseIndex(Element e, DefaultDBTable table) {

@@ -42,6 +42,8 @@ import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBSequence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implements generic database concepts for Oracle.<br/><br/>
@@ -50,6 +52,8 @@ import org.databene.jdbacl.model.DBSequence;
  * @author Volker Bergmann
  */
 public class OracleDialect extends DatabaseDialect {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(OracleDialect.class);
     
 	private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd HH:mm:ss''', ''yyyy-mm-dd HH24:mi:ss'')'";
 	private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
@@ -120,8 +124,12 @@ public class OracleDialect extends DatabaseDialect {
 				String condition = resultSet.getString("search_condition");
 				//System.out.println(++count + " " + ownerName + "."+ tableName + ": " + condition);
 				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
-					DBCheckConstraint constraint = new DBCheckConstraint(constraintName, tableName, condition);
-					builder.add(constraint);
+					try {
+						DBCheckConstraint constraint = new DBCheckConstraint(constraintName, tableName, condition);
+						builder.add(constraint);
+					} catch (Exception e) {
+						LOGGER.error("Error parsing check constraint ", e);
+					}
 				}
 			}
 		}
