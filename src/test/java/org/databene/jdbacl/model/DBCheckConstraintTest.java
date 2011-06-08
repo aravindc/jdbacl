@@ -43,6 +43,7 @@ public class DBCheckConstraintTest {
 		check("col1 is null or col2 is not null", "col1", "col2");
 		check("col1 is not null and length(col2) >= 3", "col1", "col2");
 		check("((col1 in ('X', 'Y') and col2 is not null) or (col1='Z' and col3 is not null))", "col1", "col2", "col3");
+		check("(col1 in ('a', 'b', 'c', 'd') and col2 ='d') or (col1 not in ('a', 'b', 'c', 'd') and col2 is not null)", "col1", "col2");
 	}
 	
 	private void check(String condition, String... expectedColumnNames) {
