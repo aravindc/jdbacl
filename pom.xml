@@ -73,6 +73,13 @@
             <version>${contiperf_version}</version>
         </dependency>
         
+        <!--  Parsing -->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.3</version>
+        </dependency>
+        
 		<!-- logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
