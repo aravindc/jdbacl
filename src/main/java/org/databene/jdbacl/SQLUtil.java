@@ -160,8 +160,7 @@ public class SQLUtil {
     }
     
 	public static Boolean mutatesDataOrStructure(String sql) {
-		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
-		
+		sql = normalizeSQL(sql);
 		// ALTER SESSION does not change data or structure
 		if (sql.trim().startsWith("alter session"))
 			return false;
@@ -185,7 +184,7 @@ public class SQLUtil {
     }
 	
 	public static boolean isDDL(String sql) {
-		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
+		sql = normalizeSQL(sql);
 	    for (String ddl : DDL_STATEMENTS)
 	    	if (sql.startsWith(ddl))
 	    		return true;
@@ -193,7 +192,7 @@ public class SQLUtil {
 	}
 	
 	public static boolean isDML(String sql) {
-		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
+		sql = normalizeSQL(sql);
 	    for (String ddl : DML_STATEMENTS)
 	    	if (sql.startsWith(ddl))
 	    		return true;
@@ -201,7 +200,7 @@ public class SQLUtil {
 	}
 	
 	public static boolean isProcedureCall(String sql) {
-		sql = sql.trim().toLowerCase();
+		sql = normalizeSQL(sql);
 	    for (String call : PROCEDURE_CALLS)
 	    	if (sql.startsWith(call))
 	    		return true;
@@ -209,7 +208,7 @@ public class SQLUtil {
 	}
 
 	public static boolean isQuery(String sql) {
-		sql = sql.trim().toLowerCase();
+		sql = normalizeSQL(sql);
 		// anything else than SELECT must be a mutation...
 	    if (!sql.startsWith("select"))
 	    	return false;
@@ -221,6 +220,13 @@ public class SQLUtil {
 	    // it is a plain select statement
 	    return true;
     }
+
+	private static String normalizeSQL(String sql) {
+		sql = StringUtil.normalizeSpace(sql.trim().toLowerCase());
+		while (sql.contains("/*"))
+			sql = StringUtil.removeSection(sql, "/*", "*/").trim();
+		return sql;
+	}
 
 	public static String constraintDescription(DBConstraint constraint) {
 		if (constraint instanceof DBPrimaryKeyConstraint)
