@@ -517,7 +517,10 @@ public class DBUtil {
     }
 
 	public static void checkReadOnly(String sql, boolean readOnly) {
-		if (readOnly && SQLUtil.mutatesDataOrStructure(sql))
+		if (!readOnly)
+			return;
+		Boolean mutation = SQLUtil.mutatesDataOrStructure(sql);
+		if (mutation == null || mutation)
 			throw new IllegalStateException("Tried to mutate a database with read-only settings: " + sql);
 	}
 
