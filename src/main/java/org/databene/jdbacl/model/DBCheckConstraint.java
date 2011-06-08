@@ -95,7 +95,7 @@ public class DBCheckConstraint extends DBConstraint {
 	}
 	
 	private String[] getColumnNames(Expression<?> condition) {
-		return CollectionUtil.toArray(scanForColumns(condition, new HashSet<String>()));
+		return CollectionUtil.toArray(scanForColumns(condition, new HashSet<String>()), String.class);
 	}
 
 	private Set<String> scanForColumns(Expression<?> expression, Set<String> result) {
