@@ -36,7 +36,6 @@ import java.text.MessageFormat;
 import java.util.regex.Pattern;
 
 import org.databene.commons.ArrayBuilder;
-import org.databene.commons.NullSafeComparator;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
