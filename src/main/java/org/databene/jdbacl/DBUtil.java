@@ -93,23 +93,23 @@ public class DBUtil {
     
     // connection handling ---------------------------------------------------------------------------------------------
     
-    public static JDBCConnectData getConnectData(String environment) throws IOException {
-		String filename = environment + ".env.properties";
-		File file = new File(filename);
-		if (!file.exists())
-			file = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
-		if (!file.exists())
-			throw new ConfigurationError("No environment definition '" + filename + "' found");
-		return JDBCConnectData.parseSingleDbProperties(file.getAbsolutePath());
+    public static JDBCConnectData getConnectData(String environment) {
+		try {
+			String filename = environment + ".env.properties";
+			File file = new File(filename);
+			if (!file.exists())
+				file = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
+			if (!file.exists())
+				throw new ConfigurationError("No environment definition '" + filename + "' found");
+			return JDBCConnectData.parseSingleDbProperties(file.getAbsolutePath());
+		} catch (IOException e) {
+			throw new ConfigurationError("Error reading environment data for '" + environment + "'");
+		}
     }
     
 	public static Connection connect(String environment) throws ConnectFailedException {
-		try {
-			JDBCConnectData connectData = DBUtil.getConnectData(environment);
-		    return connect(connectData);
-		} catch (IOException e) {
-			throw new ConfigurationError("Error reading environment settings: " + environment);
-		}
+		JDBCConnectData connectData = DBUtil.getConnectData(environment);
+	    return connect(connectData);
     }
 
 	public static Connection connect(JDBCConnectData data) throws ConnectFailedException {
