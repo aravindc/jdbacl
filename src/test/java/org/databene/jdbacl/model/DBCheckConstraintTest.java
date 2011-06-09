@@ -45,6 +45,7 @@ public class DBCheckConstraintTest {
 		check("((col1 in ('X', 'Y') and col2 is not null) or (col1='Z' and col3 is not null))", "col1", "col2", "col3");
 		check("col1 not in ('a', 'b', 'c', 'd')", "col1");
 		check("(col1 in ('a', 'b', 'c', 'd') and col2 ='d') or (col1 not in ('a', 'b', 'c', 'd') and col2 is not null)", "col1", "col2");
+		check("col1=1 and (col2 IS not null and (col3 is not null or col3 is not null or col4 is not null)) or col5=0", "col1", "col2", "col3", "col4", "col5"); 
 	}
 	
 	private void check(String condition, String... expectedColumnNames) {
