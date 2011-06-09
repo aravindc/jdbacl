@@ -31,6 +31,7 @@ import org.databene.commons.ErrorHandler;
 import org.databene.commons.Escalator;
 import org.databene.commons.Filter;
 import org.databene.commons.ImportFailedException;
+import org.databene.commons.JDBCConnectData;
 import org.databene.commons.LoggerEscalator;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
@@ -73,6 +74,9 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JDBCDBImporter.class);
 
+    String url;
+    String driver;
+    String password;
     final String user;
     String catalogName;
     String schemaName;
@@ -84,7 +88,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	boolean importingChecks = true;
 	boolean lazy = false;
 	
-    final Connection connection;
+    Connection _connection;
     DatabaseDialect dialect;
     String productName;
 
@@ -95,18 +99,35 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	DatabaseMetaData metaData;
 	Database database;
 
-    public JDBCDBImporter(String url, String driverClassname, String user, String password) throws ConnectFailedException {
-        this(url, driverClassname, user, password, null, ".*", true);
+    public JDBCDBImporter(String environment) {
+        this(DBUtil.getConnectData(environment));
     }
 
-    public JDBCDBImporter(String url, String driver, String user, String password, 
-    		String schemaName, String tablePattern, boolean importingIndexes) throws ConnectFailedException {
-    	this(DBUtil.connect(url, driver, user, password, true), user, schemaName, tablePattern, importingIndexes);
+    public JDBCDBImporter(JDBCConnectData cd) {
+    	this(cd.url, cd.driver, cd.user, cd.password, cd.catalog, cd.schema);
+	}
+
+    public JDBCDBImporter(String url, String driver, String user, String password, String catalog, String schema) {
+        this(url, driver, user, password, catalog, schema, ".*", true);
     }
 
-    public JDBCDBImporter(Connection connection, String user, 
-    		String schemaName, String includeTables, boolean importingIndexes) {
-    	this.connection = connection;
+    public JDBCDBImporter(String url, String driver, String user, String password, String catalog, String schema, 
+    		String tablePattern, boolean importingIndexes) {
+    	this._connection = null;
+        this.url = url;
+        this.driver = driver;
+        this.user = user;
+        this.password = password;
+        this.catalogName = catalog;
+        this.schemaName = schema;
+        this.includeTables = Pattern.compile(tablePattern != null ? tablePattern : ".*");
+        this.importingIndexes = importingIndexes;
+        this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
+    }
+
+    public JDBCDBImporter(Connection connection, String user, String schemaName, 
+    		String includeTables, boolean importingIndexes) {
+    	this._connection = connection;
         this.user = user;
         this.schemaName = schemaName;
         this.includeTables = Pattern.compile(includeTables != null ? includeTables : ".*");
@@ -116,7 +137,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 
     // properties ------------------------------------------------------------------------------------------------------
     
-    /**
+	/**
      * @return the productName
      */
     public String getProductName() {
@@ -127,8 +148,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     	this.errorHandler = new ErrorHandler(getClass().getName(), (faultTolerant ? Level.warn : Level.error));
     }
 
-	public Connection getConnection() {
-	    return connection;
+	public Connection getConnection() throws ConnectFailedException {
+		if (this._connection == null)
+			this._connection = DBUtil.connect(url, driver, user, password, true);
+	    return this._connection;
     }
 
     @Deprecated
@@ -178,19 +201,19 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 
 	// functional interface --------------------------------------------------------------------------------------------
 	
-	public Database importDatabase() throws ImportFailedException {
+	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
 		if (!lazy)
 			LOGGER.info("Importing database metadata. Be patient, this may take some time...");
         long startTime = System.currentTimeMillis();
         tableNameFilter = new TableNameFilter();
         try {
-            metaData = connection.getMetaData();
+            metaData = getConnection().getMetaData();
             productName = metaData.getDatabaseProductName();
             if (LOGGER.isDebugEnabled())
                 LOGGER.debug("Product name: " + productName);
             dialect = DatabaseDialectManager.getDialectForProduct(productName);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
-            	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", connection);
+            	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
             database = new DefaultDatabase(productName);
             importCatalogs();
             importSchemas();
@@ -216,12 +239,12 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     }
 
 	public void close() {
-        DBUtil.close(connection);
+        DBUtil.close(_connection);
 	}
 	
 	// private helper methods ------------------------------------------------------------------------------------------
 
-	private void importCatalogs() throws SQLException {
+	private void importCatalogs() throws SQLException, ConnectFailedException {
         LOGGER.debug("Importing catalogs");
         ResultSet catalogSet = metaData.getCatalogs();
         int catalogCount = 0;
@@ -230,7 +253,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             LOGGER.debug("found catalog " + catalogName);
             if ((schemaName == null && user.equalsIgnoreCase(catalogName)) 
             		|| (schemaName != null && catalogName.equalsIgnoreCase(this.catalogName))
-            		|| catalogName.equalsIgnoreCase(connection.getCatalog()))
+            		|| catalogName.equalsIgnoreCase(getConnection().getCatalog()))
                 this.catalogName = catalogName;
             database.addCatalog(new DBCatalog(StringUtil.emptyToNull(catalogName)));
             catalogCount++;
@@ -615,14 +638,14 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            }
     }
 
-    private void importChecks() throws SQLException {
+    private void importChecks() throws SQLException, ConnectFailedException {
         LOGGER.info("Importing checks");
         int count = 0;
         if (dialect instanceof OracleDialect) {
 	        for (DBCatalog catalog : database.getCatalogs())
 		        for (DBSchema schema : catalog.getSchemas()) {
 		        	OracleDialect oraDialect = (OracleDialect) dialect;
-					DBCheckConstraint[] newChecks = oraDialect.queryCheckConstraints(connection, schema.getName());
+					DBCheckConstraint[] newChecks = oraDialect.queryCheckConstraints(getConnection(), schema.getName());
 					for (DBCheckConstraint newCheck : newChecks) {
 		                if (!tableSupported(newCheck.getTableName()))
 		                	continue;
@@ -728,7 +751,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	private void importSequences() {
 		try {
 			if (dialect.isSequenceSupported())
-				dialect.querySequences(connection);
+				dialect.querySequences(getConnection());
 		} catch (Exception e) {
 			LOGGER.error("Error importing sequences", e);
 		}
