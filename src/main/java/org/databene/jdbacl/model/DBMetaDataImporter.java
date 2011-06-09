@@ -28,6 +28,7 @@ package org.databene.jdbacl.model;
 
 import java.io.Closeable;
 
+import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ImportFailedException;
 
 /**
@@ -36,5 +37,5 @@ import org.databene.commons.ImportFailedException;
  * @author Volker Bergmann
  */
 public interface DBMetaDataImporter extends Closeable {
-    Database importDatabase() throws ImportFailedException;
+    Database importDatabase() throws ConnectFailedException, ImportFailedException;
 }

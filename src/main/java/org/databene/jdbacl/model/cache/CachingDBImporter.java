@@ -25,6 +25,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
+import org.databene.commons.ConnectFailedException;
 import org.databene.commons.FileUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.Period;
@@ -59,7 +60,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 		this.environment = environment;
 	}
 
-	public Database importDatabase() throws ImportFailedException {
+	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
 		File file = getCacheFile();
 		long now = System.currentTimeMillis();
 		if (file.exists() && now - file.lastModified() < TIME_TO_LIVE)
@@ -89,7 +90,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 		return new XMLModelImporter(cacheFile).importDatabase();
 	}
 
-	protected Database importFreshData(File file) throws ImportFailedException {
+	protected Database importFreshData(File file) throws ConnectFailedException, ImportFailedException {
 		Database database = realImporter.importDatabase();
 		LOGGER.info("Reading and exporting Database meta data to cache file");
 		try {
