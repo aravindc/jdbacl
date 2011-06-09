@@ -223,7 +223,10 @@ public class SQLParserUtil {
 	}
 
 	private static Expression<Boolean> convertIs(CommonTree node) {
-		return new EqualsExpression("IS", convertExpressionNode(childAt(0, node)), convertExpressionNode(childAt(1, node)));
+		if (node.getChildCount() > 1)
+			return new NotEqualsExpression("IS NOT", convertExpressionNode(childAt(0, node)), new NullExpression());
+		else
+			return new EqualsExpression("IS", convertExpressionNode(childAt(0, node)), new NullExpression());
 	}
 
 	private static Expression<?> convertNot(CommonTree node) {
@@ -235,8 +238,15 @@ public class SQLParserUtil {
 	}
 
 	private static Expression<?> convertIn(CommonTree node) {
-		return new ValueCollectionContainsExpression(
-				"IN", convertExpressionNode(childAt(0, node)), convertValueList(childAt(1, node)));
+		Expression<?> valueEx = convertExpressionNode(childAt(0, node));
+		CommonTree child1 = childAt(1, node);
+		boolean not = (child1.getType() == SQLLexer.NOT);
+		int collectionIndex = (not ? 2 : 1);
+		Expression<? extends Collection<?>> collEx = convertValueList(childAt(collectionIndex, node));
+		Expression<?> result = new ValueCollectionContainsExpression("IN", valueEx, collEx);
+		if (not)
+			result = new LogicalComplementExpression(result);
+		return result;
 	}
 
 	private static Expression<? extends Collection<?>> convertValueList(CommonTree node) {
