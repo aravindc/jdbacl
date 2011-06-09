@@ -109,8 +109,8 @@ public abstract class AbstractIdentityTest {
 	}
 
 	protected Database importDatabase(Connection target)
-			throws ImportFailedException {
-		return new JDBCDBImporter(target, "sa", "PUBLIC", null, false).importDatabase();
+			throws ConnectFailedException, ImportFailedException {
+		return new JDBCDBImporter(target, "sa", "PUBLIC", ".*", false).importDatabase();
 	}
 	
 	protected Connection connectDB(String dbName, int port) throws ConnectFailedException {
