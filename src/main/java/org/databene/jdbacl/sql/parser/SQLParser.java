@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:45:30 /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g 2011-06-08 11:45:07
+// $ANTLR 3.3 Nov 30, 2010 12:45:30 /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g 2011-06-08 18:35:16
 
 	package org.databene.jdbacl.sql.parser;
 
@@ -1085,7 +1085,7 @@ public class SQLParser extends Parser {
 
 
             // AST REWRITE
-            // elements: column_detail, type, name, size
+            // elements: name, size, type, column_detail
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -1285,7 +1285,7 @@ public class SQLParser extends Parser {
 
 
             // AST REWRITE
-            // elements: INT, size_uom, fractionDigits
+            // elements: fractionDigits, size_uom, INT
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -4013,7 +4013,7 @@ public class SQLParser extends Parser {
 
 
             // AST REWRITE
-            // elements: table_mutation, table_name
+            // elements: table_name, table_mutation
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -5805,7 +5805,7 @@ public class SQLParser extends Parser {
 
 
             // AST REWRITE
-            // elements: STRING, column_name
+            // elements: column_name, STRING
             // token labels: 
             // rule labels: retval
             // token list labels: 
@@ -6179,7 +6179,7 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "equality_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:1: equality_expression : relational_expression ( ( '=' | '!=' | '<>' | 'IS' ) relational_expression )? ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:1: equality_expression : null_comparison ( ( '=' | '!=' | '<>' ) null_comparison )? ;
     public final SQLParser.equality_expression_return equality_expression() throws RecognitionException {
         SQLParser.equality_expression_return retval = new SQLParser.equality_expression_return();
         retval.start = input.LT(1);
@@ -6187,39 +6187,39 @@ public class SQLParser extends Parser {
         Object root_0 = null;
 
         Token set286=null;
-        SQLParser.relational_expression_return relational_expression285 = null;
+        SQLParser.null_comparison_return null_comparison285 = null;
 
-        SQLParser.relational_expression_return relational_expression287 = null;
+        SQLParser.null_comparison_return null_comparison287 = null;
 
 
         Object set286_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:21: ( relational_expression ( ( '=' | '!=' | '<>' | 'IS' ) relational_expression )? )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:23: relational_expression ( ( '=' | '!=' | '<>' | 'IS' ) relational_expression )?
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:21: ( null_comparison ( ( '=' | '!=' | '<>' ) null_comparison )? )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:23: null_comparison ( ( '=' | '!=' | '<>' ) null_comparison )?
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_relational_expression_in_equality_expression1561);
-            relational_expression285=relational_expression();
+            pushFollow(FOLLOW_null_comparison_in_equality_expression1561);
+            null_comparison285=null_comparison();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, relational_expression285.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:45: ( ( '=' | '!=' | '<>' | 'IS' ) relational_expression )?
+            adaptor.addChild(root_0, null_comparison285.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:39: ( ( '=' | '!=' | '<>' ) null_comparison )?
             int alt41=2;
             int LA41_0 = input.LA(1);
 
-            if ( ((LA41_0>=EQ && LA41_0<=LTGT)||LA41_0==IS) ) {
+            if ( ((LA41_0>=EQ && LA41_0<=LTGT)) ) {
                 alt41=1;
             }
             switch (alt41) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:46: ( '=' | '!=' | '<>' | 'IS' ) relational_expression
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:239:40: ( '=' | '!=' | '<>' ) null_comparison
                     {
                     set286=(Token)input.LT(1);
                     set286=(Token)input.LT(1);
-                    if ( (input.LA(1)>=EQ && input.LA(1)<=LTGT)||input.LA(1)==IS ) {
+                    if ( (input.LA(1)>=EQ && input.LA(1)<=LTGT) ) {
                         input.consume();
                         root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set286), root_0);
                         state.errorRecovery=false;
@@ -6229,12 +6229,12 @@ public class SQLParser extends Parser {
                         throw mse;
                     }
 
-                    pushFollow(FOLLOW_relational_expression_in_equality_expression1581);
-                    relational_expression287=relational_expression();
+                    pushFollow(FOLLOW_null_comparison_in_equality_expression1577);
+                    null_comparison287=null_comparison();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, relational_expression287.getTree());
+                    adaptor.addChild(root_0, null_comparison287.getTree());
 
                     }
                     break;
@@ -6260,55 +6260,152 @@ public class SQLParser extends Parser {
     }
     // $ANTLR end "equality_expression"
 
+    public static class null_comparison_return extends ParserRuleReturnScope {
+        Object tree;
+        public Object getTree() { return tree; }
+    };
+
+    // $ANTLR start "null_comparison"
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:1: null_comparison : relational_expression ( 'IS' ( 'NOT' )? 'NULL' )? ;
+    public final SQLParser.null_comparison_return null_comparison() throws RecognitionException {
+        SQLParser.null_comparison_return retval = new SQLParser.null_comparison_return();
+        retval.start = input.LT(1);
+
+        Object root_0 = null;
+
+        Token string_literal289=null;
+        Token string_literal290=null;
+        Token string_literal291=null;
+        SQLParser.relational_expression_return relational_expression288 = null;
+
+
+        Object string_literal289_tree=null;
+        Object string_literal290_tree=null;
+        Object string_literal291_tree=null;
+
+        try {
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:18: ( relational_expression ( 'IS' ( 'NOT' )? 'NULL' )? )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:20: relational_expression ( 'IS' ( 'NOT' )? 'NULL' )?
+            {
+            root_0 = (Object)adaptor.nil();
+
+            pushFollow(FOLLOW_relational_expression_in_null_comparison1587);
+            relational_expression288=relational_expression();
+
+            state._fsp--;
+
+            adaptor.addChild(root_0, relational_expression288.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:42: ( 'IS' ( 'NOT' )? 'NULL' )?
+            int alt43=2;
+            int LA43_0 = input.LA(1);
+
+            if ( (LA43_0==IS) ) {
+                alt43=1;
+            }
+            switch (alt43) {
+                case 1 :
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:43: 'IS' ( 'NOT' )? 'NULL'
+                    {
+                    string_literal289=(Token)match(input,IS,FOLLOW_IS_in_null_comparison1590); 
+                    string_literal289_tree = (Object)adaptor.create(string_literal289);
+                    root_0 = (Object)adaptor.becomeRoot(string_literal289_tree, root_0);
+
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:49: ( 'NOT' )?
+                    int alt42=2;
+                    int LA42_0 = input.LA(1);
+
+                    if ( (LA42_0==NOT) ) {
+                        alt42=1;
+                    }
+                    switch (alt42) {
+                        case 1 :
+                            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:49: 'NOT'
+                            {
+                            string_literal290=(Token)match(input,NOT,FOLLOW_NOT_in_null_comparison1593); 
+                            string_literal290_tree = (Object)adaptor.create(string_literal290);
+                            adaptor.addChild(root_0, string_literal290_tree);
+
+
+                            }
+                            break;
+
+                    }
+
+                    string_literal291=(Token)match(input,NULL,FOLLOW_NULL_in_null_comparison1596); 
+
+                    }
+                    break;
+
+            }
+
+
+            }
+
+            retval.stop = input.LT(-1);
+
+            retval.tree = (Object)adaptor.rulePostProcessing(root_0);
+            adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop);
+
+        }
+
+        	catch (RecognitionException e) {
+        	  throw e;
+        	}
+        finally {
+        }
+        return retval;
+    }
+    // $ANTLR end "null_comparison"
+
     public static class relational_expression_return extends ParserRuleReturnScope {
         Object tree;
         public Object getTree() { return tree; }
     };
 
     // $ANTLR start "relational_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:1: relational_expression : in_expression ( ( '<=' | '>=' | '<' | '>' ) in_expression )? ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:1: relational_expression : in_expression ( ( '<=' | '>=' | '<' | '>' ) in_expression )? ;
     public final SQLParser.relational_expression_return relational_expression() throws RecognitionException {
         SQLParser.relational_expression_return retval = new SQLParser.relational_expression_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set289=null;
-        SQLParser.in_expression_return in_expression288 = null;
+        Token set293=null;
+        SQLParser.in_expression_return in_expression292 = null;
 
-        SQLParser.in_expression_return in_expression290 = null;
+        SQLParser.in_expression_return in_expression294 = null;
 
 
-        Object set289_tree=null;
+        Object set293_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:23: ( in_expression ( ( '<=' | '>=' | '<' | '>' ) in_expression )? )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:25: in_expression ( ( '<=' | '>=' | '<' | '>' ) in_expression )?
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:23: ( in_expression ( ( '<=' | '>=' | '<' | '>' ) in_expression )? )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:25: in_expression ( ( '<=' | '>=' | '<' | '>' ) in_expression )?
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_in_expression_in_relational_expression1590);
-            in_expression288=in_expression();
+            pushFollow(FOLLOW_in_expression_in_relational_expression1606);
+            in_expression292=in_expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, in_expression288.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:39: ( ( '<=' | '>=' | '<' | '>' ) in_expression )?
-            int alt42=2;
-            int LA42_0 = input.LA(1);
+            adaptor.addChild(root_0, in_expression292.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:39: ( ( '<=' | '>=' | '<' | '>' ) in_expression )?
+            int alt44=2;
+            int LA44_0 = input.LA(1);
 
-            if ( ((LA42_0>=GT && LA42_0<=LE)) ) {
-                alt42=1;
+            if ( ((LA44_0>=GT && LA44_0<=LE)) ) {
+                alt44=1;
             }
-            switch (alt42) {
+            switch (alt44) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:240:40: ( '<=' | '>=' | '<' | '>' ) in_expression
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:40: ( '<=' | '>=' | '<' | '>' ) in_expression
                     {
-                    set289=(Token)input.LT(1);
-                    set289=(Token)input.LT(1);
+                    set293=(Token)input.LT(1);
+                    set293=(Token)input.LT(1);
                     if ( (input.LA(1)>=GT && input.LA(1)<=LE) ) {
                         input.consume();
-                        root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set289), root_0);
+                        root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set293), root_0);
                         state.errorRecovery=false;
                     }
                     else {
@@ -6316,12 +6413,12 @@ public class SQLParser extends Parser {
                         throw mse;
                     }
 
-                    pushFollow(FOLLOW_in_expression_in_relational_expression1610);
-                    in_expression290=in_expression();
+                    pushFollow(FOLLOW_in_expression_in_relational_expression1626);
+                    in_expression294=in_expression();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, in_expression290.getTree());
+                    adaptor.addChild(root_0, in_expression294.getTree());
 
                     }
                     break;
@@ -6353,60 +6450,83 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "in_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:1: in_expression : between_expression ( 'IN' '(' value_list ')' )? ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:1: in_expression : between_expression ( ( 'NOT' )? 'IN' '(' value_list ')' )? ;
     public final SQLParser.in_expression_return in_expression() throws RecognitionException {
         SQLParser.in_expression_return retval = new SQLParser.in_expression_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token string_literal292=null;
-        Token char_literal293=null;
-        Token char_literal295=null;
-        SQLParser.between_expression_return between_expression291 = null;
+        Token string_literal296=null;
+        Token string_literal297=null;
+        Token char_literal298=null;
+        Token char_literal300=null;
+        SQLParser.between_expression_return between_expression295 = null;
 
-        SQLParser.value_list_return value_list294 = null;
+        SQLParser.value_list_return value_list299 = null;
 
 
-        Object string_literal292_tree=null;
-        Object char_literal293_tree=null;
-        Object char_literal295_tree=null;
+        Object string_literal296_tree=null;
+        Object string_literal297_tree=null;
+        Object char_literal298_tree=null;
+        Object char_literal300_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:16: ( between_expression ( 'IN' '(' value_list ')' )? )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:18: between_expression ( 'IN' '(' value_list ')' )?
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:16: ( between_expression ( ( 'NOT' )? 'IN' '(' value_list ')' )? )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:18: between_expression ( ( 'NOT' )? 'IN' '(' value_list ')' )?
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_between_expression_in_in_expression1620);
-            between_expression291=between_expression();
+            pushFollow(FOLLOW_between_expression_in_in_expression1636);
+            between_expression295=between_expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, between_expression291.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:37: ( 'IN' '(' value_list ')' )?
-            int alt43=2;
-            int LA43_0 = input.LA(1);
+            adaptor.addChild(root_0, between_expression295.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:37: ( ( 'NOT' )? 'IN' '(' value_list ')' )?
+            int alt46=2;
+            int LA46_0 = input.LA(1);
 
-            if ( (LA43_0==IN) ) {
-                alt43=1;
+            if ( (LA46_0==NOT||LA46_0==IN) ) {
+                alt46=1;
             }
-            switch (alt43) {
+            switch (alt46) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:241:38: 'IN' '(' value_list ')'
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:38: ( 'NOT' )? 'IN' '(' value_list ')'
                     {
-                    string_literal292=(Token)match(input,IN,FOLLOW_IN_in_in_expression1623); 
-                    string_literal292_tree = (Object)adaptor.create(string_literal292);
-                    root_0 = (Object)adaptor.becomeRoot(string_literal292_tree, root_0);
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:38: ( 'NOT' )?
+                    int alt45=2;
+                    int LA45_0 = input.LA(1);
 
-                    char_literal293=(Token)match(input,66,FOLLOW_66_in_in_expression1626); 
-                    pushFollow(FOLLOW_value_list_in_in_expression1629);
-                    value_list294=value_list();
+                    if ( (LA45_0==NOT) ) {
+                        alt45=1;
+                    }
+                    switch (alt45) {
+                        case 1 :
+                            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:38: 'NOT'
+                            {
+                            string_literal296=(Token)match(input,NOT,FOLLOW_NOT_in_in_expression1639); 
+                            string_literal296_tree = (Object)adaptor.create(string_literal296);
+                            adaptor.addChild(root_0, string_literal296_tree);
+
+
+                            }
+                            break;
+
+                    }
+
+                    string_literal297=(Token)match(input,IN,FOLLOW_IN_in_in_expression1642); 
+                    string_literal297_tree = (Object)adaptor.create(string_literal297);
+                    root_0 = (Object)adaptor.becomeRoot(string_literal297_tree, root_0);
+
+                    char_literal298=(Token)match(input,66,FOLLOW_66_in_in_expression1645); 
+                    pushFollow(FOLLOW_value_list_in_in_expression1648);
+                    value_list299=value_list();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, value_list294.getTree());
-                    char_literal295=(Token)match(input,67,FOLLOW_67_in_in_expression1631); 
+                    adaptor.addChild(root_0, value_list299.getTree());
+                    char_literal300=(Token)match(input,67,FOLLOW_67_in_in_expression1650); 
 
                     }
                     break;
@@ -6438,65 +6558,65 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "between_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:1: between_expression : additive_expression ( 'BETWEEN' additive_expression 'AND' additive_expression )? ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:1: between_expression : additive_expression ( 'BETWEEN' additive_expression 'AND' additive_expression )? ;
     public final SQLParser.between_expression_return between_expression() throws RecognitionException {
         SQLParser.between_expression_return retval = new SQLParser.between_expression_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token string_literal297=null;
-        Token string_literal299=null;
-        SQLParser.additive_expression_return additive_expression296 = null;
+        Token string_literal302=null;
+        Token string_literal304=null;
+        SQLParser.additive_expression_return additive_expression301 = null;
 
-        SQLParser.additive_expression_return additive_expression298 = null;
+        SQLParser.additive_expression_return additive_expression303 = null;
 
-        SQLParser.additive_expression_return additive_expression300 = null;
+        SQLParser.additive_expression_return additive_expression305 = null;
 
 
-        Object string_literal297_tree=null;
-        Object string_literal299_tree=null;
+        Object string_literal302_tree=null;
+        Object string_literal304_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:20: ( additive_expression ( 'BETWEEN' additive_expression 'AND' additive_expression )? )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:22: additive_expression ( 'BETWEEN' additive_expression 'AND' additive_expression )?
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:20: ( additive_expression ( 'BETWEEN' additive_expression 'AND' additive_expression )? )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:22: additive_expression ( 'BETWEEN' additive_expression 'AND' additive_expression )?
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_additive_expression_in_between_expression1641);
-            additive_expression296=additive_expression();
+            pushFollow(FOLLOW_additive_expression_in_between_expression1660);
+            additive_expression301=additive_expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, additive_expression296.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:42: ( 'BETWEEN' additive_expression 'AND' additive_expression )?
-            int alt44=2;
-            int LA44_0 = input.LA(1);
+            adaptor.addChild(root_0, additive_expression301.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:42: ( 'BETWEEN' additive_expression 'AND' additive_expression )?
+            int alt47=2;
+            int LA47_0 = input.LA(1);
 
-            if ( (LA44_0==BETWEEN) ) {
-                alt44=1;
+            if ( (LA47_0==BETWEEN) ) {
+                alt47=1;
             }
-            switch (alt44) {
+            switch (alt47) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:242:43: 'BETWEEN' additive_expression 'AND' additive_expression
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:43: 'BETWEEN' additive_expression 'AND' additive_expression
                     {
-                    string_literal297=(Token)match(input,BETWEEN,FOLLOW_BETWEEN_in_between_expression1644); 
-                    string_literal297_tree = (Object)adaptor.create(string_literal297);
-                    root_0 = (Object)adaptor.becomeRoot(string_literal297_tree, root_0);
+                    string_literal302=(Token)match(input,BETWEEN,FOLLOW_BETWEEN_in_between_expression1663); 
+                    string_literal302_tree = (Object)adaptor.create(string_literal302);
+                    root_0 = (Object)adaptor.becomeRoot(string_literal302_tree, root_0);
 
-                    pushFollow(FOLLOW_additive_expression_in_between_expression1647);
-                    additive_expression298=additive_expression();
-
-                    state._fsp--;
-
-                    adaptor.addChild(root_0, additive_expression298.getTree());
-                    string_literal299=(Token)match(input,AND,FOLLOW_AND_in_between_expression1649); 
-                    pushFollow(FOLLOW_additive_expression_in_between_expression1652);
-                    additive_expression300=additive_expression();
+                    pushFollow(FOLLOW_additive_expression_in_between_expression1666);
+                    additive_expression303=additive_expression();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, additive_expression300.getTree());
+                    adaptor.addChild(root_0, additive_expression303.getTree());
+                    string_literal304=(Token)match(input,AND,FOLLOW_AND_in_between_expression1668); 
+                    pushFollow(FOLLOW_additive_expression_in_between_expression1671);
+                    additive_expression305=additive_expression();
+
+                    state._fsp--;
+
+                    adaptor.addChild(root_0, additive_expression305.getTree());
 
                     }
                     break;
@@ -6528,53 +6648,53 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "additive_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:1: additive_expression : multiplicative_expression ( ( '+' | '-' | '||' ) multiplicative_expression )* ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:1: additive_expression : multiplicative_expression ( ( '+' | '-' | '||' ) multiplicative_expression )* ;
     public final SQLParser.additive_expression_return additive_expression() throws RecognitionException {
         SQLParser.additive_expression_return retval = new SQLParser.additive_expression_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set302=null;
-        SQLParser.multiplicative_expression_return multiplicative_expression301 = null;
+        Token set307=null;
+        SQLParser.multiplicative_expression_return multiplicative_expression306 = null;
 
-        SQLParser.multiplicative_expression_return multiplicative_expression303 = null;
+        SQLParser.multiplicative_expression_return multiplicative_expression308 = null;
 
 
-        Object set302_tree=null;
+        Object set307_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:21: ( multiplicative_expression ( ( '+' | '-' | '||' ) multiplicative_expression )* )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:23: multiplicative_expression ( ( '+' | '-' | '||' ) multiplicative_expression )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:21: ( multiplicative_expression ( ( '+' | '-' | '||' ) multiplicative_expression )* )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:23: multiplicative_expression ( ( '+' | '-' | '||' ) multiplicative_expression )*
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_multiplicative_expression_in_additive_expression1661);
-            multiplicative_expression301=multiplicative_expression();
+            pushFollow(FOLLOW_multiplicative_expression_in_additive_expression1680);
+            multiplicative_expression306=multiplicative_expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, multiplicative_expression301.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:49: ( ( '+' | '-' | '||' ) multiplicative_expression )*
-            loop45:
+            adaptor.addChild(root_0, multiplicative_expression306.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:49: ( ( '+' | '-' | '||' ) multiplicative_expression )*
+            loop48:
             do {
-                int alt45=2;
-                int LA45_0 = input.LA(1);
+                int alt48=2;
+                int LA48_0 = input.LA(1);
 
-                if ( ((LA45_0>=PLUS && LA45_0<=SUB)||LA45_0==BARBAR) ) {
-                    alt45=1;
+                if ( ((LA48_0>=PLUS && LA48_0<=SUB)||LA48_0==BARBAR) ) {
+                    alt48=1;
                 }
 
 
-                switch (alt45) {
+                switch (alt48) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:243:50: ( '+' | '-' | '||' ) multiplicative_expression
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:50: ( '+' | '-' | '||' ) multiplicative_expression
             	    {
-            	    set302=(Token)input.LT(1);
-            	    set302=(Token)input.LT(1);
+            	    set307=(Token)input.LT(1);
+            	    set307=(Token)input.LT(1);
             	    if ( (input.LA(1)>=PLUS && input.LA(1)<=SUB)||input.LA(1)==BARBAR ) {
             	        input.consume();
-            	        root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set302), root_0);
+            	        root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set307), root_0);
             	        state.errorRecovery=false;
             	    }
             	    else {
@@ -6582,18 +6702,18 @@ public class SQLParser extends Parser {
             	        throw mse;
             	    }
 
-            	    pushFollow(FOLLOW_multiplicative_expression_in_additive_expression1677);
-            	    multiplicative_expression303=multiplicative_expression();
+            	    pushFollow(FOLLOW_multiplicative_expression_in_additive_expression1696);
+            	    multiplicative_expression308=multiplicative_expression();
 
             	    state._fsp--;
 
-            	    adaptor.addChild(root_0, multiplicative_expression303.getTree());
+            	    adaptor.addChild(root_0, multiplicative_expression308.getTree());
 
             	    }
             	    break;
 
             	default :
-            	    break loop45;
+            	    break loop48;
                 }
             } while (true);
 
@@ -6622,53 +6742,53 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "multiplicative_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:1: multiplicative_expression : unary_expression ( ( '*' | '/' | '%' ) unary_expression )* ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:245:1: multiplicative_expression : unary_expression ( ( '*' | '/' | '%' ) unary_expression )* ;
     public final SQLParser.multiplicative_expression_return multiplicative_expression() throws RecognitionException {
         SQLParser.multiplicative_expression_return retval = new SQLParser.multiplicative_expression_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set305=null;
-        SQLParser.unary_expression_return unary_expression304 = null;
+        Token set310=null;
+        SQLParser.unary_expression_return unary_expression309 = null;
 
-        SQLParser.unary_expression_return unary_expression306 = null;
+        SQLParser.unary_expression_return unary_expression311 = null;
 
 
-        Object set305_tree=null;
+        Object set310_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:26: ( unary_expression ( ( '*' | '/' | '%' ) unary_expression )* )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:28: unary_expression ( ( '*' | '/' | '%' ) unary_expression )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:245:26: ( unary_expression ( ( '*' | '/' | '%' ) unary_expression )* )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:245:28: unary_expression ( ( '*' | '/' | '%' ) unary_expression )*
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_unary_expression_in_multiplicative_expression1685);
-            unary_expression304=unary_expression();
+            pushFollow(FOLLOW_unary_expression_in_multiplicative_expression1704);
+            unary_expression309=unary_expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, unary_expression304.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:45: ( ( '*' | '/' | '%' ) unary_expression )*
-            loop46:
+            adaptor.addChild(root_0, unary_expression309.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:245:45: ( ( '*' | '/' | '%' ) unary_expression )*
+            loop49:
             do {
-                int alt46=2;
-                int LA46_0 = input.LA(1);
+                int alt49=2;
+                int LA49_0 = input.LA(1);
 
-                if ( ((LA46_0>=STAR && LA46_0<=PERCENT)) ) {
-                    alt46=1;
+                if ( ((LA49_0>=STAR && LA49_0<=PERCENT)) ) {
+                    alt49=1;
                 }
 
 
-                switch (alt46) {
+                switch (alt49) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:244:46: ( '*' | '/' | '%' ) unary_expression
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:245:46: ( '*' | '/' | '%' ) unary_expression
             	    {
-            	    set305=(Token)input.LT(1);
-            	    set305=(Token)input.LT(1);
+            	    set310=(Token)input.LT(1);
+            	    set310=(Token)input.LT(1);
             	    if ( (input.LA(1)>=STAR && input.LA(1)<=PERCENT) ) {
             	        input.consume();
-            	        root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set305), root_0);
+            	        root_0 = (Object)adaptor.becomeRoot((Object)adaptor.create(set310), root_0);
             	        state.errorRecovery=false;
             	    }
             	    else {
@@ -6676,18 +6796,18 @@ public class SQLParser extends Parser {
             	        throw mse;
             	    }
 
-            	    pushFollow(FOLLOW_unary_expression_in_multiplicative_expression1701);
-            	    unary_expression306=unary_expression();
+            	    pushFollow(FOLLOW_unary_expression_in_multiplicative_expression1720);
+            	    unary_expression311=unary_expression();
 
             	    state._fsp--;
 
-            	    adaptor.addChild(root_0, unary_expression306.getTree());
+            	    adaptor.addChild(root_0, unary_expression311.getTree());
 
             	    }
             	    break;
 
             	default :
-            	    break loop46;
+            	    break loop49;
                 }
             } while (true);
 
@@ -6716,37 +6836,37 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "unary_expression"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:245:1: unary_expression : ( '-' primary | 'NOT' primary | primary );
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:246:1: unary_expression : ( '-' primary | 'NOT' primary | primary );
     public final SQLParser.unary_expression_return unary_expression() throws RecognitionException {
         SQLParser.unary_expression_return retval = new SQLParser.unary_expression_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal307=null;
-        Token string_literal309=null;
-        SQLParser.primary_return primary308 = null;
+        Token char_literal312=null;
+        Token string_literal314=null;
+        SQLParser.primary_return primary313 = null;
 
-        SQLParser.primary_return primary310 = null;
+        SQLParser.primary_return primary315 = null;
 
-        SQLParser.primary_return primary311 = null;
+        SQLParser.primary_return primary316 = null;
 
 
-        Object char_literal307_tree=null;
-        Object string_literal309_tree=null;
+        Object char_literal312_tree=null;
+        Object string_literal314_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:246:5: ( '-' primary | 'NOT' primary | primary )
-            int alt47=3;
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:247:5: ( '-' primary | 'NOT' primary | primary )
+            int alt50=3;
             switch ( input.LA(1) ) {
             case SUB:
                 {
-                alt47=1;
+                alt50=1;
                 }
                 break;
             case NOT:
                 {
-                alt47=2;
+                alt50=2;
                 }
                 break;
             case INT:
@@ -6786,64 +6906,64 @@ public class SQLParser extends Parser {
             case 135:
             case 137:
                 {
-                alt47=3;
+                alt50=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 47, 0, input);
+                    new NoViableAltException("", 50, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt47) {
+            switch (alt50) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:246:9: '-' primary
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:247:9: '-' primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    char_literal307=(Token)match(input,SUB,FOLLOW_SUB_in_unary_expression1717); 
-                    char_literal307_tree = (Object)adaptor.create(char_literal307);
-                    root_0 = (Object)adaptor.becomeRoot(char_literal307_tree, root_0);
+                    char_literal312=(Token)match(input,SUB,FOLLOW_SUB_in_unary_expression1736); 
+                    char_literal312_tree = (Object)adaptor.create(char_literal312);
+                    root_0 = (Object)adaptor.becomeRoot(char_literal312_tree, root_0);
 
-                    pushFollow(FOLLOW_primary_in_unary_expression1720);
-                    primary308=primary();
+                    pushFollow(FOLLOW_primary_in_unary_expression1739);
+                    primary313=primary();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, primary308.getTree());
+                    adaptor.addChild(root_0, primary313.getTree());
 
                     }
                     break;
                 case 2 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:247:9: 'NOT' primary
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:248:9: 'NOT' primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    string_literal309=(Token)match(input,NOT,FOLLOW_NOT_in_unary_expression1730); 
-                    string_literal309_tree = (Object)adaptor.create(string_literal309);
-                    root_0 = (Object)adaptor.becomeRoot(string_literal309_tree, root_0);
+                    string_literal314=(Token)match(input,NOT,FOLLOW_NOT_in_unary_expression1749); 
+                    string_literal314_tree = (Object)adaptor.create(string_literal314);
+                    root_0 = (Object)adaptor.becomeRoot(string_literal314_tree, root_0);
 
-                    pushFollow(FOLLOW_primary_in_unary_expression1733);
-                    primary310=primary();
+                    pushFollow(FOLLOW_primary_in_unary_expression1752);
+                    primary315=primary();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, primary310.getTree());
+                    adaptor.addChild(root_0, primary315.getTree());
 
                     }
                     break;
                 case 3 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:248:9: primary
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:249:9: primary
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_primary_in_unary_expression1743);
-                    primary311=primary();
+                    pushFollow(FOLLOW_primary_in_unary_expression1762);
+                    primary316=primary();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, primary311.getTree());
+                    adaptor.addChild(root_0, primary316.getTree());
 
                     }
                     break;
@@ -6871,50 +6991,50 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "primary"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:251:1: primary : ( '(' expression ')' | IDENTIFIER arguments -> ^( INVOCATION IDENTIFIER arguments ) | value );
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:252:1: primary : ( '(' expression ')' | IDENTIFIER arguments -> ^( INVOCATION IDENTIFIER arguments ) | value );
     public final SQLParser.primary_return primary() throws RecognitionException {
         SQLParser.primary_return retval = new SQLParser.primary_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal312=null;
-        Token char_literal314=null;
-        Token IDENTIFIER315=null;
-        SQLParser.expression_return expression313 = null;
+        Token char_literal317=null;
+        Token char_literal319=null;
+        Token IDENTIFIER320=null;
+        SQLParser.expression_return expression318 = null;
 
-        SQLParser.arguments_return arguments316 = null;
+        SQLParser.arguments_return arguments321 = null;
 
-        SQLParser.value_return value317 = null;
+        SQLParser.value_return value322 = null;
 
 
-        Object char_literal312_tree=null;
-        Object char_literal314_tree=null;
-        Object IDENTIFIER315_tree=null;
+        Object char_literal317_tree=null;
+        Object char_literal319_tree=null;
+        Object IDENTIFIER320_tree=null;
         RewriteRuleTokenStream stream_IDENTIFIER=new RewriteRuleTokenStream(adaptor,"token IDENTIFIER");
         RewriteRuleSubtreeStream stream_arguments=new RewriteRuleSubtreeStream(adaptor,"rule arguments");
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:252:5: ( '(' expression ')' | IDENTIFIER arguments -> ^( INVOCATION IDENTIFIER arguments ) | value )
-            int alt48=3;
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:253:5: ( '(' expression ')' | IDENTIFIER arguments -> ^( INVOCATION IDENTIFIER arguments ) | value )
+            int alt51=3;
             switch ( input.LA(1) ) {
             case 66:
                 {
-                alt48=1;
+                alt51=1;
                 }
                 break;
             case IDENTIFIER:
                 {
-                int LA48_2 = input.LA(2);
+                int LA51_2 = input.LA(2);
 
-                if ( (LA48_2==66) ) {
-                    alt48=2;
+                if ( (LA51_2==66) ) {
+                    alt51=2;
                 }
-                else if ( (LA48_2==EOF||(LA48_2>=OR && LA48_2<=IS)||(LA48_2>=IN && LA48_2<=BARBAR)||(LA48_2>=67 && LA48_2<=68)||(LA48_2>=75 && LA48_2<=82)||(LA48_2>=85 && LA48_2<=86)||LA48_2==90||LA48_2==97||(LA48_2>=108 && LA48_2<=117)) ) {
-                    alt48=3;
+                else if ( (LA51_2==EOF||LA51_2==NOT||(LA51_2>=OR && LA51_2<=IS)||(LA51_2>=IN && LA51_2<=BARBAR)||(LA51_2>=67 && LA51_2<=68)||(LA51_2>=75 && LA51_2<=82)||(LA51_2>=85 && LA51_2<=86)||LA51_2==90||LA51_2==97||(LA51_2>=108 && LA51_2<=117)) ) {
+                    alt51=3;
                 }
                 else {
                     NoViableAltException nvae =
-                        new NoViableAltException("", 48, 2, input);
+                        new NoViableAltException("", 51, 2, input);
 
                     throw nvae;
                 }
@@ -6955,49 +7075,49 @@ public class SQLParser extends Parser {
             case 135:
             case 137:
                 {
-                alt48=3;
+                alt51=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 48, 0, input);
+                    new NoViableAltException("", 51, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt48) {
+            switch (alt51) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:252:9: '(' expression ')'
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:253:9: '(' expression ')'
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    char_literal312=(Token)match(input,66,FOLLOW_66_in_primary1763); 
-                    pushFollow(FOLLOW_expression_in_primary1766);
-                    expression313=expression();
+                    char_literal317=(Token)match(input,66,FOLLOW_66_in_primary1782); 
+                    pushFollow(FOLLOW_expression_in_primary1785);
+                    expression318=expression();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, expression313.getTree());
-                    char_literal314=(Token)match(input,67,FOLLOW_67_in_primary1768); 
+                    adaptor.addChild(root_0, expression318.getTree());
+                    char_literal319=(Token)match(input,67,FOLLOW_67_in_primary1787); 
 
                     }
                     break;
                 case 2 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:253:9: IDENTIFIER arguments
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:254:9: IDENTIFIER arguments
                     {
-                    IDENTIFIER315=(Token)match(input,IDENTIFIER,FOLLOW_IDENTIFIER_in_primary1779);  
-                    stream_IDENTIFIER.add(IDENTIFIER315);
+                    IDENTIFIER320=(Token)match(input,IDENTIFIER,FOLLOW_IDENTIFIER_in_primary1798);  
+                    stream_IDENTIFIER.add(IDENTIFIER320);
 
-                    pushFollow(FOLLOW_arguments_in_primary1781);
-                    arguments316=arguments();
+                    pushFollow(FOLLOW_arguments_in_primary1800);
+                    arguments321=arguments();
 
                     state._fsp--;
 
-                    stream_arguments.add(arguments316.getTree());
+                    stream_arguments.add(arguments321.getTree());
 
 
                     // AST REWRITE
-                    // elements: arguments, IDENTIFIER
+                    // elements: IDENTIFIER, arguments
                     // token labels: 
                     // rule labels: retval
                     // token list labels: 
@@ -7007,9 +7127,9 @@ public class SQLParser extends Parser {
                     RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
                     root_0 = (Object)adaptor.nil();
-                    // 253:30: -> ^( INVOCATION IDENTIFIER arguments )
+                    // 254:30: -> ^( INVOCATION IDENTIFIER arguments )
                     {
-                        // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:253:33: ^( INVOCATION IDENTIFIER arguments )
+                        // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:254:33: ^( INVOCATION IDENTIFIER arguments )
                         {
                         Object root_1 = (Object)adaptor.nil();
                         root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(INVOCATION, "INVOCATION"), root_1);
@@ -7026,16 +7146,16 @@ public class SQLParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:254:9: value
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:255:9: value
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_value_in_primary1801);
-                    value317=value();
+                    pushFollow(FOLLOW_value_in_primary1820);
+                    value322=value();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, value317.getTree());
+                    adaptor.addChild(root_0, value322.getTree());
 
                     }
                     break;
@@ -7063,82 +7183,82 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "arguments"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:1: arguments : '(' ( expression ( ',' expression )* )? ')' -> ^( ARGUMENTS ( expression )* ) ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:1: arguments : '(' ( expression ( ',' expression )* )? ')' -> ^( ARGUMENTS ( expression )* ) ;
     public final SQLParser.arguments_return arguments() throws RecognitionException {
         SQLParser.arguments_return retval = new SQLParser.arguments_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal318=null;
-        Token char_literal320=null;
-        Token char_literal322=null;
-        SQLParser.expression_return expression319 = null;
+        Token char_literal323=null;
+        Token char_literal325=null;
+        Token char_literal327=null;
+        SQLParser.expression_return expression324 = null;
 
-        SQLParser.expression_return expression321 = null;
+        SQLParser.expression_return expression326 = null;
 
 
-        Object char_literal318_tree=null;
-        Object char_literal320_tree=null;
-        Object char_literal322_tree=null;
+        Object char_literal323_tree=null;
+        Object char_literal325_tree=null;
+        Object char_literal327_tree=null;
         RewriteRuleTokenStream stream_67=new RewriteRuleTokenStream(adaptor,"token 67");
         RewriteRuleTokenStream stream_66=new RewriteRuleTokenStream(adaptor,"token 66");
         RewriteRuleTokenStream stream_68=new RewriteRuleTokenStream(adaptor,"token 68");
         RewriteRuleSubtreeStream stream_expression=new RewriteRuleSubtreeStream(adaptor,"rule expression");
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:11: ( '(' ( expression ( ',' expression )* )? ')' -> ^( ARGUMENTS ( expression )* ) )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:13: '(' ( expression ( ',' expression )* )? ')'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:11: ( '(' ( expression ( ',' expression )* )? ')' -> ^( ARGUMENTS ( expression )* ) )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:13: '(' ( expression ( ',' expression )* )? ')'
             {
-            char_literal318=(Token)match(input,66,FOLLOW_66_in_arguments1814);  
-            stream_66.add(char_literal318);
+            char_literal323=(Token)match(input,66,FOLLOW_66_in_arguments1833);  
+            stream_66.add(char_literal323);
 
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:17: ( expression ( ',' expression )* )?
-            int alt50=2;
-            int LA50_0 = input.LA(1);
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:17: ( expression ( ',' expression )* )?
+            int alt53=2;
+            int LA53_0 = input.LA(1);
 
-            if ( ((LA50_0>=INT && LA50_0<=COMMENT)||(LA50_0>=IS && LA50_0<=NULL)||LA50_0==SUB||LA50_0==62||(LA50_0>=65 && LA50_0<=66)||LA50_0==74||(LA50_0>=76 && LA50_0<=80)||LA50_0==86||LA50_0==90||LA50_0==98||(LA50_0>=109 && LA50_0<=116)||(LA50_0>=121 && LA50_0<=123)||LA50_0==129||LA50_0==133||LA50_0==135||LA50_0==137) ) {
-                alt50=1;
+            if ( ((LA53_0>=INT && LA53_0<=COMMENT)||(LA53_0>=IS && LA53_0<=NULL)||LA53_0==SUB||LA53_0==62||(LA53_0>=65 && LA53_0<=66)||LA53_0==74||(LA53_0>=76 && LA53_0<=80)||LA53_0==86||LA53_0==90||LA53_0==98||(LA53_0>=109 && LA53_0<=116)||(LA53_0>=121 && LA53_0<=123)||LA53_0==129||LA53_0==133||LA53_0==135||LA53_0==137) ) {
+                alt53=1;
             }
-            switch (alt50) {
+            switch (alt53) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:18: expression ( ',' expression )*
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:18: expression ( ',' expression )*
                     {
-                    pushFollow(FOLLOW_expression_in_arguments1817);
-                    expression319=expression();
+                    pushFollow(FOLLOW_expression_in_arguments1836);
+                    expression324=expression();
 
                     state._fsp--;
 
-                    stream_expression.add(expression319.getTree());
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:29: ( ',' expression )*
-                    loop49:
+                    stream_expression.add(expression324.getTree());
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:29: ( ',' expression )*
+                    loop52:
                     do {
-                        int alt49=2;
-                        int LA49_0 = input.LA(1);
+                        int alt52=2;
+                        int LA52_0 = input.LA(1);
 
-                        if ( (LA49_0==68) ) {
-                            alt49=1;
+                        if ( (LA52_0==68) ) {
+                            alt52=1;
                         }
 
 
-                        switch (alt49) {
+                        switch (alt52) {
                     	case 1 :
-                    	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:30: ',' expression
+                    	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:30: ',' expression
                     	    {
-                    	    char_literal320=(Token)match(input,68,FOLLOW_68_in_arguments1820);  
-                    	    stream_68.add(char_literal320);
+                    	    char_literal325=(Token)match(input,68,FOLLOW_68_in_arguments1839);  
+                    	    stream_68.add(char_literal325);
 
-                    	    pushFollow(FOLLOW_expression_in_arguments1822);
-                    	    expression321=expression();
+                    	    pushFollow(FOLLOW_expression_in_arguments1841);
+                    	    expression326=expression();
 
                     	    state._fsp--;
 
-                    	    stream_expression.add(expression321.getTree());
+                    	    stream_expression.add(expression326.getTree());
 
                     	    }
                     	    break;
 
                     	default :
-                    	    break loop49;
+                    	    break loop52;
                         }
                     } while (true);
 
@@ -7148,8 +7268,8 @@ public class SQLParser extends Parser {
 
             }
 
-            char_literal322=(Token)match(input,67,FOLLOW_67_in_arguments1828);  
-            stream_67.add(char_literal322);
+            char_literal327=(Token)match(input,67,FOLLOW_67_in_arguments1847);  
+            stream_67.add(char_literal327);
 
 
 
@@ -7164,14 +7284,14 @@ public class SQLParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 257:53: -> ^( ARGUMENTS ( expression )* )
+            // 258:53: -> ^( ARGUMENTS ( expression )* )
             {
-                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:56: ^( ARGUMENTS ( expression )* )
+                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:56: ^( ARGUMENTS ( expression )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(ARGUMENTS, "ARGUMENTS"), root_1);
 
-                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:257:68: ( expression )*
+                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:68: ( expression )*
                 while ( stream_expression.hasNext() ) {
                     adaptor.addChild(root_1, stream_expression.nextTree());
 
@@ -7208,61 +7328,61 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "expression_list"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:1: expression_list : expression ( ',' expression )* ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:1: expression_list : expression ( ',' expression )* ;
     public final SQLParser.expression_list_return expression_list() throws RecognitionException {
         SQLParser.expression_list_return retval = new SQLParser.expression_list_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal324=null;
-        SQLParser.expression_return expression323 = null;
+        Token char_literal329=null;
+        SQLParser.expression_return expression328 = null;
 
-        SQLParser.expression_return expression325 = null;
+        SQLParser.expression_return expression330 = null;
 
 
-        Object char_literal324_tree=null;
+        Object char_literal329_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:17: ( expression ( ',' expression )* )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:19: expression ( ',' expression )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:17: ( expression ( ',' expression )* )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:19: expression ( ',' expression )*
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_expression_in_expression_list1844);
-            expression323=expression();
+            pushFollow(FOLLOW_expression_in_expression_list1863);
+            expression328=expression();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, expression323.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:30: ( ',' expression )*
-            loop51:
+            adaptor.addChild(root_0, expression328.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:30: ( ',' expression )*
+            loop54:
             do {
-                int alt51=2;
-                int LA51_0 = input.LA(1);
+                int alt54=2;
+                int LA54_0 = input.LA(1);
 
-                if ( (LA51_0==68) ) {
-                    alt51=1;
+                if ( (LA54_0==68) ) {
+                    alt54=1;
                 }
 
 
-                switch (alt51) {
+                switch (alt54) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:258:31: ',' expression
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:31: ',' expression
             	    {
-            	    char_literal324=(Token)match(input,68,FOLLOW_68_in_expression_list1847); 
-            	    pushFollow(FOLLOW_expression_in_expression_list1850);
-            	    expression325=expression();
+            	    char_literal329=(Token)match(input,68,FOLLOW_68_in_expression_list1866); 
+            	    pushFollow(FOLLOW_expression_in_expression_list1869);
+            	    expression330=expression();
 
             	    state._fsp--;
 
-            	    adaptor.addChild(root_0, expression325.getTree());
+            	    adaptor.addChild(root_0, expression330.getTree());
 
             	    }
             	    break;
 
             	default :
-            	    break loop51;
+            	    break loop54;
                 }
             } while (true);
 
@@ -7291,61 +7411,61 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "qualified_name"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:1: qualified_name : name ( '.' name )* ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:1: qualified_name : name ( '.' name )* ;
     public final SQLParser.qualified_name_return qualified_name() throws RecognitionException {
         SQLParser.qualified_name_return retval = new SQLParser.qualified_name_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal327=null;
-        SQLParser.name_return name326 = null;
+        Token char_literal332=null;
+        SQLParser.name_return name331 = null;
 
-        SQLParser.name_return name328 = null;
+        SQLParser.name_return name333 = null;
 
 
-        Object char_literal327_tree=null;
+        Object char_literal332_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:16: ( name ( '.' name )* )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:18: name ( '.' name )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:16: ( name ( '.' name )* )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:18: name ( '.' name )*
             {
             root_0 = (Object)adaptor.nil();
 
-            pushFollow(FOLLOW_name_in_qualified_name1859);
-            name326=name();
+            pushFollow(FOLLOW_name_in_qualified_name1878);
+            name331=name();
 
             state._fsp--;
 
-            adaptor.addChild(root_0, name326.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:23: ( '.' name )*
-            loop52:
+            adaptor.addChild(root_0, name331.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:23: ( '.' name )*
+            loop55:
             do {
-                int alt52=2;
-                int LA52_0 = input.LA(1);
+                int alt55=2;
+                int LA55_0 = input.LA(1);
 
-                if ( (LA52_0==136) ) {
-                    alt52=1;
+                if ( (LA55_0==136) ) {
+                    alt55=1;
                 }
 
 
-                switch (alt52) {
+                switch (alt55) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:259:24: '.' name
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:24: '.' name
             	    {
-            	    char_literal327=(Token)match(input,136,FOLLOW_136_in_qualified_name1862); 
-            	    pushFollow(FOLLOW_name_in_qualified_name1865);
-            	    name328=name();
+            	    char_literal332=(Token)match(input,136,FOLLOW_136_in_qualified_name1881); 
+            	    pushFollow(FOLLOW_name_in_qualified_name1884);
+            	    name333=name();
 
             	    state._fsp--;
 
-            	    adaptor.addChild(root_0, name328.getTree());
+            	    adaptor.addChild(root_0, name333.getTree());
 
             	    }
             	    break;
 
             	default :
-            	    break loop52;
+            	    break loop55;
                 }
             } while (true);
 
@@ -7374,62 +7494,62 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "value_list"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:1: value_list : value ( ',' value )* -> ^( VALUE_LIST ( value )* ) ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:1: value_list : value ( ',' value )* -> ^( VALUE_LIST ( value )* ) ;
     public final SQLParser.value_list_return value_list() throws RecognitionException {
         SQLParser.value_list_return retval = new SQLParser.value_list_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal330=null;
-        SQLParser.value_return value329 = null;
+        Token char_literal335=null;
+        SQLParser.value_return value334 = null;
 
-        SQLParser.value_return value331 = null;
+        SQLParser.value_return value336 = null;
 
 
-        Object char_literal330_tree=null;
+        Object char_literal335_tree=null;
         RewriteRuleTokenStream stream_68=new RewriteRuleTokenStream(adaptor,"token 68");
         RewriteRuleSubtreeStream stream_value=new RewriteRuleSubtreeStream(adaptor,"rule value");
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:12: ( value ( ',' value )* -> ^( VALUE_LIST ( value )* ) )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:14: value ( ',' value )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:12: ( value ( ',' value )* -> ^( VALUE_LIST ( value )* ) )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:14: value ( ',' value )*
             {
-            pushFollow(FOLLOW_value_in_value_list1874);
-            value329=value();
+            pushFollow(FOLLOW_value_in_value_list1893);
+            value334=value();
 
             state._fsp--;
 
-            stream_value.add(value329.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:20: ( ',' value )*
-            loop53:
+            stream_value.add(value334.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:20: ( ',' value )*
+            loop56:
             do {
-                int alt53=2;
-                int LA53_0 = input.LA(1);
+                int alt56=2;
+                int LA56_0 = input.LA(1);
 
-                if ( (LA53_0==68) ) {
-                    alt53=1;
+                if ( (LA56_0==68) ) {
+                    alt56=1;
                 }
 
 
-                switch (alt53) {
+                switch (alt56) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:21: ',' value
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:21: ',' value
             	    {
-            	    char_literal330=(Token)match(input,68,FOLLOW_68_in_value_list1877);  
-            	    stream_68.add(char_literal330);
+            	    char_literal335=(Token)match(input,68,FOLLOW_68_in_value_list1896);  
+            	    stream_68.add(char_literal335);
 
-            	    pushFollow(FOLLOW_value_in_value_list1879);
-            	    value331=value();
+            	    pushFollow(FOLLOW_value_in_value_list1898);
+            	    value336=value();
 
             	    state._fsp--;
 
-            	    stream_value.add(value331.getTree());
+            	    stream_value.add(value336.getTree());
 
             	    }
             	    break;
 
             	default :
-            	    break loop53;
+            	    break loop56;
                 }
             } while (true);
 
@@ -7446,14 +7566,14 @@ public class SQLParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 260:33: -> ^( VALUE_LIST ( value )* )
+            // 261:33: -> ^( VALUE_LIST ( value )* )
             {
-                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:36: ^( VALUE_LIST ( value )* )
+                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:36: ^( VALUE_LIST ( value )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(VALUE_LIST, "VALUE_LIST"), root_1);
 
-                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:260:49: ( value )*
+                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:49: ( value )*
                 while ( stream_value.hasNext() ) {
                     adaptor.addChild(root_1, stream_value.nextTree());
 
@@ -7490,62 +7610,62 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "value"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:1: value : ( name | literal );
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:1: value : ( name | literal );
     public final SQLParser.value_return value() throws RecognitionException {
         SQLParser.value_return retval = new SQLParser.value_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        SQLParser.name_return name332 = null;
+        SQLParser.name_return name337 = null;
 
-        SQLParser.literal_return literal333 = null;
+        SQLParser.literal_return literal338 = null;
 
 
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:8: ( name | literal )
-            int alt54=2;
-            int LA54_0 = input.LA(1);
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:8: ( name | literal )
+            int alt57=2;
+            int LA57_0 = input.LA(1);
 
-            if ( (LA54_0==IDENTIFIER||(LA54_0>=QUOTED_NAME && LA54_0<=COMMENT)||LA54_0==IS||LA54_0==62||LA54_0==65||LA54_0==74||(LA54_0>=76 && LA54_0<=80)||LA54_0==86||LA54_0==90||LA54_0==98||(LA54_0>=109 && LA54_0<=116)||(LA54_0>=121 && LA54_0<=123)||LA54_0==129||LA54_0==133||LA54_0==135||LA54_0==137) ) {
-                alt54=1;
+            if ( (LA57_0==IDENTIFIER||(LA57_0>=QUOTED_NAME && LA57_0<=COMMENT)||LA57_0==IS||LA57_0==62||LA57_0==65||LA57_0==74||(LA57_0>=76 && LA57_0<=80)||LA57_0==86||LA57_0==90||LA57_0==98||(LA57_0>=109 && LA57_0<=116)||(LA57_0>=121 && LA57_0<=123)||LA57_0==129||LA57_0==133||LA57_0==135||LA57_0==137) ) {
+                alt57=1;
             }
-            else if ( (LA54_0==INT||LA54_0==STRING||LA54_0==NULL) ) {
-                alt54=2;
+            else if ( (LA57_0==INT||LA57_0==STRING||LA57_0==NULL) ) {
+                alt57=2;
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("", 54, 0, input);
+                    new NoViableAltException("", 57, 0, input);
 
                 throw nvae;
             }
-            switch (alt54) {
+            switch (alt57) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:10: name
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:10: name
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_name_in_value1898);
-                    name332=name();
+                    pushFollow(FOLLOW_name_in_value1917);
+                    name337=name();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, name332.getTree());
+                    adaptor.addChild(root_0, name337.getTree());
 
                     }
                     break;
                 case 2 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:261:17: literal
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:17: literal
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_literal_in_value1902);
-                    literal333=literal();
+                    pushFollow(FOLLOW_literal_in_value1921);
+                    literal338=literal();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, literal333.getTree());
+                    adaptor.addChild(root_0, literal338.getTree());
 
                     }
                     break;
@@ -7573,62 +7693,62 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "name_list"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:1: name_list : name ( ',' name )* -> ^( NAME_LIST ( name )* ) ;
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:1: name_list : name ( ',' name )* -> ^( NAME_LIST ( name )* ) ;
     public final SQLParser.name_list_return name_list() throws RecognitionException {
         SQLParser.name_list_return retval = new SQLParser.name_list_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token char_literal335=null;
-        SQLParser.name_return name334 = null;
+        Token char_literal340=null;
+        SQLParser.name_return name339 = null;
 
-        SQLParser.name_return name336 = null;
+        SQLParser.name_return name341 = null;
 
 
-        Object char_literal335_tree=null;
+        Object char_literal340_tree=null;
         RewriteRuleTokenStream stream_68=new RewriteRuleTokenStream(adaptor,"token 68");
         RewriteRuleSubtreeStream stream_name=new RewriteRuleSubtreeStream(adaptor,"rule name");
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:11: ( name ( ',' name )* -> ^( NAME_LIST ( name )* ) )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:13: name ( ',' name )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:11: ( name ( ',' name )* -> ^( NAME_LIST ( name )* ) )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:13: name ( ',' name )*
             {
-            pushFollow(FOLLOW_name_in_name_list1909);
-            name334=name();
+            pushFollow(FOLLOW_name_in_name_list1928);
+            name339=name();
 
             state._fsp--;
 
-            stream_name.add(name334.getTree());
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:18: ( ',' name )*
-            loop55:
+            stream_name.add(name339.getTree());
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:18: ( ',' name )*
+            loop58:
             do {
-                int alt55=2;
-                int LA55_0 = input.LA(1);
+                int alt58=2;
+                int LA58_0 = input.LA(1);
 
-                if ( (LA55_0==68) ) {
-                    alt55=1;
+                if ( (LA58_0==68) ) {
+                    alt58=1;
                 }
 
 
-                switch (alt55) {
+                switch (alt58) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:19: ',' name
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:19: ',' name
             	    {
-            	    char_literal335=(Token)match(input,68,FOLLOW_68_in_name_list1912);  
-            	    stream_68.add(char_literal335);
+            	    char_literal340=(Token)match(input,68,FOLLOW_68_in_name_list1931);  
+            	    stream_68.add(char_literal340);
 
-            	    pushFollow(FOLLOW_name_in_name_list1914);
-            	    name336=name();
+            	    pushFollow(FOLLOW_name_in_name_list1933);
+            	    name341=name();
 
             	    state._fsp--;
 
-            	    stream_name.add(name336.getTree());
+            	    stream_name.add(name341.getTree());
 
             	    }
             	    break;
 
             	default :
-            	    break loop55;
+            	    break loop58;
                 }
             } while (true);
 
@@ -7645,14 +7765,14 @@ public class SQLParser extends Parser {
             RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.tree:null);
 
             root_0 = (Object)adaptor.nil();
-            // 262:30: -> ^( NAME_LIST ( name )* )
+            // 263:30: -> ^( NAME_LIST ( name )* )
             {
-                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:33: ^( NAME_LIST ( name )* )
+                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:33: ^( NAME_LIST ( name )* )
                 {
                 Object root_1 = (Object)adaptor.nil();
                 root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(NAME_LIST, "NAME_LIST"), root_1);
 
-                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:262:45: ( name )*
+                // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:45: ( name )*
                 while ( stream_name.hasNext() ) {
                     adaptor.addChild(root_1, stream_name.nextTree());
 
@@ -7689,30 +7809,30 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "name"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:1: name : ( IDENTIFIER | ora_key | keyword | QUOTED_NAME );
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:264:1: name : ( IDENTIFIER | ora_key | keyword | QUOTED_NAME );
     public final SQLParser.name_return name() throws RecognitionException {
         SQLParser.name_return retval = new SQLParser.name_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token IDENTIFIER337=null;
-        Token QUOTED_NAME340=null;
-        SQLParser.ora_key_return ora_key338 = null;
+        Token IDENTIFIER342=null;
+        Token QUOTED_NAME345=null;
+        SQLParser.ora_key_return ora_key343 = null;
 
-        SQLParser.keyword_return keyword339 = null;
+        SQLParser.keyword_return keyword344 = null;
 
 
-        Object IDENTIFIER337_tree=null;
-        Object QUOTED_NAME340_tree=null;
+        Object IDENTIFIER342_tree=null;
+        Object QUOTED_NAME345_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:7: ( IDENTIFIER | ora_key | keyword | QUOTED_NAME )
-            int alt56=4;
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:264:7: ( IDENTIFIER | ora_key | keyword | QUOTED_NAME )
+            int alt59=4;
             switch ( input.LA(1) ) {
             case IDENTIFIER:
                 {
-                alt56=1;
+                alt59=1;
                 }
                 break;
             case 76:
@@ -7730,7 +7850,7 @@ public class SQLParser extends Parser {
             case 115:
             case 116:
                 {
-                alt56=2;
+                alt59=2;
                 }
                 break;
             case PRIMARY:
@@ -7750,70 +7870,70 @@ public class SQLParser extends Parser {
             case 135:
             case 137:
                 {
-                alt56=3;
+                alt59=3;
                 }
                 break;
             case QUOTED_NAME:
                 {
-                alt56=4;
+                alt59=4;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 56, 0, input);
+                    new NoViableAltException("", 59, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt56) {
+            switch (alt59) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:9: IDENTIFIER
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:264:9: IDENTIFIER
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    IDENTIFIER337=(Token)match(input,IDENTIFIER,FOLLOW_IDENTIFIER_in_name1933); 
-                    IDENTIFIER337_tree = (Object)adaptor.create(IDENTIFIER337);
-                    adaptor.addChild(root_0, IDENTIFIER337_tree);
+                    IDENTIFIER342=(Token)match(input,IDENTIFIER,FOLLOW_IDENTIFIER_in_name1952); 
+                    IDENTIFIER342_tree = (Object)adaptor.create(IDENTIFIER342);
+                    adaptor.addChild(root_0, IDENTIFIER342_tree);
 
 
                     }
                     break;
                 case 2 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:22: ora_key
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:264:22: ora_key
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_ora_key_in_name1937);
-                    ora_key338=ora_key();
+                    pushFollow(FOLLOW_ora_key_in_name1956);
+                    ora_key343=ora_key();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, ora_key338.getTree());
+                    adaptor.addChild(root_0, ora_key343.getTree());
 
                     }
                     break;
                 case 3 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:32: keyword
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:264:32: keyword
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    pushFollow(FOLLOW_keyword_in_name1941);
-                    keyword339=keyword();
+                    pushFollow(FOLLOW_keyword_in_name1960);
+                    keyword344=keyword();
 
                     state._fsp--;
 
-                    adaptor.addChild(root_0, keyword339.getTree());
+                    adaptor.addChild(root_0, keyword344.getTree());
 
                     }
                     break;
                 case 4 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:263:42: QUOTED_NAME
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:264:42: QUOTED_NAME
                     {
                     root_0 = (Object)adaptor.nil();
 
-                    QUOTED_NAME340=(Token)match(input,QUOTED_NAME,FOLLOW_QUOTED_NAME_in_name1945); 
-                    QUOTED_NAME340_tree = (Object)adaptor.create(QUOTED_NAME340);
-                    adaptor.addChild(root_0, QUOTED_NAME340_tree);
+                    QUOTED_NAME345=(Token)match(input,QUOTED_NAME,FOLLOW_QUOTED_NAME_in_name1964); 
+                    QUOTED_NAME345_tree = (Object)adaptor.create(QUOTED_NAME345);
+                    adaptor.addChild(root_0, QUOTED_NAME345_tree);
 
 
                     }
@@ -7842,27 +7962,27 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "literal"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:265:1: literal : ( INT | STRING | 'NULL' );
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:266:1: literal : ( INT | STRING | 'NULL' );
     public final SQLParser.literal_return literal() throws RecognitionException {
         SQLParser.literal_return retval = new SQLParser.literal_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set341=null;
+        Token set346=null;
 
-        Object set341_tree=null;
+        Object set346_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:265:10: ( INT | STRING | 'NULL' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:266:10: ( INT | STRING | 'NULL' )
             // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:
             {
             root_0 = (Object)adaptor.nil();
 
-            set341=(Token)input.LT(1);
+            set346=(Token)input.LT(1);
             if ( input.LA(1)==INT||input.LA(1)==STRING||input.LA(1)==NULL ) {
                 input.consume();
-                adaptor.addChild(root_0, (Object)adaptor.create(set341));
+                adaptor.addChild(root_0, (Object)adaptor.create(set346));
                 state.errorRecovery=false;
             }
             else {
@@ -7895,27 +8015,27 @@ public class SQLParser extends Parser {
     };
 
     // $ANTLR start "keyword"
-    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:267:1: keyword : ( 'CREATE' | 'DROP' | 'ALTER' | 'TABLE' | 'INDEX' | 'SEQUENCE' | 'TRIGGER' | 'UNIQUE' | 'BY' | 'ON' | 'IS' | 'COLUMN' | PRIMARY | 'KEY' | DEFAULT | COMMENT );
+    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:268:1: keyword : ( 'CREATE' | 'DROP' | 'ALTER' | 'TABLE' | 'INDEX' | 'SEQUENCE' | 'TRIGGER' | 'UNIQUE' | 'BY' | 'ON' | 'IS' | 'COLUMN' | PRIMARY | 'KEY' | DEFAULT | COMMENT );
     public final SQLParser.keyword_return keyword() throws RecognitionException {
         SQLParser.keyword_return retval = new SQLParser.keyword_return();
         retval.start = input.LT(1);
 
         Object root_0 = null;
 
-        Token set342=null;
+        Token set347=null;
 
-        Object set342_tree=null;
+        Object set347_tree=null;
 
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:267:9: ( 'CREATE' | 'DROP' | 'ALTER' | 'TABLE' | 'INDEX' | 'SEQUENCE' | 'TRIGGER' | 'UNIQUE' | 'BY' | 'ON' | 'IS' | 'COLUMN' | PRIMARY | 'KEY' | DEFAULT | COMMENT )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:268:9: ( 'CREATE' | 'DROP' | 'ALTER' | 'TABLE' | 'INDEX' | 'SEQUENCE' | 'TRIGGER' | 'UNIQUE' | 'BY' | 'ON' | 'IS' | 'COLUMN' | PRIMARY | 'KEY' | DEFAULT | COMMENT )
             // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:
             {
             root_0 = (Object)adaptor.nil();
 
-            set342=(Token)input.LT(1);
+            set347=(Token)input.LT(1);
             if ( (input.LA(1)>=PRIMARY && input.LA(1)<=COMMENT)||input.LA(1)==IS||input.LA(1)==62||input.LA(1)==65||input.LA(1)==74||input.LA(1)==86||input.LA(1)==98||(input.LA(1)>=121 && input.LA(1)<=123)||input.LA(1)==129||input.LA(1)==133||input.LA(1)==135||input.LA(1)==137 ) {
                 input.consume();
-                adaptor.addChild(root_0, (Object)adaptor.create(set342));
+                adaptor.addChild(root_0, (Object)adaptor.create(set347));
                 state.errorRecovery=false;
             }
             else {
@@ -8291,62 +8411,67 @@ public class SQLParser extends Parser {
     public static final BitSet FOLLOW_equality_expression_in_exclusive_or_expression1546 = new BitSet(new long[]{0x0000000200000002L});
     public static final BitSet FOLLOW_XOR_in_exclusive_or_expression1549 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
     public static final BitSet FOLLOW_equality_expression_in_exclusive_or_expression1552 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_relational_expression_in_equality_expression1561 = new BitSet(new long[]{0x0000021C00000002L});
+    public static final BitSet FOLLOW_null_comparison_in_equality_expression1561 = new BitSet(new long[]{0x0000001C00000002L});
     public static final BitSet FOLLOW_set_in_equality_expression1564 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_relational_expression_in_equality_expression1581 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_in_expression_in_relational_expression1590 = new BitSet(new long[]{0x000001E000000002L});
-    public static final BitSet FOLLOW_set_in_relational_expression1593 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_in_expression_in_relational_expression1610 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_between_expression_in_in_expression1620 = new BitSet(new long[]{0x0000080000000002L});
-    public static final BitSet FOLLOW_IN_in_in_expression1623 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_66_in_in_expression1626 = new BitSet(new long[]{0x4000060000000FD0L,0x0E1FE0040441F402L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_value_list_in_in_expression1629 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_67_in_in_expression1631 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_additive_expression_in_between_expression1641 = new BitSet(new long[]{0x0000100000000002L});
-    public static final BitSet FOLLOW_BETWEEN_in_between_expression1644 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_additive_expression_in_between_expression1647 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_AND_in_between_expression1649 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_additive_expression_in_between_expression1652 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_multiplicative_expression_in_additive_expression1661 = new BitSet(new long[]{0x0004600000000002L});
-    public static final BitSet FOLLOW_set_in_additive_expression1664 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_multiplicative_expression_in_additive_expression1677 = new BitSet(new long[]{0x0004600000000002L});
-    public static final BitSet FOLLOW_unary_expression_in_multiplicative_expression1685 = new BitSet(new long[]{0x0003800000000002L});
-    public static final BitSet FOLLOW_set_in_multiplicative_expression1688 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_unary_expression_in_multiplicative_expression1701 = new BitSet(new long[]{0x0003800000000002L});
-    public static final BitSet FOLLOW_SUB_in_unary_expression1717 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_primary_in_unary_expression1720 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NOT_in_unary_expression1730 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_primary_in_unary_expression1733 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_primary_in_unary_expression1743 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_66_in_primary1763 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_expression_in_primary1766 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
-    public static final BitSet FOLLOW_67_in_primary1768 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENTIFIER_in_primary1779 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
-    public static final BitSet FOLLOW_arguments_in_primary1781 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_value_in_primary1801 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_66_in_arguments1814 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F40EL,0x00000000000002A2L});
-    public static final BitSet FOLLOW_expression_in_arguments1817 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-    public static final BitSet FOLLOW_68_in_arguments1820 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_expression_in_arguments1822 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
-    public static final BitSet FOLLOW_67_in_arguments1828 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_expression_in_expression_list1844 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
-    public static final BitSet FOLLOW_68_in_expression_list1847 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_expression_in_expression_list1850 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
-    public static final BitSet FOLLOW_name_in_qualified_name1859 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000100L});
-    public static final BitSet FOLLOW_136_in_qualified_name1862 = new BitSet(new long[]{0x4000020000000F40L,0x0E1FE0040441F402L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_name_in_qualified_name1865 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000100L});
-    public static final BitSet FOLLOW_value_in_value_list1874 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
-    public static final BitSet FOLLOW_68_in_value_list1877 = new BitSet(new long[]{0x4000060000000FD0L,0x0E1FE0040441F402L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_value_in_value_list1879 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
-    public static final BitSet FOLLOW_name_in_value1898 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_literal_in_value1902 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_name_in_name_list1909 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
-    public static final BitSet FOLLOW_68_in_name_list1912 = new BitSet(new long[]{0x4000020000000F40L,0x0E1FE0040441F402L,0x00000000000002A2L});
-    public static final BitSet FOLLOW_name_in_name_list1914 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
-    public static final BitSet FOLLOW_IDENTIFIER_in_name1933 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ora_key_in_name1937 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_keyword_in_name1941 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_QUOTED_NAME_in_name1945 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_null_comparison_in_equality_expression1577 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_relational_expression_in_null_comparison1587 = new BitSet(new long[]{0x0000020000000002L});
+    public static final BitSet FOLLOW_IS_in_null_comparison1590 = new BitSet(new long[]{0x0000040000000020L});
+    public static final BitSet FOLLOW_NOT_in_null_comparison1593 = new BitSet(new long[]{0x0000040000000000L});
+    public static final BitSet FOLLOW_NULL_in_null_comparison1596 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_in_expression_in_relational_expression1606 = new BitSet(new long[]{0x000001E000000002L});
+    public static final BitSet FOLLOW_set_in_relational_expression1609 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_in_expression_in_relational_expression1626 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_between_expression_in_in_expression1636 = new BitSet(new long[]{0x0000080000000022L});
+    public static final BitSet FOLLOW_NOT_in_in_expression1639 = new BitSet(new long[]{0x0000080000000000L});
+    public static final BitSet FOLLOW_IN_in_in_expression1642 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_66_in_in_expression1645 = new BitSet(new long[]{0x4000060000000FD0L,0x0E1FE0040441F402L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_value_list_in_in_expression1648 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_67_in_in_expression1650 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_additive_expression_in_between_expression1660 = new BitSet(new long[]{0x0000100000000002L});
+    public static final BitSet FOLLOW_BETWEEN_in_between_expression1663 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_additive_expression_in_between_expression1666 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_AND_in_between_expression1668 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_additive_expression_in_between_expression1671 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_multiplicative_expression_in_additive_expression1680 = new BitSet(new long[]{0x0004600000000002L});
+    public static final BitSet FOLLOW_set_in_additive_expression1683 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_multiplicative_expression_in_additive_expression1696 = new BitSet(new long[]{0x0004600000000002L});
+    public static final BitSet FOLLOW_unary_expression_in_multiplicative_expression1704 = new BitSet(new long[]{0x0003800000000002L});
+    public static final BitSet FOLLOW_set_in_multiplicative_expression1707 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_unary_expression_in_multiplicative_expression1720 = new BitSet(new long[]{0x0003800000000002L});
+    public static final BitSet FOLLOW_SUB_in_unary_expression1736 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_primary_in_unary_expression1739 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_NOT_in_unary_expression1749 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_primary_in_unary_expression1752 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_primary_in_unary_expression1762 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_66_in_primary1782 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_expression_in_primary1785 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000008L});
+    public static final BitSet FOLLOW_67_in_primary1787 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENTIFIER_in_primary1798 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000004L});
+    public static final BitSet FOLLOW_arguments_in_primary1800 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_value_in_primary1820 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_66_in_arguments1833 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F40EL,0x00000000000002A2L});
+    public static final BitSet FOLLOW_expression_in_arguments1836 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
+    public static final BitSet FOLLOW_68_in_arguments1839 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_expression_in_arguments1841 = new BitSet(new long[]{0x0000000000000000L,0x0000000000000018L});
+    public static final BitSet FOLLOW_67_in_arguments1847 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_expression_in_expression_list1863 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
+    public static final BitSet FOLLOW_68_in_expression_list1866 = new BitSet(new long[]{0x4000460000000FF0L,0x0E1FE0040441F406L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_expression_in_expression_list1869 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
+    public static final BitSet FOLLOW_name_in_qualified_name1878 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000100L});
+    public static final BitSet FOLLOW_136_in_qualified_name1881 = new BitSet(new long[]{0x4000020000000F40L,0x0E1FE0040441F402L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_name_in_qualified_name1884 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000000L,0x0000000000000100L});
+    public static final BitSet FOLLOW_value_in_value_list1893 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
+    public static final BitSet FOLLOW_68_in_value_list1896 = new BitSet(new long[]{0x4000060000000FD0L,0x0E1FE0040441F402L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_value_in_value_list1898 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
+    public static final BitSet FOLLOW_name_in_value1917 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_literal_in_value1921 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_name_in_name_list1928 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
+    public static final BitSet FOLLOW_68_in_name_list1931 = new BitSet(new long[]{0x4000020000000F40L,0x0E1FE0040441F402L,0x00000000000002A2L});
+    public static final BitSet FOLLOW_name_in_name_list1933 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000010L});
+    public static final BitSet FOLLOW_IDENTIFIER_in_name1952 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ora_key_in_name1956 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_keyword_in_name1960 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_QUOTED_NAME_in_name1964 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_literal0 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_keyword0 = new BitSet(new long[]{0x0000000000000002L});
 

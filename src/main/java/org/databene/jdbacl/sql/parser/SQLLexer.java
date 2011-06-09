@@ -1,4 +1,4 @@
-// $ANTLR 3.3 Nov 30, 2010 12:45:30 /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g 2011-06-08 11:45:08
+// $ANTLR 3.3 Nov 30, 2010 12:45:30 /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g 2011-06-08 18:35:17
  
 	package org.databene.jdbacl.sql.parser;
 
@@ -1805,8 +1805,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "CREATE_TABLE"
     public final void mCREATE_TABLE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:285:22: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:285:23: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:286:22: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:286:23: 
             {
             }
 
@@ -1819,8 +1819,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "DROP_TABLE"
     public final void mDROP_TABLE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:286:20: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:286:21: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:287:20: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:287:21: 
             {
             }
 
@@ -1833,8 +1833,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "ALTER_TABLE"
     public final void mALTER_TABLE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:287:21: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:287:22: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:288:21: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:288:22: 
             {
             }
 
@@ -1847,8 +1847,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "TABLE_NAME"
     public final void mTABLE_NAME() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:288:20: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:288:21: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:289:20: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:289:21: 
             {
             }
 
@@ -1861,8 +1861,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "COLUMN_NAME"
     public final void mCOLUMN_NAME() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:289:21: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:289:22: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:290:21: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:290:22: 
             {
             }
 
@@ -1875,8 +1875,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "SIZE"
     public final void mSIZE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:290:14: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:290:15: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:291:14: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:291:15: 
             {
             }
 
@@ -1889,8 +1889,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "CREATE_SEQUENCE"
     public final void mCREATE_SEQUENCE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:291:25: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:291:26: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:292:25: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:292:26: 
             {
             }
 
@@ -1903,8 +1903,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "DROP_SEQUENCE"
     public final void mDROP_SEQUENCE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:292:23: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:292:24: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:293:23: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:293:24: 
             {
             }
 
@@ -1917,8 +1917,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "NAME_LIST"
     public final void mNAME_LIST() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:293:19: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:293:20: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:294:19: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:294:20: 
             {
             }
 
@@ -1931,8 +1931,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "CREATE_INDEX"
     public final void mCREATE_INDEX() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:294:22: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:294:23: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:295:22: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:295:23: 
             {
             }
 
@@ -1945,8 +1945,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "INDEX_NAME"
     public final void mINDEX_NAME() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:295:20: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:295:21: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:296:20: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:296:21: 
             {
             }
 
@@ -1959,8 +1959,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "TABLE_DETAILS"
     public final void mTABLE_DETAILS() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:296:23: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:296:24: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:297:23: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:297:24: 
             {
             }
 
@@ -1973,8 +1973,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "COLUMN_SPEC"
     public final void mCOLUMN_SPEC() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:297:21: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:297:22: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:298:21: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:298:22: 
             {
             }
 
@@ -1987,8 +1987,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "ORA_CONFIGS"
     public final void mORA_CONFIGS() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:298:21: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:298:22: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:299:21: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:299:22: 
             {
             }
 
@@ -2001,8 +2001,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "COMMENT_TABLE"
     public final void mCOMMENT_TABLE() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:299:23: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:299:24: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:300:23: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:300:24: 
             {
             }
 
@@ -2015,8 +2015,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "COMMENT_COLUMN"
     public final void mCOMMENT_COLUMN() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:300:24: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:300:25: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:301:24: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:301:25: 
             {
             }
 
@@ -2029,8 +2029,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "INVOCATION"
     public final void mINVOCATION() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:301:20: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:301:21: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:302:20: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:302:21: 
             {
             }
 
@@ -2043,8 +2043,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "ARGUMENTS"
     public final void mARGUMENTS() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:302:19: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:302:20: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:303:19: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:303:20: 
             {
             }
 
@@ -2057,8 +2057,8 @@ public class SQLLexer extends Lexer {
     // $ANTLR start "VALUE_LIST"
     public final void mVALUE_LIST() throws RecognitionException {
         try {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:303:20: ()
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:303:21: 
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:304:20: ()
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:304:21: 
             {
             }
 
@@ -2073,8 +2073,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = OR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:305:4: ( 'OR' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:305:6: 'OR'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:306:4: ( 'OR' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:306:6: 'OR'
             {
             match("OR"); 
 
@@ -2094,8 +2094,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = AND;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:306:5: ( 'AND' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:306:7: 'AND'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:307:5: ( 'AND' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:307:7: 'AND'
             {
             match("AND"); 
 
@@ -2115,8 +2115,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = XOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:307:5: ( 'XOR' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:307:7: 'XOR'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:308:5: ( 'XOR' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:308:7: 'XOR'
             {
             match("XOR"); 
 
@@ -2136,8 +2136,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = EQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:308:4: ( '=' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:308:6: '='
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:309:4: ( '=' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:309:6: '='
             {
             match('='); 
 
@@ -2156,8 +2156,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = BANGEQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:309:8: ( '!=' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:309:10: '!='
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:310:8: ( '!=' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:310:10: '!='
             {
             match("!="); 
 
@@ -2177,8 +2177,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = LTGT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:310:6: ( '<>' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:310:8: '<>'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:311:6: ( '<>' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:311:8: '<>'
             {
             match("<>"); 
 
@@ -2198,8 +2198,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = GT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:311:4: ( '>' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:311:6: '>'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:312:4: ( '>' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:312:6: '>'
             {
             match('>'); 
 
@@ -2218,8 +2218,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = GE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:312:4: ( '>=' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:312:6: '>='
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:313:4: ( '>=' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:313:6: '>='
             {
             match(">="); 
 
@@ -2239,8 +2239,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = LT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:313:4: ( '<' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:313:6: '<'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:314:4: ( '<' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:314:6: '<'
             {
             match('<'); 
 
@@ -2259,8 +2259,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = LE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:314:4: ( '<=' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:314:6: '<='
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:315:4: ( '<=' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:315:6: '<='
             {
             match("<="); 
 
@@ -2280,8 +2280,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = IS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:315:4: ( 'IS' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:315:6: 'IS'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:316:4: ( 'IS' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:316:6: 'IS'
             {
             match("IS"); 
 
@@ -2301,8 +2301,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = NOT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:316:5: ( 'NOT' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:316:7: 'NOT'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:317:5: ( 'NOT' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:317:7: 'NOT'
             {
             match("NOT"); 
 
@@ -2322,8 +2322,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = NULL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:317:7: ( 'NULL' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:317:9: 'NULL'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:318:7: ( 'NULL' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:318:9: 'NULL'
             {
             match("NULL"); 
 
@@ -2343,8 +2343,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = IN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:318:4: ( 'IN' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:318:6: 'IN'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:319:4: ( 'IN' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:319:6: 'IN'
             {
             match("IN"); 
 
@@ -2364,8 +2364,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = BETWEEN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:319:9: ( 'BETWEEN' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:319:11: 'BETWEEN'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:320:9: ( 'BETWEEN' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:320:11: 'BETWEEN'
             {
             match("BETWEEN"); 
 
@@ -2385,8 +2385,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = PLUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:320:6: ( '+' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:320:8: '+'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:321:6: ( '+' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:321:8: '+'
             {
             match('+'); 
 
@@ -2405,8 +2405,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = SUB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:321:5: ( '-' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:321:7: '-'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:322:5: ( '-' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:322:7: '-'
             {
             match('-'); 
 
@@ -2425,8 +2425,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = STAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:322:6: ( '*' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:322:8: '*'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:323:6: ( '*' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:323:8: '*'
             {
             match('*'); 
 
@@ -2445,8 +2445,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = SLASH;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:323:7: ( '/' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:323:9: '/'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:324:7: ( '/' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:324:9: '/'
             {
             match('/'); 
 
@@ -2465,8 +2465,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = PERCENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:324:9: ( '%' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:324:11: '%'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:325:9: ( '%' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:325:11: '%'
             {
             match('%'); 
 
@@ -2485,8 +2485,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = BARBAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:325:8: ( '||' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:325:10: '||'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:326:8: ( '||' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:326:10: '||'
             {
             match("||"); 
 
@@ -2506,8 +2506,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = ROWID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:327:9: ( 'ROWID' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:327:11: 'ROWID'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:328:9: ( 'ROWID' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:328:11: 'ROWID'
             {
             match("ROWID"); 
 
@@ -2527,8 +2527,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = NUMBER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:328:10: ( 'NUMBER' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:328:12: 'NUMBER'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:329:10: ( 'NUMBER' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:329:12: 'NUMBER'
             {
             match("NUMBER"); 
 
@@ -2548,8 +2548,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = VARCHAR2;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:329:10: ( 'VARCHAR2' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:329:12: 'VARCHAR2'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:330:10: ( 'VARCHAR2' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:330:12: 'VARCHAR2'
             {
             match("VARCHAR2"); 
 
@@ -2569,8 +2569,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = NVARCHAR2;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:330:11: ( 'NVARCHAR2' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:330:13: 'NVARCHAR2'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:331:11: ( 'NVARCHAR2' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:331:13: 'NVARCHAR2'
             {
             match("NVARCHAR2"); 
 
@@ -2590,8 +2590,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = BYTE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:331:8: ( 'BYTE' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:331:10: 'BYTE'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:332:8: ( 'BYTE' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:332:10: 'BYTE'
             {
             match("BYTE"); 
 
@@ -2611,8 +2611,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = CHAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:332:8: ( 'CHAR' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:332:10: 'CHAR'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:333:8: ( 'CHAR' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:333:10: 'CHAR'
             {
             match("CHAR"); 
 
@@ -2632,8 +2632,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = DATE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:333:8: ( 'DATE' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:333:10: 'DATE'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:334:8: ( 'DATE' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:334:10: 'DATE'
             {
             match("DATE"); 
 
@@ -2653,8 +2653,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = TIMESTAMP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:334:12: ( 'TIMESTAMP' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:334:14: 'TIMESTAMP'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:335:12: ( 'TIMESTAMP' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:335:14: 'TIMESTAMP'
             {
             match("TIMESTAMP"); 
 
@@ -2674,8 +2674,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = BEFORE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:336:10: ( 'BEFORE' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:336:12: 'BEFORE'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:337:10: ( 'BEFORE' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:337:12: 'BEFORE'
             {
             match("BEFORE"); 
 
@@ -2695,8 +2695,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = PRIMARY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:337:10: ( 'PRIMARY' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:337:12: 'PRIMARY'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:338:10: ( 'PRIMARY' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:338:12: 'PRIMARY'
             {
             match("PRIMARY"); 
 
@@ -2716,8 +2716,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = DEFAULT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:338:10: ( 'DEFAULT' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:338:12: 'DEFAULT'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:339:10: ( 'DEFAULT' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:339:12: 'DEFAULT'
             {
             match("DEFAULT"); 
 
@@ -2737,8 +2737,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = IDENTIFIER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:340:13: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:340:15: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:341:13: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )* )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:341:15: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||input.LA(1)=='_'||(input.LA(1)>='a' && input.LA(1)<='z') ) {
                 input.consume();
@@ -2749,7 +2749,7 @@ public class SQLLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:340:39: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:341:39: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' | '$' )*
             loop1:
             do {
                 int alt1=2;
@@ -2798,10 +2798,10 @@ public class SQLLexer extends Lexer {
         try {
             int _type = INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:342:5: ( ( '0' .. '9' )+ )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:342:7: ( '0' .. '9' )+
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:343:5: ( ( '0' .. '9' )+ )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:343:7: ( '0' .. '9' )+
             {
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:342:7: ( '0' .. '9' )+
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:343:7: ( '0' .. '9' )+
             int cnt2=0;
             loop2:
             do {
@@ -2815,7 +2815,7 @@ public class SQLLexer extends Lexer {
 
                 switch (alt2) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:342:7: '0' .. '9'
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:343:7: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -2847,7 +2847,7 @@ public class SQLLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:345:5: ( '--' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' | '/*' ( options {greedy=false; } : . )* '*/' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:5: ( '--' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' | '/*' ( options {greedy=false; } : . )* '*/' )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -2865,11 +2865,11 @@ public class SQLLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:345:9: '--' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:9: '--' (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
                     {
                     match("--"); 
 
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:345:14: (~ ( '\\n' | '\\r' ) )*
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:14: (~ ( '\\n' | '\\r' ) )*
                     loop3:
                     do {
                         int alt3=2;
@@ -2882,7 +2882,7 @@ public class SQLLexer extends Lexer {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:345:14: ~ ( '\\n' | '\\r' )
+                    	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:14: ~ ( '\\n' | '\\r' )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -2902,7 +2902,7 @@ public class SQLLexer extends Lexer {
                         }
                     } while (true);
 
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:345:28: ( '\\r' )?
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:28: ( '\\r' )?
                     int alt4=2;
                     int LA4_0 = input.LA(1);
 
@@ -2911,7 +2911,7 @@ public class SQLLexer extends Lexer {
                     }
                     switch (alt4) {
                         case 1 :
-                            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:345:28: '\\r'
+                            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:28: '\\r'
                             {
                             match('\r'); 
 
@@ -2926,11 +2926,11 @@ public class SQLLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:9: '/*' ( options {greedy=false; } : . )* '*/'
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:347:9: '/*' ( options {greedy=false; } : . )* '*/'
                     {
                     match("/*"); 
 
-                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:14: ( options {greedy=false; } : . )*
+                    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:347:14: ( options {greedy=false; } : . )*
                     loop5:
                     do {
                         int alt5=2;
@@ -2955,7 +2955,7 @@ public class SQLLexer extends Lexer {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:346:42: .
+                    	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:347:42: .
                     	    {
                     	    matchAny(); 
 
@@ -2988,8 +2988,8 @@ public class SQLLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:349:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:349:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:350:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:350:9: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1)>='\t' && input.LA(1)<='\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -3017,11 +3017,11 @@ public class SQLLexer extends Lexer {
         try {
             int _type = STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:356:8: ( '\\'' (~ ( '\\\\' | '\\'' ) )* '\\'' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:356:11: '\\'' (~ ( '\\\\' | '\\'' ) )* '\\''
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:8: ( '\\'' (~ ( '\\\\' | '\\'' ) )* '\\'' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:11: '\\'' (~ ( '\\\\' | '\\'' ) )* '\\''
             {
             match('\''); 
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:356:16: (~ ( '\\\\' | '\\'' ) )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:16: (~ ( '\\\\' | '\\'' ) )*
             loop7:
             do {
                 int alt7=2;
@@ -3034,7 +3034,7 @@ public class SQLLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:356:18: ~ ( '\\\\' | '\\'' )
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:18: ~ ( '\\\\' | '\\'' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -3071,11 +3071,11 @@ public class SQLLexer extends Lexer {
         try {
             int _type = QUOTED_NAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:13: ( '\"' (~ ( '\\\\' | '\\\"' ) )* '\"' )
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:16: '\"' (~ ( '\\\\' | '\\\"' ) )* '\"'
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:358:13: ( '\"' (~ ( '\\\\' | '\\\"' ) )* '\"' )
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:358:16: '\"' (~ ( '\\\\' | '\\\"' ) )* '\"'
             {
             match('\"'); 
-            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:20: (~ ( '\\\\' | '\\\"' ) )*
+            // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:358:20: (~ ( '\\\\' | '\\\"' ) )*
             loop8:
             do {
                 int alt8=2;
@@ -3088,7 +3088,7 @@ public class SQLLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:357:22: ~ ( '\\\\' | '\\\"' )
+            	    // /Users/volker/Documents/databene/jdbacl/src/main/g/SQL.g:358:22: ~ ( '\\\\' | '\\\"' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
