@@ -228,56 +228,40 @@ public class SQLUtil {
 		return sql;
 	}
 
-	public static String constraintDescription(DBConstraint constraint) {
+	public static String constraintSpec(DBConstraint constraint, boolean withName) {
 		if (constraint instanceof DBPrimaryKeyConstraint)
-			return pkDescription((DBPrimaryKeyConstraint) constraint);
+			return pkSpec((DBPrimaryKeyConstraint) constraint, withName);
 		else if (constraint instanceof DBUniqueConstraint)
-			return ukDescription((DBUniqueConstraint) constraint);
+			return ukSpec((DBUniqueConstraint) constraint, withName);
 		else if (constraint instanceof DBForeignKeyConstraint)
-			return fkDescription((DBForeignKeyConstraint) constraint);
-		else if (constraint instanceof DBForeignKeyConstraint)
-			return fkDescription((DBForeignKeyConstraint) constraint);
+			return fkSpec((DBForeignKeyConstraint) constraint, withName);
 		else if (constraint instanceof DBNotNullConstraint)
-			return notNullDescription((DBNotNullConstraint) constraint);
+			return notNullSpec((DBNotNullConstraint) constraint);
 		else if (constraint instanceof DBCheckConstraint)
-			return checkDescription((DBCheckConstraint) constraint);
+			return checkSpec((DBCheckConstraint) constraint);
 		else
 			throw new UnsupportedOperationException("Unknown constraint type: " + 
 					constraint.getClass());
 	}
 	
-	private static String checkDescription(DBCheckConstraint constraint) {
+	private static String checkSpec(DBCheckConstraint constraint) {
 		return "CHECK " + constraint.getConditionText();
 	}
 
-	private static String notNullDescription(DBNotNullConstraint constraint) {
+	private static String notNullSpec(DBNotNullConstraint constraint) {
 		return constraint.getColumnNames()[0] + " NOT NULL";
 	}
 
-	public static String pkDescription(DBPrimaryKeyConstraint pk) {
-		return constraintName(pk) + "PRIMARY KEY " + pk.getTable().getName() + colsInParens(pk);
-	}
-
-	public static String pkSpec(DBPrimaryKeyConstraint pk) {
-		return constraintName(pk) + "PRIMARY KEY " + colsInParens(pk);
+	public static String pkSpec(DBPrimaryKeyConstraint pk, boolean withName) {
+		return (withName ? constraintName(pk) : "") + "PRIMARY KEY " + colsInParens(pk);
 	}
 	
-	public static String ukDescription(DBUniqueConstraint uk) {
-		return constraintName(uk) + "UNIQUE " + uk.getTable().getName() + colsInParens(uk);
+	public static String ukSpec(DBUniqueConstraint uk, boolean withName) {
+		return (withName ? constraintName(uk) : "") + "UNIQUE " + colsInParens(uk);
     }
 
-	public static String ukSpec(DBUniqueConstraint uk) {
-		return constraintName(uk) + "UNIQUE " + colsInParens(uk);
-    }
-
-	public static String fkDescription(DBForeignKeyConstraint fk) {
-		return constraintName(fk) + "FK " + 
-			fk.getTable().getName() + colsInParens(fk) + " -> " +
-			fk.getRefereeTable() + colsInParens(fk.getRefereeColumnNames());
-	}
-	
-	public static String fkSpec(DBForeignKeyConstraint fk) {
-		return constraintName(fk) + " FOREIGN KEY " + colsInParens(fk.getColumnNames()) +
+	public static String fkSpec(DBForeignKeyConstraint fk, boolean withName) {
+		return (withName ? constraintName(fk) : "") + " FOREIGN KEY " + colsInParens(fk.getColumnNames()) +
 			" REFERENCES " + fk.getRefereeTable() + colsInParens(fk.getRefereeColumnNames());
 	}
 	
@@ -320,6 +304,17 @@ public class SQLUtil {
 				"CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ' : 
 				"");
 	}
+	
+	public static String typeAndName(DBObject dbObject) {
+		if (dbObject == null)
+			return null;
+		String name = dbObject.getName();
+		if (name == null && dbObject instanceof DBConstraint)
+			name = "constraint";
+		return dbObject.getObjectType() + ' ' + name;
+	}
+
+	// private helpers -------------------------------------------------------------------------------------------------
 	
 	private static String quoteNameIfNecessary(String name) {
 		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
