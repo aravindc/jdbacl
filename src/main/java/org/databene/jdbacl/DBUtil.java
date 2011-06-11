@@ -33,6 +33,7 @@ import org.databene.commons.ConfigurationError;
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
 import org.databene.commons.IOUtil;
+import org.databene.commons.ImportFailedException;
 import org.databene.commons.JDBCConnectData;
 import org.databene.commons.LogCategories;
 import org.databene.commons.ReaderLineIterator;
@@ -43,10 +44,13 @@ import org.databene.commons.converter.ToStringConverter;
 import org.databene.commons.debug.Debug;
 import org.databene.commons.depend.DependencyModel;
 import org.databene.jdbacl.model.DBConstraint;
+import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.cache.CachingDBImporter;
+import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 import org.databene.jdbacl.proxy.LoggingPreparedStatementHandler;
 import org.databene.jdbacl.proxy.LoggingResultSetHandler;
 import org.databene.jdbacl.proxy.LoggingStatementHandler;
@@ -589,6 +593,31 @@ public class DBUtil {
 			if (!fk.getTable().getColumn(columnName).isNullable())
 				return true;
 		return false;
+	}
+
+
+	public static Database getMetaData(String environment, 
+			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+			String tableExclusionPattern, boolean lazy, boolean cached) 
+				throws ConnectFailedException, ImportFailedException {
+		DBMetaDataImporter importer = createImporter(environment, 
+				importUKs, importIndexes, importSequences, importChecks, tableExclusionPattern, lazy);
+		if (cached)
+			importer = new CachingDBImporter(importer, environment);
+		return importer.importDatabase();
+	}
+
+	private static JDBCDBImporter createImporter(String environment, 
+			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+			String tableExclusionPattern, boolean lazy) {
+		JDBCDBImporter importer = new JDBCDBImporter(environment);
+		importer.setExcludeTables(tableExclusionPattern);
+		importer.setLazy(lazy);
+		importer.setImportingUKs(importUKs);
+		importer.setImportingIndexes(importIndexes);
+		importer.setImportingSequences(importSequences);
+		importer.setImportingChecks(importChecks);
+		return importer;
 	}
 
 }
