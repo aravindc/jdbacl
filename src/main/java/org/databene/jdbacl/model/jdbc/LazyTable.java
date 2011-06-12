@@ -204,6 +204,10 @@ public class LazyTable implements DBTable {
 	    return getRealTable().getReferrers();
     }
 	
+	public void addReferrer(DBTable table) {
+	    getRealTable().addReferrer(table);
+	}
+
 	public DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection)
             throws SQLException {
 	    return getRealTable().queryRowsByCellValues(columnNames, values, connection);

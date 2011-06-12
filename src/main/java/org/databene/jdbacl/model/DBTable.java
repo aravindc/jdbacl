@@ -72,6 +72,7 @@ public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableCo
 	void addForeignKey(DBForeignKeyConstraint dbForeignKeyConstraint);
 
 	Collection<DBTable> getReferrers();
+	void addReferrer(DBTable table);
 	
 	long getRowCount(Connection connection);
     DBRow queryByPK(Object pk, Connection connection) throws SQLException;

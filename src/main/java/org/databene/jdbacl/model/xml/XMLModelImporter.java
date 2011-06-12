@@ -75,12 +75,20 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		try {
 			in = new FileInputStream(file);
 			Document doc = XMLUtil.parse(in);
-			return parseDatabase(doc.getDocumentElement());
+			Database database = parseDatabase(doc.getDocumentElement());
+			scanReferers(database);
+			return database;
 		} catch (IOException e) {
 			throw new ImportFailedException(e);
 		} finally {
 			IOUtil.close(in);
 		}
+	}
+
+	private void scanReferers(Database database) {
+		for (DBTable table : database.getTables())
+			for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints())
+				fk.getRefereeTable().addReferrer(table);
 	}
 
 	private Database parseDatabase(Element e) {
