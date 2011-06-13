@@ -29,6 +29,7 @@ package org.databene.jdbacl.model;
 import java.util.Arrays;
 
 import org.databene.commons.NullSafeComparator;
+import org.databene.jdbacl.SQLUtil;
 
 /**
  * Represents a unique constraint on one or the combination of several columns of one table.<br/>
@@ -69,4 +70,9 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 			&& NullSafeComparator.equals(this.getTable().getName(), that.getTable().getName());
 	}
 
+	@Override
+	public String toString() {
+		return SQLUtil.renderColumnNames(columnNames);
+	}
+	
 }
