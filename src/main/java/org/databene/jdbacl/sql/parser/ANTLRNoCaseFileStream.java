@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
+import org.databene.commons.IOUtil;
 
 /**
  * Helper class which provides the content of a file as {@link ANTLRInputStream} 
@@ -34,14 +35,17 @@ import org.antlr.runtime.CharStream;
  * @since 0.1
  * @author Volker Bergmann
  */
-public class ANTLRNoCaseFileStream extends ANTLRFileStream {
+public class ANTLRNoCaseFileStream extends ANTLRFileStream implements TextHolder {
+	
+	String fileName;
 	
     public ANTLRNoCaseFileStream(String fileName) throws IOException {
-        super(fileName, null);
+        this(fileName, null);
     }
 
     public ANTLRNoCaseFileStream(String fileName, String encoding) throws IOException {
         super(fileName, encoding);
+        this.fileName = fileName;
     }
 
     @Override
@@ -55,4 +59,12 @@ public class ANTLRNoCaseFileStream extends ANTLRFileStream {
         return Character.toUpperCase(data[p + i - 1]);
     }
 
+    public String getText() {
+    	try {
+			return IOUtil.getContentOfURI(fileName);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+    }
+    
 }

@@ -21,44 +21,12 @@
 
 package org.databene.jdbacl.sql.parser;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.ANTLRStringStream;
-import org.antlr.runtime.CharStream;
-
 /**
- * Helper class which provides the content of a string as {@link ANTLRInputStream} 
- * while transforming token characters to upper case.<br/><br/>
- * Created: 07.06.2011 20:04:29
- * @since 0.1
+ * Interface for ANTL streams that can provide a text representation of the text they represent.<br/><br/>
+ * Created: 13.06.2011 18:44:25
+ * @since 0.6.8
  * @author Volker Bergmann
  */
-public class ANTLRNoCaseStringStream extends ANTLRStringStream implements TextHolder {
-
-	private String text;
-	
-	public ANTLRNoCaseStringStream(String text) {
-		super(text);
-		this.text = text;
-	}
-
-	@Override
-    public int LA(int i) {
-        if (i == 0)
-            return 0; // undefined
-        if (i < 0)
-            i++; // e.g., translate LA(-1) to use offset 0
-        if ((p + i - 1) >= n)
-            return CharStream.EOF;
-        return Character.toUpperCase(data[p + i - 1]);
-    }
-
-	@Override
-	public String toString() {
-		return new String(data);
-	}
-	
-	public String getText() {
-		return text;
-	}
-	
+public interface TextHolder {
+	String getText();
 }

@@ -62,9 +62,9 @@ import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DefaultDBColumn;
 import org.databene.jdbacl.model.DefaultDBTable;
-import org.databene.jdbacl.sql.parser.ANTLRNoCaseStringStream;
 import org.databene.jdbacl.sql.parser.SQLLexer;
 import org.databene.jdbacl.sql.parser.SQLParser;
+import org.databene.jdbacl.sql.parser.TextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,9 @@ public class SQLParserUtil {
 	static final Logger LOGGER = LoggerFactory.getLogger(SQLParserUtil.class);
 
     public static Object parse(CharStream in) throws ParseException {
-    	String text = ""; // TODO no text available due to Reader
+    	String text = null;
+    	if (in instanceof TextHolder)
+    		text = ((TextHolder) in).getText();
         try {
         	SQLParser parser = parser(in);
         	SQLParser.commands_return r = parser.commands();
@@ -99,7 +101,9 @@ public class SQLParserUtil {
     }
 	
     public static Expression<?> parseExpression(CharStream in) throws ParseException {
-    	String text = (in instanceof ANTLRNoCaseStringStream ? in.toString() : null);
+    	String text = null;
+    	if (in instanceof TextHolder)
+    		text = ((TextHolder) in).getText();
         try {
         	SQLParser parser = parser(in);
         	SQLParser.expression_return r = parser.expression();
