@@ -178,7 +178,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     // index operations ------------------------------------------------------------------------------------------------
 
     public List<DBIndex> getIndexes() {
-        return indexes.values();
+        return new ArrayList<DBIndex>(indexes.values());
     }
 
     public DBIndex getIndex(String indexName) {
@@ -197,10 +197,9 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     // uniqueConstraint operations -------------------------------------------------------------------------------------
 
     public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
-    	if (!includePK)
-    		return uniqueConstraints;
     	Set<DBUniqueConstraint> result = new HashSet<DBUniqueConstraint>(uniqueConstraints);
-    	result.add(pk);
+    	if (includePK)
+    		result.add(pk);
     	return result;
     }
 
@@ -227,7 +226,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     // ForeignKeyConstraint operations ---------------------------------------------------------------------------------
 
     public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
-        return foreignKeyConstraints;
+        return new HashSet<DBForeignKeyConstraint>(foreignKeyConstraints);
     }
 
 	public DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames) {
@@ -250,7 +249,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     // referrer operations ---------------------------------------------------------------------------------------------
     
     public Collection<DBTable> getReferrers() {
-    	return referrers;
+    	return new HashSet<DBTable>(referrers);
     }
     
 	public void addReferrer(DBTable referrer) {
@@ -265,7 +264,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     // check constraint operations -------------------------------------------------------------------------------------
 
 	public List<DBCheckConstraint> getCheckConstraints() {
-		return checkConstraints;
+		return new ArrayList<DBCheckConstraint>(checkConstraints);
 	}
 
 	public void addCheckConstraint(DBCheckConstraint checkConstraint) {
