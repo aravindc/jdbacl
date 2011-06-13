@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,8 +21,8 @@
 
 package org.databene.jdbacl.identity;
 
-import org.databene.commons.ArrayFormat;
 import org.databene.commons.ConfigurationError;
+import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBRow;
 import org.databene.jdbacl.model.DBTable;
@@ -56,7 +56,7 @@ public class SimpleTranscoder {
 				Object targetRef = mapper.getTargetPK(sourceTable, sourceRefNK);
 				if (targetRef == null) {
 					String message = "No mapping found for " + sourceDbId + '.' + refereeTable + "#" + sourceRef + 
-						" referred in " + table.getName() + "(" + ArrayFormat.format(fk.getColumnNames()) + "). " +
+						" referred in " + table.getName() + SQLUtil.renderColumnNames(fk.getColumnNames()) + ". " +
 						"Probably has not been in the result set of the former '" + refereeTable + "' nk query.";
 					throw new RuntimeException(message);
 				}
