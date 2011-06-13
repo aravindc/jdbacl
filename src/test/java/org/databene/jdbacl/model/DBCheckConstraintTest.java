@@ -29,9 +29,9 @@ import org.databene.commons.CollectionUtil;
 import org.junit.Test;
 
 /**
- * TODO Document class.<br/><br/>
+ * Tests the {@link DBCheckConstraint}.<br/><br/>
  * Created: 08.06.2011 14:04:49
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class DBCheckConstraintTest {

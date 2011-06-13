@@ -21,12 +21,13 @@
 
 package org.databene.jdbacl.sql;
 
+import org.databene.commons.Expression;
 import org.databene.commons.expression.ConstantExpression;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link Expression} which represents a database column.<br/><br/>
  * Created: 08.06.2011 13:37:59
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class ColumnExpression extends ConstantExpression<String> {

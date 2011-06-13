@@ -29,9 +29,9 @@ import org.databene.jdbacl.sql.parser.ANTLRNoCaseStringStream;
 import org.junit.Test;
 
 /**
- * TODO Document class.<br/><br/>
+ * Tests the {@link SQLParserUtil}.<br/><br/>
  * Created: 07.06.2011 15:35:51
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class SQLParserUtilTest {

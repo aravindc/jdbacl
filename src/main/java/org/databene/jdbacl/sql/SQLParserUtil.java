@@ -69,7 +69,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO Document class.<br/><br/>
+ * Provides SQL parsing functionality.<br/><br/>
  * Created: 05.08.2010 10:19:38
  * @since 0.1
  * @author Volker Bergmann

@@ -24,12 +24,14 @@ package org.databene.jdbacl.sql.parser;
 import java.io.IOException;
 
 import org.antlr.runtime.ANTLRFileStream;
+import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CharStream;
 
 /**
- * TODO Document class.<br/><br/>
+ * Helper class which provides the content of a file as {@link ANTLRInputStream} 
+ * while transforming token characters to upper case.<br/><br/>
  * Created: 10.08.2010 15:44:57
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class ANTLRNoCaseFileStream extends ANTLRFileStream {

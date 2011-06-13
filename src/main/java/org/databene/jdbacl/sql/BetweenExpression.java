@@ -25,9 +25,9 @@ import org.databene.commons.Expression;
 import org.databene.commons.expression.InRangeExpression;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link Expression} implementation for the SQL BETWEEN function.<br/><br/>
  * Created: 07.06.2011 22:15:34
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class BetweenExpression extends InRangeExpression {

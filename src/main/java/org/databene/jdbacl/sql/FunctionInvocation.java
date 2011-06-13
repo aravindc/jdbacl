@@ -26,9 +26,9 @@ import org.databene.commons.Expression;
 import org.databene.commons.expression.CompositeExpression;
 
 /**
- * TODO Document class.<br/><br/>
+ * Represents the invocation of a function.<br/><br/>
  * Created: 08.06.2011 11:58:37
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class FunctionInvocation extends CompositeExpression<Object,Object> {

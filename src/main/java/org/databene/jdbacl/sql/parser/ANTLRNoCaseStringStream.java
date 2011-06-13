@@ -21,13 +21,15 @@
 
 package org.databene.jdbacl.sql.parser;
 
+import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CharStream;
 
 /**
- * TODO Document class.<br/><br/>
+ * Helper class which provides the content of a string as {@link ANTLRInputStream} 
+ * while transforming token characters to upper case.<br/><br/>
  * Created: 07.06.2011 20:04:29
- * @since TODO version
+ * @since 0.1
  * @author Volker Bergmann
  */
 public class ANTLRNoCaseStringStream extends ANTLRStringStream {
