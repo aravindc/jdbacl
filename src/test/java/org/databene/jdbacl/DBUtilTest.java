@@ -55,7 +55,7 @@ public class DBUtilTest {
 		assertTrue(result.changedStructure);
 		Object[][] rows = (Object[][]) DBUtil.query("select * from T1", connection);
 		assertEquals(1, rows.length);
-		assertTrue(Arrays.equals(ArrayUtil.buildArrayOfType(Object.class, 1, "R&B"), rows[0]));
+		assertTrue(Arrays.equals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]));
 		int count = (Integer) DBUtil.query("select count(*) from T1", connection);
 		assertEquals(1, count);
 	}
