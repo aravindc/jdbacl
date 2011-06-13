@@ -310,7 +310,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 		StringBuilder query = new StringBuilder("select ");
 		query.append(ArrayFormat.format(getPKColumnNames()));
 		query.append(" from ").append(name);
-    	Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 1000); // TODO configurable fetchSize?
+    	Iterator<ResultSet> rawIterator = new QueryIterator(query.toString(), connection, 100);
         ResultSetConverter<Object> converter = new ResultSetConverter<Object>(Object.class, true);
     	return new ConvertingIterator<ResultSet, Object>(rawIterator, converter);
 	}
