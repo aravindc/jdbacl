@@ -43,7 +43,7 @@ public class DBUniqueConstraintTest {
     public void testToString() {
         DBTable table = new DefaultDBTable("tablename");
         DBUniqueConstraint constraint = new DBUniqueConstraint(table, "constraintname", "column1", "column2");
-        assertEquals("DBUniqueConstraint[tablename[column1, column2]]", constraint.toString());
+        assertEquals("unique (column1, column2)", constraint.toString());
     }
     
 	@Test

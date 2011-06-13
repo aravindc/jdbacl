@@ -72,7 +72,7 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 
 	@Override
 	public String toString() {
-		return SQLUtil.renderColumnNames(columnNames);
+		return "unique " + SQLUtil.renderColumnNames(columnNames);
 	}
 	
 }
