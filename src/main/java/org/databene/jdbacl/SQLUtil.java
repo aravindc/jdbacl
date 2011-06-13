@@ -37,7 +37,6 @@ import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
-import org.databene.jdbacl.model.MultiColumnObject;
 
 /**
  * Provides utility methods for creating SQL queries and commands.<br/><br/>
@@ -79,19 +78,23 @@ public class SQLUtil {
 				Integer.parseInt(sizeAndFractionDigits[1].trim()) };
 	}
 	
-    public static String formatColumnNames(DBColumn[] columns) {
+    public static String renderColumnNames(DBColumn[] columns) {
         StringBuilder builder = new StringBuilder(columns[0].getName());
         for (int i = 1; i < columns.length; i++)
             builder.append(", ").append(columns[i].getName());
         return builder.toString();
     }
 
-    public static String formatColumnNames(List<DBColumn> columns) {
+    public static String renderColumnNames(List<DBColumn> columns) {
         StringBuilder builder = new StringBuilder(columns.get(0).getName());
         for (int i = 1; i < columns.size(); i++)
             builder.append(", ").append(columns.get(i).getName());
         return builder.toString();
     }
+
+	public static String renderColumnNames(String[] columnNames) {
+		return '(' + ArrayFormat.format(columnNames) + ')';
+	}
 
 	public static String renderColumn(DBColumn column) {
 		StringBuilder builder = new StringBuilder();
@@ -253,16 +256,16 @@ public class SQLUtil {
 	}
 
 	public static String pkSpec(DBPrimaryKeyConstraint pk, boolean withName) {
-		return (withName ? constraintName(pk) : "") + "PRIMARY KEY " + colsInParens(pk);
+		return (withName ? constraintName(pk) : "") + "PRIMARY KEY " + renderColumnNames(pk.getColumnNames());
 	}
 	
 	public static String ukSpec(DBUniqueConstraint uk, boolean withName) {
-		return (withName ? constraintName(uk) : "") + "UNIQUE " + colsInParens(uk);
+		return (withName ? constraintName(uk) : "") + "UNIQUE " + renderColumnNames(uk.getColumnNames());
     }
 
 	public static String fkSpec(DBForeignKeyConstraint fk, boolean withName) {
-		return (withName ? constraintName(fk) : "") + " FOREIGN KEY " + colsInParens(fk.getColumnNames()) +
-			" REFERENCES " + fk.getRefereeTable() + colsInParens(fk.getRefereeColumnNames());
+		return (withName ? constraintName(fk) : "") + " FOREIGN KEY " + renderColumnNames(fk.getColumnNames()) +
+			" REFERENCES " + fk.getRefereeTable() + renderColumnNames(fk.getRefereeColumnNames());
 	}
 	
 	public static String leftJoin(String refererAlias, String[] refererColumns, 
@@ -319,13 +322,5 @@ public class SQLUtil {
 	private static String quoteNameIfNecessary(String name) {
 		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
     }
-
-	private static Object colsInParens(MultiColumnObject object) {
-		return colsInParens(object.getColumnNames());
-	}
-
-	private static Object colsInParens(String[] columnNames) {
-		return '(' + ArrayFormat.format(columnNames) + ')';
-	}
 
 }
