@@ -29,7 +29,7 @@ package org.databene.jdbacl.model;
 import java.sql.Types;
 
 import org.databene.jdbacl.model.DBColumn;
-import org.databene.jdbacl.model.DBColumnType;
+import org.databene.jdbacl.model.DBDataType;
 import org.junit.Test;
 import static junit.framework.Assert.*;
 
@@ -43,7 +43,7 @@ public class DefaultDBColumnTest {
 	@Test
     public void testToString() {
         assertEquals("Column formatting failed", "ID : NUMBER(11,2)",
-                new DefaultDBColumn("ID", null, DBColumnType.getInstance(Types.DECIMAL, "NUMBER"), 11, 2).toString());
+                new DefaultDBColumn("ID", null, DBDataType.getInstance(Types.DECIMAL, "NUMBER"), 11, 2).toString());
     }
     
 }

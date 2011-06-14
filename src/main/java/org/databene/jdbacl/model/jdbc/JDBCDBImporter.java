@@ -44,7 +44,7 @@ import org.databene.jdbacl.dialect.OracleDialect;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
-import org.databene.jdbacl.model.DBColumnType;
+import org.databene.jdbacl.model.DBDataType;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBIndex;
@@ -432,7 +432,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            }
 
 	            Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
-	            DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBColumnType.getInstance(sqlType, columnType), columnSize, fractionDigits);
+	            DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBDataType.getInstance(sqlType, columnType), columnSize, fractionDigits);
 	            if (!StringUtil.isEmpty(comment))
 	                column.setDoc(comment);
 	            if (!StringUtil.isEmpty(defaultValue)) {

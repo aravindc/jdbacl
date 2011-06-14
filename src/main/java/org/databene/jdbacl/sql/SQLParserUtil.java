@@ -57,7 +57,7 @@ import org.databene.commons.expression.NullExpression;
 import org.databene.commons.expression.SubtractionExpression;
 import org.databene.commons.expression.SumExpression;
 import org.databene.commons.expression.UnaryMinusExpression;
-import org.databene.jdbacl.model.DBColumnType;
+import org.databene.jdbacl.model.DBDataType;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DefaultDBColumn;
@@ -446,7 +446,7 @@ public class SQLParserUtil {
 				}
 			}
 		}
-		DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBColumnType.getInstance(/* TODO */ -1, columnTypeName), size, fractionDigits);
+		DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBDataType.getInstance(columnTypeName), size, fractionDigits);
 		table.addColumn(column);
 	    for (int i = detailOffset; i < node.getChildCount(); i++)
 	    	convertColumnDetail(childAt(i, node), column);
