@@ -46,7 +46,7 @@ public class FunctionInvocation extends CompositeExpression<Object,Object> {
 	}
 
 	public Object evaluate(Context context) {
-		throw new UnsupportedOperationException("Expression<Object>.evaluate() is not implemented"); // TODO implement Expression<Object>.evaluate
+		return null; // the class is just a space holder
 	}
 	
 }
