@@ -479,15 +479,17 @@ public class DBUtil {
     }
 
     public static Object query(String query, Connection connection) throws SQLException {
-    	Statement statement = null;
     	ResultSet resultSet = null;
     	try {
-	    	statement = connection.createStatement();
-	    	resultSet = statement.executeQuery(query);
+	    	resultSet = executeQuery(query, connection);
 	    	return parseResultSet(resultSet);
     	} finally {
 	    	closeResultSetAndStatement(resultSet);
     	}
+    }
+
+    public static ResultSet executeQuery(String query, Connection connection) throws SQLException {
+    	return connection.createStatement().executeQuery(query);
     }
 
 	public static String escape(String text) {
