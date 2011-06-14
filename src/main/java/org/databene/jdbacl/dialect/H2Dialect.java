@@ -21,9 +21,12 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
@@ -56,13 +59,20 @@ public class H2Dialect extends DatabaseDialect {
 
 	@Override
     public DBSequence[] querySequences(Connection connection) throws SQLException {
-        String query = "select SEQUENCE_NAME from INFORMATION_SCHEMA.SEQUENCES";
+        String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
         // TODO v0.7 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
-        String[] sequenceNames = DBUtil.queryScalarArray(query, String.class, connection);
-        DBSequence[] sequences = new DBSequence[sequenceNames.length];
-        for (int i = 0; i < sequenceNames.length; i++)
-        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO information details
-		return sequences;
+        ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+        ResultSet resultSet = DBUtil.executeQuery(query, connection);
+        while (resultSet.next()) {
+        	String name = resultSet.getString("SEQUENCE_NAME");
+        	DBSequence sequence = new DBSequence(name, null);
+        	sequence.setStart(new BigInteger(resultSet.getString("CURRENT_VALUE")));
+        	sequence.setLastNumber(sequence.getStart());
+        	sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
+        	sequence.setCache(resultSet.getLong("CACHE"));
+        	builder.add(sequence);
+        }
+		return builder.toArray();
 	}
 
 	@Override
