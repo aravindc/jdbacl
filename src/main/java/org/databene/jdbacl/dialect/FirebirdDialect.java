@@ -92,7 +92,7 @@ public class FirebirdDialect extends DatabaseDialect {
 		sequenceNames = StringUtil.trimAll(sequenceNames);
         DBSequence[] sequences = new DBSequence[sequenceNames.length];
         for (int i = 0; i < sequenceNames.length; i++)
-        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO information details
+        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO v0.6.9 information details
 		return sequences;
     }
     
