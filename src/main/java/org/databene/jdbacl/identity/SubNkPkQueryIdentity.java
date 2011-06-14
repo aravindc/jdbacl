@@ -43,8 +43,8 @@ import org.databene.jdbacl.model.Database;
  */
 public class SubNkPkQueryIdentity extends IdentityModel {
 
-	IdentityProvider identityProvider; // TODO get rid of model dependency
-	String parentTableNames[]; // TODO support multiple 'parent' and 'parentColumns' property
+	IdentityProvider identityProvider; // TODO v0.7 get rid of model dependency
+	String parentTableNames[]; // TODO v0.7 support multiple 'parent' and 'parentColumns' property
 	String subNkPkQuery;
 
 	public SubNkPkQueryIdentity(IdentityProvider identityProvider, DBTable table, String... parentTableNames) {
@@ -74,13 +74,13 @@ public class SubNkPkQueryIdentity extends IdentityModel {
     private DBTable getParentTable() {
 		Database database = table.getCatalog().getDatabase();
 		if (parentTableNames.length > 1)
-			throw new UnsupportedOperationException("Multi-owner support not yet implemented"); // TODO support multiple parents
+			throw new UnsupportedOperationException("Multi-owner support not yet implemented"); // TODO v0.7 support multiple parents
 		return database.getTable(parentTableNames[0]);
 	}
 
 	IdentityModel getOwnerIdentity() {
 		if (parentTableNames.length > 1)
-			throw new UnsupportedOperationException("Multi-owner support not yet implemented"); // TODO support multiple parents
+			throw new UnsupportedOperationException("Multi-owner support not yet implemented"); // TODO v0.7 support multiple parents
         return identityProvider.getIdentity(parentTableNames[0]);
     }
 
@@ -135,7 +135,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 		private void createSubNkPkIterator(Connection connection, String dbId) {
 	        if (ownerPkIterator.hasNext()) {
 	        	Object ownerPk = ownerPkIterator.next();
-	        	ownerNK = mapper.getNaturalKey(dbId, getOwnerIdentity(), ownerPk); // TODO support multiple owners
+	        	ownerNK = mapper.getNaturalKey(dbId, getOwnerIdentity(), ownerPk); // TODO v0.7 support multiple owners
 	        	if (ownerNK == null)
 	        		throw new InvalidIdentityDefinitionError(table.getName() + " row with PK " + ownerPk + " cannot be found. Most likely this is a subsequent fault of a parent's identity definition: " + ArrayFormat.format(parentTableNames));
 	        	String query = SQLUtil.substituteMarkers(subNkPkQuery, "?", ownerPk);
