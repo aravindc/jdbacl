@@ -75,7 +75,6 @@ public class DBCheckConstraint extends DBConstraint {
 	}
 
 	public boolean isEquivalent(DBCheckConstraint that) {
-		// TODO 0.2 parse and compare conditions
 		return this.tableName.equals(that.tableName) 
 			&& StringUtil.normalizeSpace(this.conditionText).equals(StringUtil.normalizeSpace(that.getConditionText()));
 	}
