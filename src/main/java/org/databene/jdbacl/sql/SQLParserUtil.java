@@ -465,7 +465,6 @@ public class SQLParserUtil {
 					node.getLine(), 
 					node.getCharPositionInLine());
 		}
-	    // TODO Auto-generated method stub
     }
 
 	private static String convertString(CommonTree node) {
