@@ -35,8 +35,8 @@ import java.util.List;
  */
 public interface DBColumn extends DBTableComponent {
 	
-    DBColumnType getType();
-    void setType(DBColumnType type);
+    DBDataType getType();
+    void setType(DBDataType type);
     
     Integer getSize();
     void setSize(Integer size);

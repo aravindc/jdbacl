@@ -39,7 +39,7 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 
 	private static final long serialVersionUID = 5693941485232520002L;
 	
-    protected DBColumnType type;
+    protected DBDataType type;
     protected Integer size;
     protected Integer fractionDigits;
     protected String defaultValue;
@@ -50,7 +50,7 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public DefaultDBColumn(String name, DBTable table, DBColumnType type) {
+    public DefaultDBColumn(String name, DBTable table, DBDataType type) {
         this(name, table, type, null);
     }
 
@@ -58,18 +58,18 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
         this(name, table, null, null);
         Object[] tokens = SQLUtil.parseColumnTypeAndSize(typeAndSize);
         if (tokens.length > 0)
-        	this.type = DBColumnType.getInstance(jdbcType, (String) tokens[0]);
+        	this.type = DBDataType.getInstance(jdbcType, (String) tokens[0]);
         if (tokens.length > 1)
         	this.size = (Integer) tokens[1];
         if (tokens.length > 2)
         	this.fractionDigits = (Integer) tokens[2];
     }
 
-    public DefaultDBColumn(String name, DBTable table, DBColumnType type, Integer size) {
+    public DefaultDBColumn(String name, DBTable table, DBDataType type, Integer size) {
         this(name, table, type, size, null);
     }
     
-    public DefaultDBColumn(String name, DBTable table, DBColumnType type, Integer size, Integer fractionDigits) {
+    public DefaultDBColumn(String name, DBTable table, DBDataType type, Integer size, Integer fractionDigits) {
     	super(name, "column");
     	if (table != null)
     		table.addColumn(this);
@@ -86,11 +86,11 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
 
     // properties ------------------------------------------------------------------------------------------------------
 
-    public DBColumnType getType() {
+    public DBDataType getType() {
         return type;
     }
 
-    public void setType(DBColumnType type) {
+    public void setType(DBDataType type) {
         this.type = type;
     }
 
