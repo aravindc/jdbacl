@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -108,22 +108,37 @@ public class UniqueKeyIdentity extends IdentityModel {
 
 		public Object[] convert(Object[] raw) {
 			NKBuilder nkBuilder = new NKBuilder();
+			boolean used[] = new boolean[columnNames.length];
 			for (int i = 0; i < columnNames.length; i++) { // only mutate uk columns, not the PK!
+				if (used[i])
+					continue;
 				Object value = raw[i];
 				DBColumn column = table.getColumn(columnNames[i]);
 				DBForeignKeyConstraint fk = column.getForeignKeyConstraint();
 				if (value == null || fk == null) {
+					// plain or null valued columns can be used as they are
 					nkBuilder.addComponent(value);
-				} else if (fk.getColumnNames().length == 1) {
+				} else {
+					// a foreign key value needs to be replaced by the referred object's natural key
 					String parentTableName = fk.getRefereeTable().getName();
 					IdentityModel identity = mapper.getIdentityProvider().getIdentity(parentTableName);
-					Object fkValue = mapper.getNaturalKey(dbId, identity, value);
+					// build PK of the referenced row
+					Object refereePK = value;
+					String[] fkColumnNames = fk.getColumnNames();
+					if (fkColumnNames.length > 1) {
+						ArrayBuilder<Object> builder = new ArrayBuilder<Object>(Object.class);
+						for (int j = 0; j < fkColumnNames.length; j++) {
+							int fkColumnIndex = ArrayUtil.indexOf(fkColumnNames[j], columnNames);
+							if (fkColumnIndex < 0)
+								throw new ConfigurationError("Incomplete foreign-key setup in " + table.getName() + 
+										" identity definition: Missing column: " + fkColumnNames[j]);
+							builder.add(raw[fkColumnIndex]);
+							used[j] = true;
+						}
+						refereePK = builder.toArray();
+					}
+					Object fkValue = mapper.getNaturalKey(dbId, identity, refereePK);
 					nkBuilder.addComponent(fkValue);
-				} else {
-/*					Object[] fkValue = null; // TODO assemble all FK components
-					for (Object fkComponent : fkValue)
-						builder.add(fkComponent);*/
-					throw new UnsupportedOperationException("Composite foreign key mapping not implemented yet");
 				}
 			}
 			ArrayBuilder<Object> arrayBuilder = new ArrayBuilder<Object>(Object.class);
