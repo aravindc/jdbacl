@@ -44,7 +44,7 @@ public class DBSequence extends AbstractDBObject {
 	private boolean cycle = false;
 	private long cache = CACHE_DEFAULT;
 	private boolean order = false;
-	private long lastNumber = 0;
+	private BigInteger lastNumber = BigInteger.ZERO;
 
 	public DBSequence(String name, DBSchema owner) {
 		super(name, "sequence", owner);
@@ -136,11 +136,11 @@ public class DBSequence extends AbstractDBObject {
 		this.order = order;
 	}
 
-	public long getLastNumber() {
+	public BigInteger getLastNumber() {
 		return lastNumber;
 	}
 	
-	public void setLastNumber(long lastNumber) {
+	public void setLastNumber(BigInteger lastNumber) {
 		this.lastNumber = lastNumber;
 	}
 	
