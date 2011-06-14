@@ -24,6 +24,8 @@ package org.databene.jdbacl.sql;
 import static org.junit.Assert.*;
 
 import org.databene.commons.Expression;
+import org.databene.commons.expression.EqualsExpression;
+import org.databene.commons.expression.LogicalComplementExpression;
 import org.databene.jdbacl.sql.SQLParserUtil;
 import org.databene.jdbacl.sql.parser.ANTLRNoCaseStringStream;
 import org.junit.Test;
@@ -82,8 +84,11 @@ public class SQLParserUtilTest {
 
 	@Test
 	public void testNot() throws Exception {
-		String text = "not (col = 3)"; // TODO this resolves to an invocation!
-		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+		String text = "not (col = 3)";
+		Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
+		assertEquals(LogicalComplementExpression.class, expression.getClass());
+		LogicalComplementExpression complement = (LogicalComplementExpression) expression;
+		assertEquals(EqualsExpression.class, complement.getSourceExpressions()[0].getClass());
 	}
 
 	@Test
