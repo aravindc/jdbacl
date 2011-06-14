@@ -100,7 +100,7 @@ public class OracleDialect extends DatabaseDialect {
 			sequence.setCycle("Y".equals(resultSet.getString(5)));
 			sequence.setOrder("Y".equals(resultSet.getString(6)));
 			sequence.setCache(resultSet.getLong(7));
-			sequence.setLastNumber(resultSet.getLong(8));
+			sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
 			builder.add(sequence);
 		}
 		return builder.toArray();
