@@ -60,7 +60,7 @@ public class SQLUtil {
 			"insert", "update", "delete", "truncate", "select into");
 	
 	private static final Set<String> PROCEDURE_CALLS = CollectionUtil.toSet(
-			"exec", "call");
+			"execute", "exec", "call");
 	
 	public static Object[] parseColumnTypeAndSize(String spec) {
 		int lparen = spec.indexOf('(');
@@ -182,7 +182,7 @@ public class SQLUtil {
 	    if (isDDL(sql))
 	   		return true;
 	    if (isProcedureCall(sql))
-    		return null;
+    		return false;
 	    return false;
     }
 	
