@@ -103,9 +103,15 @@ public class DBUtil {
 			File file = new File(filename);
 			if (!file.exists())
 				file = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
-			if (!file.exists())
+			String path;
+			if (file.exists()) {
+				path = file.getAbsolutePath();
+			} else if (IOUtil.isURIAvailable(filename)) {
+				path = filename;
+			} else {
 				throw new ConfigurationError("No environment definition '" + filename + "' found");
-			return JDBCConnectData.parseSingleDbProperties(file.getAbsolutePath());
+			}
+			return JDBCConnectData.parseSingleDbProperties(path);
 		} catch (IOException e) {
 			throw new ConfigurationError("Error reading environment data for '" + environment + "'");
 		}
