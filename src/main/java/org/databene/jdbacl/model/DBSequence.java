@@ -35,7 +35,7 @@ public class DBSequence extends AbstractDBObject {
 
 	private static final long serialVersionUID = 8602052311285255364L;
 
-	private static final long CACHE_DEFAULT = 20; // TODO this applies only for Oracle
+	private static final long CACHE_DEFAULT = 20; // v0.7 TODO this applies only for Oracle
 	
 	private BigInteger start = BigInteger.ONE;
 	private BigInteger increment = BigInteger.ONE;
