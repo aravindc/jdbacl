@@ -63,18 +63,22 @@ public class HSQLDialect extends DatabaseDialect {
 
 	@Override
     public DBSequence[] querySequences(Connection connection) throws SQLException {
-        String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
+        String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, START_WITH, INCREMENT, MINIMUM_VALUE, MAXIMUM_VALUE, CYCLE_OPTION from information_schema.system_sequences";
         ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
         ResultSet resultSet = DBUtil.executeQuery(query, connection);
-        while (resultSet.next()) {
-        	String name = resultSet.getString("SEQUENCE_NAME");
-        	DBSequence sequence = new DBSequence(name, null);
-        	sequence.setStart(new BigInteger(resultSet.getString("START_WITH")));
-        	sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
-        	sequence.setMinValue(new BigInteger(resultSet.getString("MINIMUM_VALUE")));
-        	sequence.setMaxValue(new BigInteger(resultSet.getString("MAXIMUM_VALUE")));
-        	sequence.setCycle(resultSet.getBoolean("CYCLE_OPTION"));
-        	builder.add(sequence);
+        try {
+	        while (resultSet.next()) {
+	        	String name = resultSet.getString("SEQUENCE_NAME");
+	        	DBSequence sequence = new DBSequence(name, null);
+	        	sequence.setStart(new BigInteger(resultSet.getString("START_WITH")));
+	        	sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
+	        	sequence.setMinValue(new BigInteger(resultSet.getString("MINIMUM_VALUE")));
+	        	sequence.setMaxValue(new BigInteger(resultSet.getString("MAXIMUM_VALUE")));
+	        	sequence.setCycle(resultSet.getBoolean("CYCLE_OPTION"));
+	        	builder.add(sequence);
+	        }
+        } finally {
+        	DBUtil.closeResultSetAndStatement(resultSet);
         }
 		return builder.toArray();
 	}
