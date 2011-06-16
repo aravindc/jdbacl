@@ -278,9 +278,4 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		// nothing special to do
 	}
 	
-	public static void main(String[] args) throws ImportFailedException {
-		Database db = new XMLModelImporter(new File("TG26.meta.xml")).importDatabase();
-		System.out.println(db);
-	}
-
 }

@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 import org.databene.commons.ArrayBuilder;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
-import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBSequence;
@@ -115,14 +114,12 @@ public class OracleDialect extends DatabaseDialect {
 			query += " and owner = '" + schemaName.toUpperCase() + "'";
 		ResultSet resultSet = statement.executeQuery(query);
 		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<DBCheckConstraint>(DBCheckConstraint.class);
-		//int count = 0;
 		while (resultSet.next()) {
 			String ownerName = resultSet.getString("owner");
 			if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
 				String constraintName = resultSet.getString("constraint_name");
 				String tableName = resultSet.getString("table_name");
 				String condition = resultSet.getString("search_condition");
-				//System.out.println(++count + " " + ownerName + "."+ tableName + ": " + condition);
 				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
 					try {
 						DBCheckConstraint constraint = new DBCheckConstraint(constraintName, tableName, condition);
@@ -134,14 +131,6 @@ public class OracleDialect extends DatabaseDialect {
 			}
 		}
 		return builder.toArray();
-	}
-	
-	public static void main(String[] args) throws Exception {
-		DBCheckConstraint[] cc = new OracleDialect().queryCheckConstraints(DBUtil.connect(args[0]), null);
-		System.out.println("Check Constraints:");
-		for (DBCheckConstraint c : cc)
-			System.out.println(c);
-		System.out.println(cc.length + " check constraints found");
 	}
 	
 }
