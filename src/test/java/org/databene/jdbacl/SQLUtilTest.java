@@ -125,7 +125,7 @@ public class SQLUtilTest {
 		assertFalse(SQLUtil.mutatesStructure(UPDATE));
 		assertFalse(SQLUtil.mutatesStructure(DELETE));
 		assertFalse(SQLUtil.mutatesStructure(TRUNCATE));
-		assertNull(SQLUtil.mutatesStructure(CALL));
+		assertFalse(SQLUtil.mutatesStructure(CALL));
 	}
 
 	@Test
