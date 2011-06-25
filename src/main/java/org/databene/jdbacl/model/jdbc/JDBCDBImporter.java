@@ -229,12 +229,11 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            if (importingChecks)
 	            	importChecks();
             }
+            long duration = System.currentTimeMillis() - startTime;
+            LOGGER.info("Imported" + (lazy ? " core" : "") + " database metadata within " + duration + " ms.");
             return database;
         } catch (SQLException e) {
             throw new ImportFailedException(e);
-        } finally {
-            long duration = System.currentTimeMillis() - startTime;
-            LOGGER.info("Imported" + (lazy ? " core" : "") + " database metadata within " + duration + " ms.");
         }
     }
 
@@ -249,14 +248,17 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         ResultSet catalogSet = metaData.getCatalogs();
         int catalogCount = 0;
         while (catalogSet.next()) {
-            String catalogName = catalogSet.getString(1);
-            LOGGER.debug("found catalog " + catalogName);
-            if ((schemaName == null && user.equalsIgnoreCase(catalogName)) 
-            		|| (schemaName != null && catalogName.equalsIgnoreCase(this.catalogName))
-            		|| catalogName.equalsIgnoreCase(getConnection().getCatalog()))
-                this.catalogName = catalogName;
-            database.addCatalog(new DBCatalog(StringUtil.emptyToNull(catalogName)));
-            catalogCount++;
+            String foundCatalog = catalogSet.getString(1);
+            LOGGER.debug("found catalog " + foundCatalog);
+            if (StringUtil.equalsIgnoreCase(foundCatalog, this.catalogName) // this is the configured catalog
+            		|| StringUtil.isEmpty(this.catalogName) && ( // no catalog configured but...
+            				dialect.isDefaultCatalog(foundCatalog, user) // ...the one found is the default for the database
+            				|| foundCatalog.equalsIgnoreCase(getConnection().getCatalog()) // or for the connection
+            		)) {
+                this.catalogName = foundCatalog;
+                database.addCatalog(new DBCatalog(StringUtil.emptyToNull(foundCatalog)));
+                catalogCount++;
+            }
         }
         if (catalogCount == 0)
             database.addCatalog(new DBCatalog(null));
