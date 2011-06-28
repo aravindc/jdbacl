@@ -287,7 +287,6 @@ public class DBUtil {
 	}
 
     public static Object parseResultSet(ResultSet resultSet) throws SQLException { 
-    	// TODO v0.6 create LoggingResultSet. SQL and JDBC log should happen only in handler classes
         List<Object[]> rows = new ArrayList<Object[]>();
         while (resultSet.next()) {
             int columnCount = resultSet.getMetaData().getColumnCount();
