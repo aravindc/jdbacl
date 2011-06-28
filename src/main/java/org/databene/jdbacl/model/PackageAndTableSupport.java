@@ -103,4 +103,12 @@ public class PackageAndTableSupport implements TableHolder, SequenceHolder {
 		return result;
     }
 
+	public List<DBPackageComponent> getComponents() {
+		List<DBPackageComponent> result = new ArrayList<DBPackageComponent>();
+		result.addAll(getTables(false));
+		result.addAll(getPackages());
+		result.addAll(getSequences(false));
+		return result;
+	}
+	
 }
