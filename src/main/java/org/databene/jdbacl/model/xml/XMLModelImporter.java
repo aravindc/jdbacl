@@ -32,6 +32,7 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.xml.XMLUtil;
+import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
@@ -210,6 +211,13 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			}
 		}
 		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, owner, columnNames, refereeTable, refereeColumnNames);
+		// parse rules
+		String updateRule = XMLUtil.getAttribute(e, "updateRule", false);
+		if (!StringUtil.isEmpty(updateRule))
+			fk.setUpdateRule(FKChangeRule.valueOf(updateRule));
+		String deleteRule = XMLUtil.getAttribute(e, "deleteRule", false);
+		if (!StringUtil.isEmpty(deleteRule))
+			fk.setDeleteRule(FKChangeRule.valueOf(deleteRule));
 		return fk;
 	}
 

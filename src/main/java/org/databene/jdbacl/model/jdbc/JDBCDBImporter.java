@@ -34,6 +34,7 @@ import org.databene.commons.ImportFailedException;
 import org.databene.commons.JDBCConnectData;
 import org.databene.commons.LoggerEscalator;
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.ProgrammerError;
 import org.databene.commons.StringUtil;
 import org.databene.commons.Level;
 import org.databene.commons.collection.OrderedNameMap;
@@ -41,6 +42,8 @@ import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.dialect.OracleDialect;
+import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
@@ -703,6 +706,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 				}
 	            DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
 	            		key.fk_name, table, columnNames, key.getPkTable(), refereeColumnNames);
+	            foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
+	            foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
 	            if (LOGGER.isDebugEnabled())
 	            	LOGGER.debug("Imported foreign key {}", foreignKeyConstraint);
 	        }
@@ -712,6 +717,17 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	        DBUtil.close(resultSet);
         }
      }
+
+	private FKChangeRule parseRule(short rule) {
+		switch (rule) {
+			case DatabaseMetaData.importedKeyNoAction:   return FKChangeRule.NO_ACTION;
+			case DatabaseMetaData.importedKeyCascade:    return FKChangeRule.CASCADE;
+			case DatabaseMetaData.importedKeySetNull:    return FKChangeRule.SET_NULL;
+			case DatabaseMetaData.importedKeySetDefault: return FKChangeRule.SET_DEFAULT;
+			case DatabaseMetaData.importedKeyRestrict:   return FKChangeRule.NO_ACTION;
+			default: throw new ProgrammerError("Not a supported rule: " + rule);
+		}
+	}
 
 	private void importRefererTables(DefaultDBTable table) {
         LOGGER.debug("Importing exported keys for table {}", table.getName());
@@ -752,8 +768,11 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     
 	private void importSequences() {
 		try {
-			if (dialect.isSequenceSupported())
-				dialect.querySequences(getConnection());
+			if (dialect.isSequenceSupported()) {
+				DBSequence[] sequences = dialect.querySequences(getConnection());
+				for (DBSequence sequence : sequences)
+					database.getCatalog(catalogName).getSchema(schemaName).addSequence(sequence);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Error importing sequences", e);
 		}

@@ -33,6 +33,7 @@ import org.databene.commons.Encodings;
 import org.databene.commons.IOUtil;
 import org.databene.commons.xml.SimpleXMLWriter;
 import org.databene.jdbacl.SQLUtil;
+import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
@@ -199,6 +200,10 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			String[] refereeColumns = fk.getRefereeColumnNames();
 			if (refereeColumns.length == 1)
 				addAttribute("refereeColumn", refereeColumns[0], atts);
+			if (fk.getUpdateRule() != FKChangeRule.NO_ACTION)
+				addAttribute("updateRule", fk.getUpdateRule().name(), atts);
+			if (fk.getDeleteRule() != FKChangeRule.NO_ACTION)
+				addAttribute("deleteRule", fk.getDeleteRule().name(), atts);
 			writer.startElement("fk", atts);
 			if (columnNames.length > 1) {
 				writer.startElement("columns");

@@ -47,6 +47,8 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
     
     private final DBTable refereeTable;
     private final String[] refereeColumnNames;
+    private FKChangeRule updateRule;
+    private FKChangeRule deleteRule;
     
     public DBForeignKeyConstraint(String name, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
@@ -55,6 +57,8 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
         this.fkColumnNames = fkColumnNames;
         this.refereeTable = refereeTable;
         this.refereeColumnNames = refereeColumnNames;
+        this.updateRule = FKChangeRule.NO_ACTION;
+        this.deleteRule = FKChangeRule.NO_ACTION;
         owner.addForeignKey(this);
     }
 
@@ -102,6 +106,22 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
 			&& NullSafeComparator.equals(refereeTable.getName(), that.refereeTable.getName());
 	}
 
+	public FKChangeRule getUpdateRule() {
+		return updateRule;
+	}
+	
+	public void setUpdateRule(FKChangeRule updateRule) {
+		this.updateRule = updateRule;
+	}
+	
+	public FKChangeRule getDeleteRule() {
+		return deleteRule;
+	}
+	
+	public void setDeleteRule(FKChangeRule deleteRule) {
+		this.deleteRule = deleteRule;
+	}
+	
 	
 	
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
