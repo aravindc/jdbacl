@@ -155,8 +155,7 @@ class ImportedKey {
                     + key.fk_name + ", " + key.pk_name + ", "
                     + key.deferrablibity
             );
-
-        if (!key.fktable_name.equalsIgnoreCase(fkTable.getName()))	// Failover for Firebird:  
+        if (!key.fktable_name.equalsIgnoreCase(fkTable.getName()))	// Fix for Firebird:  
         	return null;											// When querying X, it returns the foreign keys of XY to
 
         key.pkTable = null;
