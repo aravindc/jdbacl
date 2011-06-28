@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -27,9 +27,10 @@
 package org.databene.jdbacl.dialect;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.databene.commons.StringUtil;
+import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
@@ -87,13 +88,18 @@ public class FirebirdDialect extends DatabaseDialect {
     
     @Override
     public DBSequence[] querySequences(Connection connection) throws SQLException {
-        String query = "select * from RDB$GENERATORS where RDB$GENERATOR_NAME NOT LIKE '%$%'";
-        String[] sequenceNames = DBUtil.queryScalarArray(query, String.class, connection);
-		sequenceNames = StringUtil.trimAll(sequenceNames);
-        DBSequence[] sequences = new DBSequence[sequenceNames.length];
-        for (int i = 0; i < sequenceNames.length; i++)
-        	sequences[i] = new DBSequence(sequenceNames[i], null); // TODO v0.6.9 information details
-		return sequences;
+        String query = "select RDB$GENERATOR_NAME, RDB$GENERATOR_ID, RDB$SYSTEM_FLAG, RDB$DESCRIPTION " +
+        		"from RDB$GENERATORS where RDB$GENERATOR_NAME NOT LIKE '%$%'";
+        ResultSet resultSet = null;
+        try {
+        	resultSet = DBUtil.executeQuery(query, connection);
+        	ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+        	while (resultSet.next())
+        		builder.add(new DBSequence(resultSet.getString(1).trim(), null));
+    		return builder.toArray();
+        } finally {
+        	DBUtil.closeResultSetAndStatement(resultSet);
+        }
     }
     
     @Override
