@@ -77,10 +77,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
 	public List<DBPackageComponent> getComponents() {
-		List<DBPackageComponent> result = new ArrayList<DBPackageComponent>();
-		result.addAll(support.getTables());
-		result.addAll(support.getPackages());
-		return result;
+		return support.getComponents();
 	}
 	
     // table operations ------------------------------------------------------------------------------------------------
