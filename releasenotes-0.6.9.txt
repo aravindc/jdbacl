@@ -1,0 +1,13 @@
+Release Notes jdbacl 0.6.9
+--------------------------
+
+
+Enhancements
+------------
+- Defined MySQL dialect
+- Supporting rules on foreign key update and deletion
+
+
+Bug fixes
+---------
+- Sequences are not imported
