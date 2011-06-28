@@ -10,4 +10,5 @@ Enhancements
 
 Bug fixes
 ---------
+- #3329989: Connecting SQL server with NTLM causes NPE
 - Sequences are not imported
