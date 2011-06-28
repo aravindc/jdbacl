@@ -31,11 +31,11 @@ import org.databene.commons.NullSafeComparator;
  * @since 0.6.8
  * @author Volker Bergmann
  */
-public class DBSequence extends AbstractDBObject {
+public class DBSequence extends AbstractDBObject implements DBPackageComponent {
 
 	private static final long serialVersionUID = 8602052311285255364L;
 
-	private static final long CACHE_DEFAULT = 20; // v0.7 TODO this applies only for Oracle
+	private static final long CACHE_DEFAULT = 20; // TODO v0.7 this applies only for Oracle
 	
 	private BigInteger start = BigInteger.ONE;
 	private BigInteger increment = BigInteger.ONE;
