@@ -37,6 +37,8 @@ public class DBSequence extends AbstractDBObject implements DBPackageComponent {
 
 	private static final long CACHE_DEFAULT = 20; // TODO v0.7 this applies only for Oracle
 	
+	private String catalogName;
+	private String schemaName;
 	private BigInteger start = BigInteger.ONE;
 	private BigInteger increment = BigInteger.ONE;
 	private BigInteger maxValue = null;
@@ -48,10 +50,33 @@ public class DBSequence extends AbstractDBObject implements DBPackageComponent {
 
 	public DBSequence(String name, DBSchema owner) {
 		super(name, "sequence", owner);
-        if (owner != null)
-        	owner.addSequence(this);
 	}
 
+	public DBSequence(String name, String catalogName, String schemaName) {
+		super(name, "sequence", null);
+		this.catalogName = catalogName;
+		this.schemaName = schemaName;
+	}
+
+	@Override
+	public void setOwner(CompositeDBObject<?> owner) {
+		super.setOwner(owner);
+        if (owner != null) {
+    		DBSchema schema = (DBSchema) owner;
+    		schema.addSequence(this);
+        	this.catalogName = schema.getCatalog().getName();
+        	this.schemaName = schema.getName();
+        }
+	}
+
+	public String getCatalogName() {
+		return catalogName;
+	}
+	
+	public String getSchemaName() {
+		return schemaName;
+	}
+	
 	public BigInteger getStart() {
 		return start;
 	}
