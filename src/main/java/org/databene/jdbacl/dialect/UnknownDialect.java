@@ -53,4 +53,19 @@ public class UnknownDialect extends DatabaseDialect {
 	    return true;
     }
 
+	@Override
+	public boolean isAutoPKName(String pkName) {
+		return false;
+	}
+
+	@Override
+	public boolean isAutoUKName(String pkName) {
+		return false;
+	}
+
+	@Override
+	public boolean isAutoFKName(String pkName) {
+		return false;
+	}
+
 }

@@ -122,7 +122,8 @@ public class OracleDialect extends DatabaseDialect {
 				String condition = resultSet.getString("search_condition");
 				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
 					try {
-						DBCheckConstraint constraint = new DBCheckConstraint(constraintName, tableName, condition);
+						DBCheckConstraint constraint = new DBCheckConstraint(
+								constraintName, isAutoCheckName(constraintName), tableName, condition);
 						builder.add(constraint);
 					} catch (Exception e) {
 						LOGGER.error("Error parsing check constraint ", e);
@@ -132,5 +133,24 @@ public class OracleDialect extends DatabaseDialect {
 		}
 		return builder.toArray();
 	}
+
+	@Override
+	public boolean isAutoPKName(String pkName) {
+		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	}
+
+	@Override
+	public boolean isAutoUKName(String pkName) {
+		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	}
+
+	@Override
+	public boolean isAutoFKName(String pkName) {
+		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	}
 	
+	private boolean isAutoCheckName(String constraintName) {
+		throw new UnsupportedOperationException("OracleDialect.isAutoCheckName() is not implemented"); // TODO implement OracleDialect.isAutoCheckName
+	}
+
 }

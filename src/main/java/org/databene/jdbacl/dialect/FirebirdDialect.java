@@ -111,4 +111,19 @@ public class FirebirdDialect extends DatabaseDialect {
         return "set generator " + sequenceName + " to " + (value - 1);
     }
 
+	@Override
+	public boolean isAutoPKName(String pkName) {
+		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	}
+
+	@Override
+	public boolean isAutoUKName(String pkName) {
+		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	}
+
+	@Override
+	public boolean isAutoFKName(String pkName) {
+		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	}
+
 }

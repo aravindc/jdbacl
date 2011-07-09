@@ -26,6 +26,8 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.util.regex.Pattern;
+
 import org.databene.jdbacl.DatabaseDialect;
 
 /**
@@ -38,6 +40,10 @@ public class DerbyDialect extends DatabaseDialect {
 
 	private static final String DATE_PATTERN = "'DATE('''yyyy-MM-dd''')'";
 	private static final String TIME_PATTERN = "'TIME('''HH:mm:ss''')'";
+	
+	Pattern autoPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+	Pattern autoUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+	Pattern autoFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
 
     public DerbyDialect() {
 	    super("derby", false, false, DATE_PATTERN, TIME_PATTERN);
@@ -53,5 +59,20 @@ public class DerbyDialect extends DatabaseDialect {
 		schema = schema.toUpperCase();
 	    return schema.equals("APP") || schema.equals(user.toUpperCase());
     }
+
+	@Override
+	public boolean isAutoPKName(String pkName) {
+		return autoPKNamePattern.matcher(pkName).matches();
+	}
+
+	@Override
+	public boolean isAutoUKName(String ukName) {
+		return autoUKNamePattern.matcher(ukName).matches();
+	}
+
+	@Override
+	public boolean isAutoFKName(String fkName) {
+		return autoFKNamePattern.matcher(fkName).matches();
+	}
 
 }

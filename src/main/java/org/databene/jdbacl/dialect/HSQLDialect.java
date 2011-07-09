@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -30,6 +30,7 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
@@ -47,7 +48,11 @@ public class HSQLDialect extends DatabaseDialect {
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
 
-    public HSQLDialect() {
+	Pattern autoPKNamePattern = Pattern.compile("SYS_IDX_[0-9]{1,10}");
+	Pattern autoUKNamePattern = Pattern.compile("SYS_IDX_SYS_CT_[0-9]{1,10}_[0-9]{1,10}");
+	Pattern autoFKNamePattern = Pattern.compile("SYS_FK_[0-9]{1,10}");
+
+	public HSQLDialect() {
 	    super("hsql", false, true, DATE_PATTERN, TIME_PATTERN);
     }
 
@@ -100,6 +105,21 @@ public class HSQLDialect extends DatabaseDialect {
 	@Override
 	public String renderDropSequence(String name) {
 		return "drop sequence " + name;
+	}
+
+	@Override
+	public boolean isAutoPKName(String pkName) {
+		return autoPKNamePattern.matcher(pkName).matches();
+	}
+
+	@Override
+	public boolean isAutoUKName(String ukName) {
+		return autoUKNamePattern.matcher(ukName).matches();
+	}
+
+	@Override
+	public boolean isAutoFKName(String fkName) {
+		return autoFKNamePattern.matcher(fkName).matches();
 	}
 
 }
