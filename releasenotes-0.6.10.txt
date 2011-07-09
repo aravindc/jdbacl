@@ -1,0 +1,20 @@
+Release Notes jdbacl 0.6.10
+---------------------------
+
+
+Enhancements
+------------
+- recognition of automatically assigned names for primary key, unique key and foreign key constraints
+- Support of individual capitalization in constraint rendering
+- Added catalog and schema information to DBSequence
+- CreateExporter exports database meta data to a DDL file with CREATE TABLE commands.
+
+
+Changes
+-------
+- removed DBColumn.setUnique()
+
+
+Bug fixes
+---------
+- Bug fixes in column meta data import
