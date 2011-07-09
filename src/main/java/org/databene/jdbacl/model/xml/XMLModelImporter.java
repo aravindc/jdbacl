@@ -184,11 +184,17 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	}
 
 	private DBPrimaryKeyConstraint parsePK(Element e, DefaultDBTable table) {
-		return new DBPrimaryKeyConstraint(table, e.getAttribute("name"), parseColumnNames(e));
+		boolean autoNamed = false;
+		if (e.getAttribute("autoNamed") != null)
+			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
+		return new DBPrimaryKeyConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
 	}
 
 	private DBUniqueConstraint parseUK(Element e, DefaultDBTable table) {
-		return new DBUniqueConstraint(table, e.getAttribute("name"), parseColumnNames(e));
+		boolean autoNamed = false;
+		if (e.getAttribute("autoNamed") != null)
+			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
+		return new DBUniqueConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
 	}
 
 	private DBForeignKeyConstraint parseFK(Element e, DefaultDBTable owner, DBSchema schema) {
@@ -210,7 +216,10 @@ public class XMLModelImporter implements DBMetaDataImporter {
 				refereeColumnNames = ArrayUtil.append(colElement.getAttribute("refereeColumn"), refereeColumnNames);
 			}
 		}
-		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, owner, columnNames, refereeTable, refereeColumnNames);
+		boolean autoNamed = false;
+		if (e.getAttribute("autoNamed") != null)
+			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
+		DBForeignKeyConstraint fk = new DBForeignKeyConstraint(name, autoNamed, owner, columnNames, refereeTable, refereeColumnNames);
 		// parse rules
 		String updateRule = XMLUtil.getAttribute(e, "updateRule", false);
 		if (!StringUtil.isEmpty(updateRule))
@@ -223,7 +232,10 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private DBCheckConstraint parseCheck(Element e, DefaultDBTable table) {
 		try {
-			return new DBCheckConstraint(e.getAttribute("name"), table, e.getAttribute("definition"));
+			boolean autoNamed = false;
+			if (e.getAttribute("autoNamed") != null)
+				autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
+			return new DBCheckConstraint(e.getAttribute("name"),autoNamed, table, e.getAttribute("definition"));
 		} catch (Exception ex) {
 			LOGGER.error("Error parsing check constraint", ex);
 			return null;
