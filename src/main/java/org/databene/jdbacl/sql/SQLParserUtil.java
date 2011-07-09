@@ -57,6 +57,7 @@ import org.databene.commons.expression.NullExpression;
 import org.databene.commons.expression.SubtractionExpression;
 import org.databene.commons.expression.SumExpression;
 import org.databene.commons.expression.UnaryMinusExpression;
+import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBDataType;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
@@ -78,7 +79,7 @@ public class SQLParserUtil {
 	
 	static final Logger LOGGER = LoggerFactory.getLogger(SQLParserUtil.class);
 
-    public static Object parse(CharStream in) throws ParseException {
+    public static Object parse(CharStream in, DatabaseDialect dialect) throws ParseException {
     	String text = null;
     	if (in instanceof TextHolder)
     		text = ((TextHolder) in).getText();
@@ -87,7 +88,7 @@ public class SQLParserUtil {
         	SQLParser.commands_return r = parser.commands();
 	        checkForSyntaxErrors(text, "weightedLiteralList", parser, r);
 	        if (r != null) {
-	        	return convertNode((CommonTree) r.getTree());
+	        	return convertNode((CommonTree) r.getTree(), dialect);
 	        } else
 	        	return null;
         } catch (RuntimeException e) {
@@ -122,9 +123,9 @@ public class SQLParserUtil {
         }
     }
 	
-	private static Object convertNode(CommonTree node) {
+	private static Object convertNode(CommonTree node, DatabaseDialect dialect) {
     	switch (node.getType()) {
-			case SQLLexer.CREATE_TABLE: return convertCreateTable(node);
+			case SQLLexer.CREATE_TABLE: return convertCreateTable(node, dialect);
 			case SQLLexer.DROP_TABLE: return convertDropTable(node);
 			case SQLLexer.ALTER_TABLE: return convertAlterTable(node);
 			case SQLLexer.CREATE_SEQUENCE: return convertCreateSequence(node);
@@ -134,7 +135,7 @@ public class SQLParserUtil {
 			case SQLLexer.COMMENT_COLUMN: return convertColumnComment(node);
 		}
     	if (node.isNil()) {
-    		List<Object> nodes = convertNodes(getChildNodes(node));
+    		List<Object> nodes = convertNodes(getChildNodes(node), dialect);
     		return nodes.toArray();
     	}
 		throw new ParseException("Unknown token type", "'" + node.getText() + "'");
@@ -381,30 +382,30 @@ public class SQLParserUtil {
 	    return null;
     }
 
-	private static List<Object> convertNodes(List<CommonTree> nodes) {
+	private static List<Object> convertNodes(List<CommonTree> nodes, DatabaseDialect dialect) {
 	    List<Object> result = new ArrayList<Object>();
 	    for (CommonTree node : nodes)
-	    	result.add(convertNode(node));
+	    	result.add(convertNode(node, dialect));
 	    return result;
     }
 
-	private static DBTable convertCreateTable(CommonTree node) {
+	private static DBTable convertCreateTable(CommonTree node, DatabaseDialect dialect) {
 		String tableName = convertString(childAt(0, node));
 		DefaultDBTable table = new DefaultDBTable(tableName);
-		convertTableDetails(childAt(1, node), table);
+		convertTableDetails(childAt(1, node), table, dialect);
 		// TODO v1.0 parse ora_configs
 	    return table;
     }
 
-	private static void convertTableDetails(CommonTree node, DefaultDBTable table) {
+	private static void convertTableDetails(CommonTree node, DefaultDBTable table, DatabaseDialect dialect) {
 		for (CommonTree subNode : getChildNodes(node))
-			convertTableDetail(subNode, table);
+			convertTableDetail(subNode, table, dialect);
     }
 
-	private static void convertTableDetail(CommonTree node, DefaultDBTable table) {
+	private static void convertTableDetail(CommonTree node, DefaultDBTable table, DatabaseDialect dialect) {
 		switch (node.getType()) {
 			case SQLLexer.COLUMN_SPEC: convertColumnSpec(node, table); break;
-			case SQLLexer.PRIMARY: convertInlinePK(node, table); break;
+			case SQLLexer.PRIMARY: convertInlinePK(node, table, dialect); break;
 			default: throw new ParseException("Unknown table detail token type", 
 					String.valueOf(node.getText()), 
 					node.getLine(), 
@@ -412,10 +413,11 @@ public class SQLParserUtil {
 		}
     }
 
-	private static void convertInlinePK(CommonTree node, DefaultDBTable table) {
+	private static void convertInlinePK(CommonTree node, DefaultDBTable table, DatabaseDialect dialect) {
 	    String constraintName = convertString(childAt(0, node));
 	    String[] pkColumnNames = convertNameList(childAt(1, node));
-	    DBPrimaryKeyConstraint pk = new DBPrimaryKeyConstraint(table, constraintName, pkColumnNames);
+	    DBPrimaryKeyConstraint pk = new DBPrimaryKeyConstraint(
+	    		table, constraintName, dialect.isAutoPKName(constraintName), pkColumnNames);
 	    table.setPrimaryKey(pk);
     }
 
