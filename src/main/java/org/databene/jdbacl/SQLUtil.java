@@ -21,6 +21,7 @@
 
 package org.databene.jdbacl;
 
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -78,6 +79,61 @@ public class SQLUtil {
 				Integer.parseInt(sizeAndFractionDigits[1].trim()) };
 	}
 	
+	public static void renderCreateTable(DBTable table, 
+			boolean includeForeignKeys, NameSpec nameSpec, PrintWriter out) {
+		// create table <name> (
+		out.print("create table ");
+		out.print(table.getName());
+		out.print(" (");
+		// columns
+		List<DBColumn> columns = table.getColumns();
+		for (int i = 0; i < columns.size(); i++) {
+			if (i > 0)
+				out.print(',');
+			out.println();
+			out.print('\t');
+			out.print(renderColumn(columns.get(i)));
+		}
+		// primary key
+		DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
+		if (pk != null) {
+			out.println(",");
+			out.print('\t');
+			out.print(pkSpec(pk, nameSpec));
+		}
+		// unique keys
+		Set<DBUniqueConstraint> uks = table.getUniqueConstraints(false);
+		for (DBUniqueConstraint uk : uks) {
+			out.println(",");
+			out.print('\t');
+			out.print(ukSpec(uk, nameSpec));
+		}
+		// unique keys
+		if (includeForeignKeys) {
+			Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
+			for (DBForeignKeyConstraint fk : fks) {
+				out.println(",");
+				out.print('\t');
+				out.print(fkSpec(fk, nameSpec));
+			}
+		}
+		// checks
+		List<DBCheckConstraint> checks = table.getCheckConstraints();
+		for (DBCheckConstraint check : checks) {
+			out.println(",");
+			out.print('\t');
+			out.print(checkSpec(check, nameSpec));
+		}
+		out.println();
+		out.print(")");
+	}
+	
+	public static void renderAddForeignKey(DBForeignKeyConstraint fk, NameSpec nameSpec, PrintWriter printer) {
+		printer.println("ALTER TABLE " + fk.getTable().getName() + " ADD ");
+		printer.print('\t');
+		printer.print(SQLUtil.fkSpec(fk, nameSpec));
+    }
+
     public static String renderColumnNames(DBColumn[] columns) {
         StringBuilder builder = new StringBuilder(columns[0].getName());
         for (int i = 1; i < columns.length; i++)
@@ -231,41 +287,54 @@ public class SQLUtil {
 		return sql;
 	}
 
-	public static String constraintSpec(DBConstraint constraint, boolean withName) {
+	public static String constraintSpec(DBConstraint constraint, NameSpec nameSpec) {
 		if (constraint instanceof DBPrimaryKeyConstraint)
-			return pkSpec((DBPrimaryKeyConstraint) constraint, withName);
+			return pkSpec((DBPrimaryKeyConstraint) constraint, nameSpec);
 		else if (constraint instanceof DBUniqueConstraint)
-			return ukSpec((DBUniqueConstraint) constraint, withName);
+			return ukSpec((DBUniqueConstraint) constraint, nameSpec);
 		else if (constraint instanceof DBForeignKeyConstraint)
-			return fkSpec((DBForeignKeyConstraint) constraint, withName);
+			return fkSpec((DBForeignKeyConstraint) constraint, nameSpec);
 		else if (constraint instanceof DBNotNullConstraint)
 			return notNullSpec((DBNotNullConstraint) constraint);
 		else if (constraint instanceof DBCheckConstraint)
-			return checkSpec((DBCheckConstraint) constraint);
+			return checkSpec((DBCheckConstraint) constraint, nameSpec);
 		else
 			throw new UnsupportedOperationException("Unknown constraint type: " + 
 					constraint.getClass());
 	}
 	
-	private static String checkSpec(DBCheckConstraint constraint) {
-		return "CHECK " + constraint.getConditionText();
+	private static String checkSpec(DBCheckConstraint check, NameSpec nameSpec) {
+		StringBuilder builder = createConstraintSpecBuilder(check, nameSpec);
+		builder.append("CHECK ").append(check.getConditionText());
+		return builder.toString();
 	}
 
 	private static String notNullSpec(DBNotNullConstraint constraint) {
 		return constraint.getColumnNames()[0] + " NOT NULL";
 	}
 
-	public static String pkSpec(DBPrimaryKeyConstraint pk, boolean withName) {
-		return (withName ? constraintName(pk) : "") + "PRIMARY KEY " + renderColumnNames(pk.getColumnNames());
+	public static String pkSpec(DBPrimaryKeyConstraint pk, NameSpec nameSpec) {
+		StringBuilder builder = createConstraintSpecBuilder(pk, nameSpec);
+		builder.append("PRIMARY KEY ").append(renderColumnNames(pk.getColumnNames()));
+		return builder.toString();
 	}
 	
-	public static String ukSpec(DBUniqueConstraint uk, boolean withName) {
-		return (withName ? constraintName(uk) : "") + "UNIQUE " + renderColumnNames(uk.getColumnNames());
+	public static String ukSpec(DBUniqueConstraint uk, NameSpec nameSpec) {
+		StringBuilder builder = createConstraintSpecBuilder(uk, nameSpec);
+		builder.append("UNIQUE ").append(renderColumnNames(uk.getColumnNames()));
+		return builder.toString();
     }
 
-	public static String fkSpec(DBForeignKeyConstraint fk, boolean withName) {
-		return (withName ? constraintName(fk) : "") + " FOREIGN KEY " + renderColumnNames(fk.getColumnNames()) +
-			" REFERENCES " + fk.getRefereeTable() + renderColumnNames(fk.getRefereeColumnNames());
+	public static String fkSpec(DBForeignKeyConstraint fk, NameSpec nameSpec) {
+		StringBuilder builder = createConstraintSpecBuilder(fk, nameSpec);
+		builder.append("FOREIGN KEY ").append(renderColumnNames(fk.getColumnNames()));
+		builder.append(" REFERENCES ").append(fk.getRefereeTable()).append(renderColumnNames(fk.getRefereeColumnNames()));
+		return builder.toString();
+	}
+
+	protected static StringBuilder createConstraintSpecBuilder(DBConstraint constraint, NameSpec nameSpec) {
+		StringBuilder builder = new StringBuilder();
+		return appendConstraintName(constraint, builder, nameSpec);
 	}
 	
 	public static String leftJoin(String refererAlias, String[] refererColumns, 
@@ -297,6 +366,12 @@ public class SQLUtil {
 		return (object.getOwner() != null ? object.getOwner() + "." : "") + object.getName();
 	}
 
+	public static StringBuilder appendConstraintName(DBConstraint constraint, StringBuilder builder, NameSpec nameSpec) {
+		if (constraint.getName() != null && (nameSpec == NameSpec.ALWAYS || (nameSpec == NameSpec.CUSTOM && !constraint.isAutoNamed())))
+			builder.append("CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ');
+		return builder;
+	}
+	
 	public static void appendConstraintName(DBConstraint constraint, StringBuilder builder) {
 		if (constraint.getName() != null)
 			builder.append("CONSTRAINT " + quoteNameIfNecessary(constraint.getName()) + ' ');
