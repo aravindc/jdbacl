@@ -29,7 +29,7 @@ import org.databene.commons.version.VersionInfo;
 import org.databene.jdbacl.model.Database;
 
 /**
- * TODO Document class.<br/><br/>
+ * Retrieves meta data from a database and prints it to the console in a tree structure.<br/><br/>
  * Created: 26.06.2011 07:38:38
  * @since 0.6.9
  * @author Volker Bergmann
