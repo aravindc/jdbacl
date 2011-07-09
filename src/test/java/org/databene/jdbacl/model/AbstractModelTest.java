@@ -42,30 +42,30 @@ public abstract class AbstractModelTest {
 		DefaultDBTable table1 = new DefaultDBTable("table1", schema);
 		DBColumn id1 = new DefaultDBColumn("id1", table1, Types.INTEGER, "int");
 		DBColumn name1 = new DefaultDBColumn("name1", table1, Types.INTEGER, "int");
-		DBPrimaryKeyConstraint pk1 = new DBPrimaryKeyConstraint(table1, "table1_pk", "id1");
-		DBUniqueConstraint uk1 = new DBUniqueConstraint(table1, "table1_name1_uk", "name1");
+		DBPrimaryKeyConstraint pk1 = new DBPrimaryKeyConstraint(table1, "table1_pk", false, "id1");
+		DBUniqueConstraint uk1 = new DBUniqueConstraint(table1, "table1_name1_uk", false, "name1");
 		DBIndex index1 = new DBUniqueIndex("index1", uk1);
 		
 		DefaultDBTable table2 = new DefaultDBTable("table2", schema);
 		DBColumn id2 = new DefaultDBColumn("id2", table2, Types.INTEGER, "int");
 		DBColumn ref2 = new DefaultDBColumn("ref2", table2, Types.INTEGER, "int");
-		DBPrimaryKeyConstraint pk2 = new DBPrimaryKeyConstraint(table2, "table2_pk", "id2");
-		DBForeignKeyConstraint fk2 = new DBForeignKeyConstraint("table2_fk2", table2, new String[] {"ref2"}, table1, new String[] {"id1"});
+		DBPrimaryKeyConstraint pk2 = new DBPrimaryKeyConstraint(table2, "table2_pk", false, "id2");
+		DBForeignKeyConstraint fk2 = new DBForeignKeyConstraint("table2_fk2", false, table2, new String[] {"ref2"}, table1, new String[] {"id1"});
 		
 		DefaultDBTable table3 = new DefaultDBTable("table3", schema);
 		DBColumn id3_1 = new DefaultDBColumn("id3_1", table3, Types.INTEGER, "int");
 		DBColumn id3_2 = new DefaultDBColumn("id3_2", table3, Types.INTEGER, "int");
 		DBColumn name3 = new DefaultDBColumn("name3", table3, Types.INTEGER, "varchar(8)");
 		DBColumn type3 = new DefaultDBColumn("type3", table3, Types.INTEGER, "char");
-		DBPrimaryKeyConstraint pk3 = new DBPrimaryKeyConstraint(table3, "table3_pk", "id3_1", "id3_2");
-		DBUniqueConstraint uk3 = new DBUniqueConstraint(table3, "table3_name3_uk", "name3", "type3");
+		DBPrimaryKeyConstraint pk3 = new DBPrimaryKeyConstraint(table3, "table3_pk", false, "id3_1", "id3_2");
+		DBUniqueConstraint uk3 = new DBUniqueConstraint(table3, "table3_name3_uk", false, "name3", "type3");
 		
 		DefaultDBTable table4 = new DefaultDBTable("table4", schema);
 		DBColumn id4 = new DefaultDBColumn("id4", table4, Types.INTEGER, "int");
 		DBColumn ref4_1 = new DefaultDBColumn("ref4_1", table4, Types.INTEGER, "int");
 		DBColumn ref4_2 = new DefaultDBColumn("ref4_2", table4, Types.INTEGER, "int");
-		DBPrimaryKeyConstraint pk4 = new DBPrimaryKeyConstraint(table4, "table4_pk", "id4");
-		DBForeignKeyConstraint fk4 = new DBForeignKeyConstraint("table4_fk2", table4, new String[] {"ref4_1", "ref4_2"}, 
+		DBPrimaryKeyConstraint pk4 = new DBPrimaryKeyConstraint(table4, "table4_pk", false, "id4");
+		DBForeignKeyConstraint fk4 = new DBForeignKeyConstraint("table4_fk2", false, table4, new String[] {"ref4_1", "ref4_2"}, 
 				table3, new String[] {"id3_1", "id3_2"});
 		DBIndex index4 = new DBNonUniqueIndex("index4", table4, "ref4_1", "ref4_2");
 		

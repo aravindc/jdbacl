@@ -42,7 +42,7 @@ public class DBUniqueConstraintTest {
 	@Test
     public void testToString() {
         DBTable table = new DefaultDBTable("tablename");
-        DBUniqueConstraint constraint = new DBUniqueConstraint(table, "constraintname", "column1", "column2");
+        DBUniqueConstraint constraint = new DBUniqueConstraint(table, "constraintname", false, "column1", "column2");
         assertEquals("unique (column1, column2)", constraint.toString());
     }
     
@@ -50,13 +50,13 @@ public class DBUniqueConstraintTest {
     public void testEquals() {
         DBTable table = new DefaultDBTable("tablename");
     	// simple checks
-    	DBUniqueConstraint uc1 = new DBUniqueConstraint(table, "uc1", "col1");
+    	DBUniqueConstraint uc1 = new DBUniqueConstraint(table, "uc1", false, "col1");
     	assertFalse(uc1.equals(null));
     	assertFalse(uc1.equals(""));
     	assertTrue(uc1.equals(uc1));
     	// real comparisons
-    	DBUniqueConstraint uc2 = new DBUniqueConstraint(table, "uc2", "col2");
-    	DBUniqueConstraint uc3 = new DBUniqueConstraint(table, "uc3", "col1", "col2");
+    	DBUniqueConstraint uc2 = new DBUniqueConstraint(table, "uc2", false, "col2");
+    	DBUniqueConstraint uc3 = new DBUniqueConstraint(table, "uc3", false, "col1", "col2");
     	assertFalse(uc1.equals(uc2));
     	assertFalse(uc1.equals(uc3));
     	assertFalse(uc3.equals(uc1));

@@ -49,7 +49,7 @@ public class DBCheckConstraintTest {
 	}
 	
 	private void check(String condition, String... expectedColumnNames) {
-		DBCheckConstraint constraint = new DBCheckConstraint("ck", "tbl", condition);
+		DBCheckConstraint constraint = new DBCheckConstraint("ck", false, "tbl", condition);
 		Set<String> expectedSet = CollectionUtil.toSet(expectedColumnNames);
 		Set<String> actualSet = CollectionUtil.toSet(constraint.getColumnNames());
 		assertEquals(expectedSet, actualSet);
