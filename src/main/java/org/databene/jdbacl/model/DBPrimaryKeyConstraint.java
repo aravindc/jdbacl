@@ -41,8 +41,8 @@ public class DBPrimaryKeyConstraint extends DBUniqueConstraint {
      * @param name    the constraint name - it may be null
      * @param columnNames the names of the columns to which the constraint is applied
      */
-    public DBPrimaryKeyConstraint(DBTable table, String name, String... columnNames) {
-        super(table, name, columnNames);
+    public DBPrimaryKeyConstraint(DBTable table, String name, boolean autoNamed, String... columnNames) {
+        super(table, name, autoNamed, columnNames);
         table.setPrimaryKey(this);
     }
 

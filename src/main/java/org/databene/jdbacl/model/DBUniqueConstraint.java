@@ -47,8 +47,8 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
      * @param name the constraint name - it may be null
      * @param columnNames the names of the columns to which the constraint applies
      */
-    public DBUniqueConstraint(DBTable owner, String name, String... columnNames) {
-        super(name, "unique constraint", owner);
+    public DBUniqueConstraint(DBTable owner, String name, boolean autoNamed, String... columnNames) {
+        super(name, autoNamed, "unique constraint", owner);
         this.columnNames = columnNames;
         if (getClass() == DBUniqueConstraint.class)
         	owner.addUniqueConstraint(this);

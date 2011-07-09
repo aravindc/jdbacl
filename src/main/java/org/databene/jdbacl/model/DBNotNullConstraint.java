@@ -40,8 +40,8 @@ public class DBNotNullConstraint extends DBConstraint {
     
 	private String columnName;
 
-    public DBNotNullConstraint(DBTable owner, String name, String columnName) {
-        super(name, "not null", owner);
+    public DBNotNullConstraint(DBTable owner, String name, boolean autoNamed, String columnName) {
+        super(name, autoNamed, "not null", owner);
         Assert.notNull(owner, "owner");
         Assert.notNull(columnName, "column name");
         this.columnName = columnName;
