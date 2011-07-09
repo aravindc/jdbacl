@@ -152,17 +152,6 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("pk");
 	}
 
-	public void writeColumnGroup(String[] pkColumnNames, SimpleXMLWriter writer)
-			throws SAXException {
-		writer.startElement("columns");
-		for (String pkColumnName : pkColumnNames) {
-			AttributesImpl colAtts = createAttributes("name", pkColumnName);
-			writer.startElement("column", colAtts);
-			writer.endElement("column");
-		}
-		writer.endElement("columns");
-	}
-
 	private void exportUKs(Set<DBUniqueConstraint> uks, SimpleXMLWriter writer) 
 			throws SAXException {
 		for (DBUniqueConstraint uk : uks) {
@@ -231,6 +220,16 @@ public class XMLModelExporter implements DBMetaDataExporter {
 				writeColumnGroup(columnNames, writer);
 			writer.endElement("index");
 		}
+	}
+
+	public void writeColumnGroup(String[] pkColumnNames, SimpleXMLWriter writer) throws SAXException {
+		writer.startElement("columns");
+		for (String pkColumnName : pkColumnNames) {
+			AttributesImpl colAtts = createAttributes("name", pkColumnName);
+			writer.startElement("column", colAtts);
+			writer.endElement("column");
+		}
+		writer.endElement("columns");
 	}
 
 	private void exportSequence(DBSequence sequence, SimpleXMLWriter writer) throws SAXException {
