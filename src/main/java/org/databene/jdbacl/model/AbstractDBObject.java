@@ -49,7 +49,7 @@ public abstract class AbstractDBObject implements DBObject {
 	public AbstractDBObject(String name, String objectType, CompositeDBObject owner) {
 		this.name = name;
 		this.objectType = objectType;
-		this.owner = owner;
+		setOwner(owner); // allow child classes to do additional work when setting the owner
 	}
 
     // properties ------------------------------------------------------------------------------------------------------
