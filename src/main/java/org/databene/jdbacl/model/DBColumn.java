@@ -48,7 +48,6 @@ public interface DBColumn extends DBTableComponent {
     void setDefaultValue(String defaultValue);
     
     boolean isUnique();
-    void setUnique(boolean unique);
     
     List<DBUniqueConstraint> getUkConstraints();
     void addUkConstraint(DBUniqueConstraint constraint);
