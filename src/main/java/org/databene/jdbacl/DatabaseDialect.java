@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -212,5 +212,9 @@ public abstract class DatabaseDialect {
 		else
 			return new UnsupportedOperationException(methodName + "() not implemented");
     }
+
+	public abstract boolean isAutoPKName(String pkName);
+	public abstract boolean isAutoUKName(String ukName);
+	public abstract boolean isAutoFKName(String fkName);
 
 }
