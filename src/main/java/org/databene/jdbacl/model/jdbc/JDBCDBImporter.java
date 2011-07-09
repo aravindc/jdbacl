@@ -388,8 +388,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		if (this.catalogName != null)
 			importColumns(database.getCatalog(this.catalogName), this.schemaName, null, tableNameFilter, errorHandler);
 		else
-			for (DBCatalog catalog : database.getCatalogs())
-				importColumns(catalog, this.schemaName, null, tableNameFilter, errorHandler);
+			for (DBCatalog catalog : database.getCatalogs()) {
+				for (DBSchema schema : catalog.getSchemas())
+					importColumns(catalog, schema.getName(), null, tableNameFilter, errorHandler);
+			}
     }
 
     private void importColumns(DBCatalog catalog, String schemaName, String tablePattern, Filter<String> tableFilter, ErrorHandler errorHandler) {
@@ -413,7 +415,9 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            }
 	            int sqlType = columnSet.getInt(5);
 	            String columnType = columnSet.getString(6);
-	            int columnSize = columnSet.getInt(7);
+	            Integer columnSize = columnSet.getInt(7);
+	            if (columnSize == 0) // happens with INTEGER values on HSQLDB
+	            	columnSize = null;
 	            int decimalDigits = columnSet.getInt(9);
 	            boolean nullable = columnSet.getBoolean(11);
 	            String comment = columnSet.getString(12);
@@ -430,11 +434,9 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                        + ", " + nullable + ", " + comment + ", " + defaultValue);
 	
 	            DBTable table = catalog.getTable(tableName);
-	            if (table == null) {
-	                DBSchema schema = catalog.getSchema(schemaName);
-	                if (schema != null)
-	                    table = (DefaultDBTable) schema.getTable(tableName);
-	            }
+	            DBSchema schema = catalog.getSchema(schemaName);
+	            if (schema != null)
+	                table = (DefaultDBTable) schema.getTable(tableName);
 
 	            Integer fractionDigits = (decimalDigits > 0 ? decimalDigits : null);
 	            DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBDataType.getInstance(sqlType, columnType), columnSize, fractionDigits);
@@ -529,7 +531,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	        }
 	        if (pkComponents.size() > 0) {
 		        String[] columnNames = pkComponents.values().toArray(new String[pkComponents.size()]);
-		        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(table, pkName, columnNames);
+		        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(table, pkName, dialect.isAutoPKName(pkName), columnNames);
 		        table.setPrimaryKey(constraint);
 		        for (String columnName : columnNames) {
 		        	DBColumn column = table.getColumn(columnName);
@@ -614,7 +616,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                	if (isPK) {
 	                		constraint = pk;
 	                	} else {
-	                		constraint = new DBUniqueConstraint(table, indexInfo.name, indexInfo.columnNames);
+	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isAutoUKName(indexInfo.name), indexInfo.columnNames);
 		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
 	                	}
 	                    index = new DBUniqueIndex(indexInfo.name, constraint);
@@ -705,7 +707,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                refereeColumnNames[i] = key.getRefereeColumnNames().get(i);
 				}
 	            DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
-	            		key.fk_name, table, columnNames, key.getPkTable(), refereeColumnNames);
+	            		key.fk_name, dialect.isAutoFKName(key.fk_name), table, columnNames, key.getPkTable(), refereeColumnNames);
 	            foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
 	            foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
 	            if (LOGGER.isDebugEnabled())
@@ -770,8 +772,14 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		try {
 			if (dialect.isSequenceSupported()) {
 				DBSequence[] sequences = dialect.querySequences(getConnection());
-				for (DBSequence sequence : sequences)
-					database.getCatalog(catalogName).getSchema(schemaName).addSequence(sequence);
+				for (DBSequence sequence : sequences) {
+					DBCatalog catalog = database.getCatalog(sequence.getCatalogName());
+					if (catalog != null) {
+						DBSchema schema = catalog.getSchema(sequence.getSchemaName());
+						if (schema != null)
+							schema.addSequence(sequence);
+					}
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error importing sequences", e);
