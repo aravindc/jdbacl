@@ -125,11 +125,6 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
     	return false;
     }
     
-	public void setUnique(boolean unique) {
-		DBUniqueConstraint constraint = new DBUniqueConstraint(getTable(), name + "_UK", name);
-		addUkConstraint(constraint);
-	}
-
     public List<DBUniqueConstraint> getUkConstraints() {
         return ukConstraints;
     }
@@ -156,8 +151,10 @@ public class DefaultDBColumn extends AbstractDBTableComponent implements DBColum
             notNullConstraint = null;
         } else {
             // if there needs to be a NotNullConstraint, check if there exists one, first
-            if (this.isNullable())
-                this.notNullConstraint = new DBNotNullConstraint(getTable(), null, name);
+            if (this.isNullable()) {
+				String constraintName = getTable().getName() + '_' + name + "_NOT_NULL"; // TODO get constraint name from DB
+				this.notNullConstraint = new DBNotNullConstraint(getTable(), constraintName , true, name);
+			}
         }
     }
 
