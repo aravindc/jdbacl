@@ -46,15 +46,15 @@ import org.junit.Test;
  * @since 0.6.0
  * @author Volker Bergmann
  */
-public abstract class DatabaseDialectTest {
+public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	
-	protected DatabaseDialect dialect;
+	protected E dialect;
 	
 	protected final static Date DATETIME_19710203131415 = TimeUtil.date(1971, 1, 3, 13, 14, 15, 0);
 	protected final static Time TIME_131415 = TimeUtil.time(13, 14, 15, 0);
 	protected final static Timestamp TIMESTAMP_19710203131415123456789 = TimeUtil.timestamp(1971, 1, 3, 13, 14, 15, 123456789);
 	
-	public DatabaseDialectTest(DatabaseDialect dialect) {
+	public DatabaseDialectTest(E dialect) {
 	    this.dialect = dialect;
     }
 
