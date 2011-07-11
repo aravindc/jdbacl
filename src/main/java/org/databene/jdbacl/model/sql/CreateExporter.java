@@ -34,6 +34,7 @@ import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBMetaDataExporter;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
+import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.Database;
 
@@ -64,13 +65,18 @@ public class CreateExporter implements DBMetaDataExporter {
     }
 
 	private void exportSequences(Database database, PrintWriter out) {
-		// TODO implement CreateExporter.exportSequences
+		List<DBSequence> sequences = database.getSequences(true);
+		for (DBSequence sequence : sequences) {
+			SQLUtil.renderCreateSequence(sequence, out);
+			out.println(';');
+			out.println();
+		}
 	}
 
 	private void exportTables(Database database, PrintWriter out) {
 		List<DBTable> tables = DBUtil.dependencyOrderedTables(database);
 		for (DBTable table : tables) {
-			SQLUtil.renderCreateTable(table, false, NameSpec.CUSTOM, out);
+			SQLUtil.renderCreateTable(table, false, NameSpec.IF_REPRODUCIBLE, out);
 			out.println(';');
 			out.println();
 		}
@@ -84,7 +90,7 @@ public class CreateExporter implements DBMetaDataExporter {
 	private void exportForeignKeys(DBTable table, PrintWriter out) {
 		Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
 		for (DBForeignKeyConstraint fk : fks) {
-			SQLUtil.renderAddForeignKey(fk, NameSpec.CUSTOM, out);
+			SQLUtil.renderAddForeignKey(fk, NameSpec.IF_REPRODUCIBLE, out);
 			out.println(';');
 			out.println();
 		}
