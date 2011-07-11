@@ -33,6 +33,8 @@ import org.databene.commons.Assert;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.bean.HashCodeBuilder;
+import org.databene.jdbacl.NameSpec;
+import org.databene.jdbacl.SQLUtil;
 
 /**
  * Represents a foreign key constraint.<br/><br/>
@@ -50,9 +52,9 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
     private FKChangeRule updateRule;
     private FKChangeRule deleteRule;
     
-    public DBForeignKeyConstraint(String name, boolean autoNamed, DBTable owner, String[] fkColumnNames, 
+    public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
-        super(name, autoNamed, "foreign key", owner);
+        super(name, nameDeterministic, "foreign key", owner);
         Assert.notNull(refereeTable, "refereeTable");
         this.fkColumnNames = fkColumnNames;
         this.refereeTable = refereeTable;
@@ -147,15 +149,7 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
 
 	@Override
     public String toString() {
-    	StringBuilder builder = new StringBuilder("(");
-		builder.append(fkColumnNames[0]);
-    	for (int i = 1; i < fkColumnNames.length; i++)
-    		builder.append(", ").append(fkColumnNames[i]);
-    	builder.append(") -> ").append(refereeTable.getName()).append(" (");
-		builder.append(refereeColumnNames[0]);
-    	for (int i = 1; i < refereeColumnNames.length; i++)
-    		builder.append(", ").append(refereeColumnNames[i]);
-        return builder.append(")").toString();
+		return SQLUtil.fkSpec(this, NameSpec.ALWAYS);
     }
 
 }

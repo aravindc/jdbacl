@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,7 +26,8 @@
 
 package org.databene.jdbacl.model;
 
-import org.databene.commons.ArrayFormat;
+import org.databene.jdbacl.NameSpec;
+import org.databene.jdbacl.SQLUtil;
 
 /**
  * Represents a primary key constraint in a database.<br/><br/>
@@ -41,14 +42,14 @@ public class DBPrimaryKeyConstraint extends DBUniqueConstraint {
      * @param name    the constraint name - it may be null
      * @param columnNames the names of the columns to which the constraint is applied
      */
-    public DBPrimaryKeyConstraint(DBTable table, String name, boolean autoNamed, String... columnNames) {
-        super(table, name, autoNamed, columnNames);
+    public DBPrimaryKeyConstraint(DBTable table, String name, boolean nameDeterministic, String... columnNames) {
+        super(table, name, nameDeterministic, columnNames);
         table.setPrimaryKey(this);
     }
 
     @Override
     public String toString() {
-        return getName() + " (" + ArrayFormat.format(getColumnNames()) + ')';
+        return SQLUtil.pkSpec(this, NameSpec.ALWAYS);
     }
     
 }

@@ -29,6 +29,7 @@ package org.databene.jdbacl.model;
 import java.util.Arrays;
 
 import org.databene.commons.NullSafeComparator;
+import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
 
 /**
@@ -47,8 +48,8 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
      * @param name the constraint name - it may be null
      * @param columnNames the names of the columns to which the constraint applies
      */
-    public DBUniqueConstraint(DBTable owner, String name, boolean autoNamed, String... columnNames) {
-        super(name, autoNamed, "unique constraint", owner);
+    public DBUniqueConstraint(DBTable owner, String name, boolean nameDeterministic, String... columnNames) {
+        super(name, nameDeterministic, "unique constraint", owner);
         this.columnNames = columnNames;
         if (getClass() == DBUniqueConstraint.class)
         	owner.addUniqueConstraint(this);
@@ -72,7 +73,7 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 
 	@Override
 	public String toString() {
-		return "unique " + SQLUtil.renderColumnNames(columnNames);
+		return SQLUtil.ukSpec(this, NameSpec.ALWAYS);
 	}
 	
 }

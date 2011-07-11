@@ -47,13 +47,13 @@ public class DBCheckConstraint extends DBConstraint {
 	private Expression<?> condition;
 	private String[] columnNames;
 
-	public DBCheckConstraint(String name, boolean autoNamed, DBTable owner, String conditionText) {
-		this(name, autoNamed, owner.getName(), conditionText);
+	public DBCheckConstraint(String name, boolean nameDeterministic, DBTable owner, String conditionText) {
+		this(name, nameDeterministic, owner.getName(), conditionText);
 		owner.addCheckConstraint(this);
 	}
 	
-	public DBCheckConstraint(String name, boolean autoNamed, String tableName, String conditionText) {
-		super(name, autoNamed, "check constraint", null);
+	public DBCheckConstraint(String name, boolean nameDeterministic, String tableName, String conditionText) {
+		super(name, nameDeterministic, "check constraint", null);
 		this.tableName = tableName;
 		this.conditionText = conditionText;
 		this.condition = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(conditionText));
@@ -90,7 +90,7 @@ public class DBCheckConstraint extends DBConstraint {
 
 	@Override
 	public String toString() {
-		return "CHECK " + conditionText;
+		return (name != null ? "CONSTRAINT " + name : "") + "CHECK " + conditionText;
 	}
 	
 	private String[] getColumnNames(Expression<?> condition) {

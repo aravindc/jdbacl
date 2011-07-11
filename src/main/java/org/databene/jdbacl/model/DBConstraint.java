@@ -40,16 +40,16 @@ public abstract class DBConstraint extends AbstractDBTableComponent implements M
 
     private static final long serialVersionUID = 3768329019450975632L;
     
-    private boolean autoNamed;
+    private boolean nameDeterministic;
     
     // interface -------------------------------------------------------------------------------------------------------
 
     /**
      * @param name the constraint name - it may be null
      */
-    public DBConstraint(String name, boolean autoNamed, String objectType, DBTable owner) {
+    public DBConstraint(String name, boolean nameDeterministic, String objectType, DBTable owner) {
     	super(name, objectType, owner);
-    	this.autoNamed = autoNamed;
+    	this.nameDeterministic = nameDeterministic;
     }
 
     /**
@@ -62,8 +62,8 @@ public abstract class DBConstraint extends AbstractDBTableComponent implements M
         return (DBTable) getOwner();
     }
 
-	public boolean isAutoNamed() {
-		return autoNamed;
+	public boolean isNameDeterministic() {
+		return nameDeterministic;
 	}
 
     // java.lang.Object overrides --------------------------------------------------------------------------------------

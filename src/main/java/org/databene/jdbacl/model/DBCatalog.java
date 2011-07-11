@@ -124,11 +124,18 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
     }
 
     public DBTable getTable(String name) {
+        return getTable(name, true);
+    }
+    
+    public DBTable getTable(String name, boolean required) {
         for (DBSchema schema : getSchemas())
             for (DBTable table : schema.getTables())
             	if (table.getName().equals(name))
             		return table;
-        throw new ObjectNotFoundException("Table '" + name + "'");
+        if (required)
+        	throw new ObjectNotFoundException("Table '" + name + "'");
+        else
+        	return null;
     }
     
 	public void removeTable(String tableName) {

@@ -134,6 +134,8 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 	public List<DBTableComponent> getComponents() {
 		List<DBTableComponent> result = new ArrayList<DBTableComponent>();
 		result.addAll(columns.values());
+		if (pk != null)
+			result.add(pk);
 		result.addAll(uniqueConstraints);
 		result.addAll(foreignKeyConstraints);
 		result.addAll(indexes.values());
