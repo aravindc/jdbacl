@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,6 +21,8 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.util.regex.Pattern;
+
 import org.databene.jdbacl.DatabaseDialect;
 
 /**
@@ -34,6 +36,8 @@ public class SqlServerDialect extends DatabaseDialect {
 	private static final String DATE_PATTERN = "''yyyy-MM-dd'T'HH:mm:ss''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
 
+	Pattern randomNamePattern = Pattern.compile("SYS_\\w*");
+
 	public SqlServerDialect() {
 	    super("sql_server", false, false, DATE_PATTERN, TIME_PATTERN);
     }
@@ -45,22 +49,27 @@ public class SqlServerDialect extends DatabaseDialect {
 
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
-	    return "DBO".equals(schema.toUpperCase());
+	    return "DBO".equalsIgnoreCase(schema);
     }
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	public boolean isDeterministicPKName(String pkName) {
+		return !randomNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	public boolean isDeterministicUKName(String pkName) {
+		return !randomNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	public boolean isDeterministicFKName(String pkName) {
+		return !randomNamePattern.matcher(pkName).matches();
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return !randomNamePattern.matcher(indexName).matches();
 	}
 
 }

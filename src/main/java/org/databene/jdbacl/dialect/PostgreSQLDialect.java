@@ -26,9 +26,12 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.model.DBSequence;
 
 /**
  * Implements generic database concepts for PostgreSQL.<br/><br/>
@@ -45,14 +48,18 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN);
     }
 
+    public DBSequence[] querySequences(Connection connection) throws SQLException {
+		throw new UnsupportedOperationException(); // TODO v0.6.10 implement PostgreSQLDialect.querySequences()
+	}
+
     @Override
     public boolean isDefaultCatalog(String catalog, String user) {
-        return user.equalsIgnoreCase(catalog);
+        return "".equals(catalog) || user.equalsIgnoreCase(catalog);
     }
     
     @Override
     public boolean isDefaultSchema(String schema, String user) {
-        return "PUBLIC".equals(schema);
+        return "public".equalsIgnoreCase(schema);
     }
     
 	@Override
@@ -66,18 +73,23 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	}
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	public boolean isDeterministicPKName(String pkName) {
+		return true; // PostgreSQL generates deterministic names 
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	public boolean isDeterministicUKName(String ukName) {
+		return true; // PostgreSQL generates deterministic names
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	public boolean isDeterministicFKName(String fkName) {
+		return true; // PostgreSQL generates deterministic names
 	}
-	
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return true; // PostgreSQL generates deterministic names
+	}
+
 }

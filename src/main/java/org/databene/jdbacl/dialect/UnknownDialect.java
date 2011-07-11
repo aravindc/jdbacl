@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -45,27 +45,32 @@ public class UnknownDialect extends DatabaseDialect {
 
 	@Override
     public boolean isDefaultCatalog(String catalog, String user) {
-	    return true;
+	    return true; // hope that the first catalog found is the correct one
     }
 
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
-	    return true;
+	    return true; // hope that the first schema found is the correct one
     }
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		return false;
+	public boolean isDeterministicPKName(String pkName) {
+		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		return false;
+	public boolean isDeterministicUKName(String pkName) {
+		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		return false;
+	public boolean isDeterministicFKName(String pkName) {
+		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -41,9 +41,10 @@ public class DerbyDialect extends DatabaseDialect {
 	private static final String DATE_PATTERN = "'DATE('''yyyy-MM-dd''')'";
 	private static final String TIME_PATTERN = "'TIME('''HH:mm:ss''')'";
 	
-	Pattern autoPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
-	Pattern autoUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
-	Pattern autoFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
+	Pattern randomPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+	Pattern randomUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
+	Pattern randomFKNamePattern = Pattern.compile("FK[0-9A-F]{15,16}");
+	Pattern randomIndexNamePattern = Pattern.compile("SQL\\d+");
 
     public DerbyDialect() {
 	    super("derby", false, false, DATE_PATTERN, TIME_PATTERN);
@@ -57,22 +58,27 @@ public class DerbyDialect extends DatabaseDialect {
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
 		schema = schema.toUpperCase();
-	    return schema.equals("APP") || schema.equals(user.toUpperCase());
+	    return schema.equalsIgnoreCase("APP") || schema.equalsIgnoreCase(user);
     }
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		return autoPKNamePattern.matcher(pkName).matches();
+	public boolean isDeterministicPKName(String pkName) {
+		return !randomPKNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoUKName(String ukName) {
-		return autoUKNamePattern.matcher(ukName).matches();
+	public boolean isDeterministicUKName(String ukName) {
+		return !randomUKNamePattern.matcher(ukName).matches();
 	}
 
 	@Override
-	public boolean isAutoFKName(String fkName) {
-		return autoFKNamePattern.matcher(fkName).matches();
+	public boolean isDeterministicFKName(String fkName) {
+		return !randomFKNamePattern.matcher(fkName).matches();
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return !randomIndexNamePattern.matcher(indexName).matches();
 	}
 
 }

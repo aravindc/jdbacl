@@ -60,6 +60,8 @@ public class OracleDialect extends DatabaseDialect {
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
     private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
 
+	Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
+
 	public OracleDialect() {
 	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN);
     }
@@ -71,7 +73,7 @@ public class OracleDialect extends DatabaseDialect {
 	
 	@Override
 	public boolean isDefaultSchema(String schema, String user) {
-	    return user.toLowerCase().equals(schema.toLowerCase());
+	    return user.equalsIgnoreCase(schema);
 	}
 	
 	@Override
@@ -123,7 +125,7 @@ public class OracleDialect extends DatabaseDialect {
 				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
 					try {
 						DBCheckConstraint constraint = new DBCheckConstraint(
-								constraintName, isAutoCheckName(constraintName), tableName, condition);
+								constraintName, !isDeterministicCheckName(constraintName), tableName, condition);
 						builder.add(constraint);
 					} catch (Exception e) {
 						LOGGER.error("Error parsing check constraint ", e);
@@ -134,23 +136,28 @@ public class OracleDialect extends DatabaseDialect {
 		return builder.toArray();
 	}
 
-	@Override
-	public boolean isAutoPKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	public boolean isDeterministicCheckName(String checkName) {
+		return !randomNamePattern.matcher(checkName).matches();
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	public boolean isDeterministicPKName(String pkName) {
+		return !randomNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	public boolean isDeterministicUKName(String ukName) {
+		return !randomNamePattern.matcher(ukName).matches();
 	}
-	
-	private boolean isAutoCheckName(String constraintName) {
-		throw new UnsupportedOperationException("OracleDialect.isAutoCheckName() is not implemented"); // TODO implement OracleDialect.isAutoCheckName
+
+	@Override
+	public boolean isDeterministicFKName(String fkName) {
+		return !randomNamePattern.matcher(fkName).matches();
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return !randomNamePattern.matcher(indexName).matches();
 	}
 
 }

@@ -29,6 +29,7 @@ package org.databene.jdbacl.dialect;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
@@ -47,6 +48,11 @@ public class FirebirdDialect extends DatabaseDialect {
 
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+
+	Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
+	Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
+	Pattern randomFKNamePattern = Pattern.compile("INTEG_\\d+");
+	Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
 
     public FirebirdDialect() {
 	    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN);
@@ -112,18 +118,23 @@ public class FirebirdDialect extends DatabaseDialect {
     }
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	public boolean isDeterministicPKName(String pkName) {
+		return !randomPKNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	public boolean isDeterministicUKName(String ukName) {
+		return !randomUKNamePattern.matcher(ukName).matches();
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	public boolean isDeterministicFKName(String fkName) {
+		return !randomFKNamePattern.matcher(fkName).matches();
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return !randomIndexNamePattern.matcher(indexName).matches();
 	}
 
 }

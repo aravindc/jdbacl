@@ -48,9 +48,10 @@ public class HSQLDialect extends DatabaseDialect {
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
 
-	Pattern autoPKNamePattern = Pattern.compile("SYS_IDX_[0-9]{1,10}");
-	Pattern autoUKNamePattern = Pattern.compile("SYS_IDX_SYS_CT_[0-9]{1,10}_[0-9]{1,10}");
-	Pattern autoFKNamePattern = Pattern.compile("SYS_FK_[0-9]{1,10}");
+	Pattern randomPKNamePattern = Pattern.compile("SYS_IDX_\\w+");
+	Pattern randomUKNamePattern = Pattern.compile("SYS_IDX_SYS_\\w+");
+	Pattern randomFKNamePattern = Pattern.compile("SYS_FK_\\w+");
+	Pattern randomIndexNamePattern = Pattern.compile("SYS_IDX_\\w+");
 
 	public HSQLDialect() {
 	    super("hsql", false, true, DATE_PATTERN, TIME_PATTERN);
@@ -63,7 +64,7 @@ public class HSQLDialect extends DatabaseDialect {
 
 	@Override
     public boolean isDefaultSchema(String schema, String user) {
-	    return "PUBLIC".equals(schema);
+	    return "PUBLIC".equalsIgnoreCase(schema);
     }
 
 	@Override
@@ -108,18 +109,23 @@ public class HSQLDialect extends DatabaseDialect {
 	}
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		return autoPKNamePattern.matcher(pkName).matches();
+	public boolean isDeterministicPKName(String pkName) {
+		return !randomPKNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoUKName(String ukName) {
-		return autoUKNamePattern.matcher(ukName).matches();
+	public boolean isDeterministicUKName(String ukName) {
+		return !randomUKNamePattern.matcher(ukName).matches();
 	}
 
 	@Override
-	public boolean isAutoFKName(String fkName) {
-		return autoFKNamePattern.matcher(fkName).matches();
+	public boolean isDeterministicFKName(String fkName) {
+		return !randomFKNamePattern.matcher(fkName).matches();
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return !randomIndexNamePattern.matcher(indexName).matches();
 	}
 
 }

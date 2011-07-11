@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -26,6 +26,8 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.util.regex.Pattern;
+
 import org.databene.jdbacl.DatabaseDialect;
 
 /**
@@ -38,6 +40,8 @@ public class DB2Dialect extends DatabaseDialect {
 
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+
+	Pattern randomNamePattern = Pattern.compile("SQL\\d{15}");
 
     public DB2Dialect() {
 	    super("db2", false, true, DATE_PATTERN, TIME_PATTERN);
@@ -66,18 +70,23 @@ public class DB2Dialect extends DatabaseDialect {
     }
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	public boolean isDeterministicPKName(String pkName) {
+		return !randomNamePattern.matcher(pkName).matches();
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	public boolean isDeterministicUKName(String ukName) {
+		return !randomNamePattern.matcher(ukName).matches();
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	public boolean isDeterministicFKName(String fkName) {
+		return !randomNamePattern.matcher(fkName).matches();
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return !randomNamePattern.matcher(indexName).matches();
 	}
 
 }

@@ -46,23 +46,27 @@ public class MySQLDialect extends DatabaseDialect {
 
 	@Override
 	public boolean isDefaultSchema(String schema, String user) {
-		// MySQL does not make use of schemas at all
-		return false;
+		return false; // MySQL does not make use of schemas at all
 	}
 
 	@Override
-	public boolean isAutoPKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoPKName() is not implemented"); // TODO implement DatabaseDialect.isAutoPKName
+	public boolean isDeterministicPKName(String pkName) {
+		return true; // MySQL always creates deterministic names
 	}
 
 	@Override
-	public boolean isAutoUKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoUKName() is not implemented"); // TODO implement DatabaseDialect.isAutoUKName
+	public boolean isDeterministicUKName(String ukName) {
+		return true; // MySQL always creates deterministic names
 	}
 
 	@Override
-	public boolean isAutoFKName(String pkName) {
-		throw new UnsupportedOperationException("DatabaseDialect.isAutoFKName() is not implemented"); // TODO implement DatabaseDialect.isAutoFKName
+	public boolean isDeterministicFKName(String fkName) {
+		return true; // MySQL always creates deterministic names
+	}
+
+	@Override
+	public boolean isDeterministicIndexName(String indexName) {
+		return true; // MySQL always creates deterministic names
 	}
 
 }
