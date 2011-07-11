@@ -170,14 +170,8 @@ public class SQLParserUtil {
 			case SQLLexer.IDENTIFIER: return convertIdentifier(node);
 			case SQLLexer.STRING: return convertStringToExpression(node);
 			case SQLLexer.INT: return convertInt(node);
+			default: throw new ParseException("Unknown token type (" + node.getType() + ")", "'" + node.getText() + "'");
 		}
-    	/* TODO what's this?
-    	if (node.isNil()) {
-    		List<Object> nodes = convertNodes(getChildNodes(node));
-    		return nodes.toArray();
-    	}
-    	*/
-		throw new ParseException("Unknown token type (" + node.getType() + ")", "'" + node.getText() + "'");
     }
 
 	@SuppressWarnings("unchecked")
@@ -417,7 +411,7 @@ public class SQLParserUtil {
 	    String constraintName = convertString(childAt(0, node));
 	    String[] pkColumnNames = convertNameList(childAt(1, node));
 	    DBPrimaryKeyConstraint pk = new DBPrimaryKeyConstraint(
-	    		table, constraintName, dialect.isAutoPKName(constraintName), pkColumnNames);
+	    		table, constraintName, dialect.isDeterministicPKName(constraintName), pkColumnNames);
 	    table.setPrimaryKey(pk);
     }
 
