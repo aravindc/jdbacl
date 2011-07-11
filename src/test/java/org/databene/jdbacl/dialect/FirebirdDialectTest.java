@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,7 +21,7 @@
 
 package org.databene.jdbacl.dialect;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ import org.junit.Test;
  * @since 0.6.0
  * @author Volker Bergmann
  */
-public class FirebirdDialectTest extends DatabaseDialectTest {
+public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
 	
 	public FirebirdDialectTest() {
 	    super(new FirebirdDialect());
@@ -56,6 +56,30 @@ public class FirebirdDialectTest extends DatabaseDialectTest {
 	public void testFormatTimestamp() {
 		assertEquals("'1971-02-03 13:14:15.123456789'", 
 				dialect.formatValue(TIMESTAMP_19710203131415123456789));
+	}
+	
+	@Test
+	public void testIsDeterministicPKName() {
+		assertFalse(dialect.isDeterministicPKName("INTEG_3486"));
+		assertTrue(dialect.isDeterministicPKName("USER_PK"));
+	}
+	
+	@Test
+	public void testIsDeterministicUKName() {
+		assertFalse(dialect.isDeterministicUKName("RDB$749"));
+		assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
+	}
+	
+	@Test
+	public void testIsDeterministicFKName() {
+		assertFalse(dialect.isDeterministicFKName("INTEG_3487"));
+		assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
+	}
+	
+	@Test
+	public void testIsDeterministicIndexName() {
+		assertFalse(dialect.isDeterministicIndexName("RDB$749"));
+		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
 }

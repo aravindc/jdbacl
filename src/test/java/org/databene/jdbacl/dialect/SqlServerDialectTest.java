@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -31,7 +31,7 @@ import org.junit.Test;
  * @since 0.6.0
  * @author Volker Bergmann
  */
-public class SqlServerDialectTest extends DatabaseDialectTest {
+public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> {
 
 	public SqlServerDialectTest() {
 	    super(new SqlServerDialect());
@@ -50,6 +50,30 @@ public class SqlServerDialectTest extends DatabaseDialectTest {
 	@Test
 	public void testFormatTime() {
 		assertEquals("'13:14:15'", dialect.formatValue(TIME_131415));
+	}
+	
+	@Test
+	public void testIsDeterministicPKName() {
+		assertFalse(dialect.isDeterministicPKName("SYS_XYZ"));
+		assertTrue(dialect.isDeterministicPKName("USER_PK"));
+	}
+	
+	@Test
+	public void testIsDeterministicUKName() {
+		assertFalse(dialect.isDeterministicUKName("SYS_XYZ"));
+		assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
+	}
+	
+	@Test
+	public void testIsDeterministicFKName() {
+		assertFalse(dialect.isDeterministicFKName("SYS_XYZ"));
+		assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
+	}
+	
+	@Test
+	public void testIsDeterministicIndexName() {
+		assertFalse(dialect.isDeterministicIndexName("SYS_XYZ"));
+		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
 }

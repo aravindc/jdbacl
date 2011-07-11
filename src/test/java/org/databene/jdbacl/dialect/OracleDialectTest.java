@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -36,7 +36,7 @@ import org.junit.Test;
  * @since 0.6.0
  * @author Volker Bergmann
  */
-public class OracleDialectTest extends DatabaseDialectTest {
+public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 
 	public OracleDialectTest() {
 	    super(new OracleDialect());
@@ -70,6 +70,36 @@ public class OracleDialectTest extends DatabaseDialectTest {
 		Timestamp timestamp = TimeUtil.timestamp(1971, 1, 3, 13, 14, 15, 123456789);
 		assertEquals("to_timestamp('1971-02-03 13:14:15.123456789', 'yyyy-mm-dd HH24:mi:ss.FF')", 
 				dialect.formatValue(timestamp));
+	}
+	
+	@Test
+	public void testIsDeterministicPKName() {
+		assertFalse(dialect.isDeterministicPKName("SYS_C00208398"));
+		assertTrue(dialect.isDeterministicPKName("USER_PK"));
+	}
+	
+	@Test
+	public void testIsDeterministicUKName() {
+		assertFalse(dialect.isDeterministicUKName("SYS_C00208396"));
+		assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
+	}
+	
+	@Test
+	public void testIsDeterministicFKName() {
+		assertFalse(dialect.isDeterministicFKName("SYS_C00208399"));
+		assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
+	}
+	
+	@Test
+	public void testIsDeterministicIndexName() {
+		assertFalse(dialect.isDeterministicIndexName("SYS_C00208398"));
+		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
+	}
+	
+	@Test
+	public void testIsDeterministicCheckName() {
+		assertFalse(dialect.isDeterministicCheckName("SYS_C00208394"));
+		assertTrue(dialect.isDeterministicCheckName("USER_NAME_NOT_NULL"));
 	}
 	
 }

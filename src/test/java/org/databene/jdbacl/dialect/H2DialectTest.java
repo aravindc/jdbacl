@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -22,6 +22,8 @@
 package org.databene.jdbacl.dialect;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -31,7 +33,7 @@ import org.junit.Test;
  * @since 0.6.0
  * @author Volker Bergmann
  */
-public class H2DialectTest extends DatabaseDialectTest {
+public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 
 	public H2DialectTest() {
 	    super(new H2Dialect());
@@ -66,6 +68,31 @@ public class H2DialectTest extends DatabaseDialectTest {
 	public void testFormatTimestamp() {
 		assertEquals("'1971-02-03 13:14:15.123456789'", 
 				dialect.formatValue(TIMESTAMP_19710203131415123456789));
+	}
+	
+	@Test
+	public void testIsDeterministicPKName() {
+		assertFalse(dialect.isDeterministicPKName("CONSTRAINT_6D"));
+		assertTrue(dialect.isDeterministicPKName("USER_PK"));
+	}
+	
+	@Test
+	public void testIsDeterministicUKName() {
+		assertFalse(dialect.isDeterministicUKName("CONSTRAINT_INDEX_6"));
+		assertTrue(dialect.isDeterministicUKName("USER_NAME_UK"));
+	}
+	
+	@Test
+	public void testIsDeterministicFKName() {
+		assertFalse(dialect.isDeterministicFKName("CONSTRAINT_34"));
+		assertTrue(dialect.isDeterministicFKName("USER_ROLE_FK"));
+	}
+	
+	@Test
+	public void testIsDeterministicIndexName() {
+		assertFalse(dialect.isDeterministicIndexName("PRIMARY_KEY_6"));
+		assertFalse(dialect.isDeterministicIndexName("CONSTRAINT_INDEX_6"));
+		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
 }

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -22,6 +22,8 @@
 package org.databene.jdbacl.dialect;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -31,7 +33,7 @@ import org.junit.Test;
  * @since 0.6.0
  * @author Volker Bergmann
  */
-public class DB2DialectTest extends DatabaseDialectTest {
+public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
 
 	public DB2DialectTest() {
 	    super(new DB2Dialect());
@@ -61,6 +63,30 @@ public class DB2DialectTest extends DatabaseDialectTest {
 	public void testFormatTimestamp() {
 		assertEquals("'1971-02-03 13:14:15.123456789'", 
 				dialect.formatValue(TIMESTAMP_19710203131415123456789));
+	}
+	
+	@Test
+	public void testIsDeterministicPKName() {
+		assertFalse(dialect.isDeterministicPKName("SQL110710154222500"));
+		assertTrue( dialect.isDeterministicPKName("USER_PK"));
+	}
+	
+	@Test
+	public void testIsDeterministicUKName() {
+		assertFalse(dialect.isDeterministicUKName("SQL110710154222560"));
+		assertTrue( dialect.isDeterministicUKName("USER_NAME_UK"));
+	}
+	
+	@Test
+	public void testIsDeterministicFKName() {
+		assertFalse(dialect.isDeterministicFKName("SQL110710154222560"));
+		assertTrue( dialect.isDeterministicFKName("USER_ROLE_FK"));
+	}
+	
+	@Test
+	public void testIsDeterministicIndexName() {
+		assertFalse(dialect.isDeterministicIndexName("SQL110710154222480"));
+		assertTrue( dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
 }
