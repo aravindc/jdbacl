@@ -22,11 +22,21 @@
 package org.databene.jdbacl;
 
 /**
- * Enumerates capitalization options.<br/><br/>
+ * Enumerates name specification options for database objects.<br/>
+ * <br/>
  * Created: 02.07.2011 15:32:35
  * @since 0.6.10
  * @author Volker Bergmann
  */
 public enum NameSpec {
-	NEVER, CUSTOM, ALWAYS
+
+	/** the constraint name is never specified */
+	NEVER, 
+	
+	/** the is only specified, if it is reproducible (not an auto-generated random name) */
+	IF_REPRODUCIBLE, 
+	
+	/** the constraint name specified in any case*/
+	ALWAYS
+
 }
