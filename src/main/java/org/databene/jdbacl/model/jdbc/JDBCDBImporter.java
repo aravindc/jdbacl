@@ -221,7 +221,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             importCatalogs();
             importSchemas();
             importTables();
-            if (importingSequences)
+            if (importingSequences && dialect.isSequenceSupported())
             	importSequences();
             if (!lazy) {
             	importColumns();
@@ -252,14 +252,14 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         int catalogCount = 0;
         while (catalogSet.next()) {
             String foundCatalog = catalogSet.getString(1);
-            LOGGER.debug("found catalog " + foundCatalog);
+            LOGGER.debug("found catalog '" + foundCatalog + "'");
             if (StringUtil.equalsIgnoreCase(foundCatalog, this.catalogName) // this is the configured catalog
-            		|| StringUtil.isEmpty(this.catalogName) && ( // no catalog configured but...
+            		|| (StringUtil.isEmpty(this.catalogName) && ( // no catalog configured but...
             				dialect.isDefaultCatalog(foundCatalog, user) // ...the one found is the default for the database
             				|| foundCatalog.equalsIgnoreCase(getConnection().getCatalog()) // or for the connection
-            		)) {
+            		))) {
                 this.catalogName = foundCatalog;
-                database.addCatalog(new DBCatalog(StringUtil.emptyToNull(foundCatalog)));
+                database.addCatalog(new DBCatalog(foundCatalog));
                 catalogCount++;
             }
         }
@@ -280,16 +280,15 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             	catalogName = schemaSet.getString(2);
             if (schemaName.equalsIgnoreCase(this.schemaName) 
             		|| (this.schemaName == null && dialect.isDefaultSchema(schemaName, user))) {
-	            LOGGER.debug("importing schema {}", schemaName);
-	            if (schemaName.equalsIgnoreCase(this.schemaName))
-	            	this.schemaName = schemaName; // take over capitalization used in the DB
+	            LOGGER.debug("importing schema '{}'", schemaName);
+	        	this.schemaName = schemaName; // take over capitalization used in the DB
 	            DBSchema schema = new DBSchema(schemaName);
-	            String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName : this.catalogName); // PostgreSQL and SQL Server does not necessarily tell you the catalog name
+	            String catalogNameOfSchema = (columnCount >= 2 && catalogName != null ? catalogName : this.catalogName); // PostgreSQL and SQL Server do not necessarily tell you the catalog name
             	DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
             	if (catalogOfSchema != null)
             		catalogOfSchema.addSchema(schema);
             	else
-            		throw new ObjectNotFoundException("Catalog not found: " + catalogName);
+            		throw new ObjectNotFoundException("Catalog not found: " + catalogOfSchema);
 	            schemaCount++;
             } else
                 LOGGER.debug("ignoring schema {}", schemaName);
@@ -397,7 +396,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     private void importColumns(DBCatalog catalog, String schemaName, String tablePattern, Filter<String> tableFilter, ErrorHandler errorHandler) {
         String catalogName = catalog.getName();
         String schemaPattern = (schemaName != null ? schemaName : (catalog.getSchemas().size() == 1 ? catalog.getSchemas().get(0).getName() : null));
-        LOGGER.debug("Importing columns for catalog '" + catalogName + "', schemaPattern '" + schemaName + "', tablePattern '" + tablePattern + "'");
+        LOGGER.debug("Importing columns for " +
+        		"catalog " + StringUtil.quoteIfNotNull(catalogName) + ", " +
+        		"schemaPattern " + StringUtil.quoteIfNotNull(schemaName) + ", " +
+        		"tablePattern '" + StringUtil.quoteIfNotNull(tablePattern) + "'");
         ResultSet columnSet = null;
         try {
         	columnSet = metaData.getColumns(catalogName, schemaPattern, tablePattern, null);
@@ -433,7 +435,11 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                        + columnName + ", " + sqlType + ", " + columnType + ", " + columnSize + ", " + decimalDigits
 	                        + ", " + nullable + ", " + comment + ", " + defaultValue);
 	
-	            DBTable table = catalog.getTable(tableName);
+	            DBTable table = catalog.getTable(tableName, false);
+	            if (table == null) {
+	            	LOGGER.debug("Ignoring column {}.{}", tableName, columnName);
+	            	continue; // PostgreSQL returns the columns of indexes, too
+	            }
 	            DBSchema schema = catalog.getSchema(schemaName);
 	            if (schema != null)
 	                table = (DefaultDBTable) schema.getTable(tableName);
@@ -531,7 +537,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	        }
 	        if (pkComponents.size() > 0) {
 		        String[] columnNames = pkComponents.values().toArray(new String[pkComponents.size()]);
-		        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(table, pkName, dialect.isAutoPKName(pkName), columnNames);
+		        DBPrimaryKeyConstraint constraint = new DBPrimaryKeyConstraint(table, pkName, dialect.isDeterministicPKName(pkName), columnNames);
 		        table.setPrimaryKey(constraint);
 		        for (String columnName : columnNames) {
 		        	DBColumn column = table.getColumn(columnName);
@@ -616,7 +622,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                	if (isPK) {
 	                		constraint = pk;
 	                	} else {
-	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isAutoUKName(indexInfo.name), indexInfo.columnNames);
+	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
 		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
 	                	}
 	                    index = new DBUniqueIndex(indexInfo.name, constraint);
@@ -707,7 +713,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                refereeColumnNames[i] = key.getRefereeColumnNames().get(i);
 				}
 	            DBForeignKeyConstraint foreignKeyConstraint = new DBForeignKeyConstraint(
-	            		key.fk_name, dialect.isAutoFKName(key.fk_name), table, columnNames, key.getPkTable(), refereeColumnNames);
+	            		key.fk_name, dialect.isDeterministicFKName(key.fk_name), table, columnNames, key.getPkTable(), refereeColumnNames);
 	            foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
 	            foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
 	            if (LOGGER.isDebugEnabled())
