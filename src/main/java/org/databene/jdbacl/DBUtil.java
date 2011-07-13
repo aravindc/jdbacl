@@ -49,6 +49,7 @@ import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.TableHolder;
 import org.databene.jdbacl.model.cache.CachingDBImporter;
 import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 import org.databene.jdbacl.proxy.LoggingPreparedStatementHandler;
@@ -547,9 +548,9 @@ public class DBUtil {
         }
     }
 
-    public static List<DBTable> dependencyOrderedTables(Database database) {
+    public static List<DBTable> dependencyOrderedTables(TableHolder tableHolder) {
         DependencyModel<DBTable> model = new DependencyModel<DBTable>();
-        for (DBTable table : database.getTables())
+        for (DBTable table : tableHolder.getTables())
             model.addNode(table);
         return model.dependencyOrderedObjects(true);
     }

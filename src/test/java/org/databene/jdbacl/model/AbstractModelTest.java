@@ -44,7 +44,7 @@ public abstract class AbstractModelTest {
 		DBColumn name1 = new DefaultDBColumn("name1", table1, Types.INTEGER, "int");
 		DBPrimaryKeyConstraint pk1 = new DBPrimaryKeyConstraint(table1, "table1_pk", false, "id1");
 		DBUniqueConstraint uk1 = new DBUniqueConstraint(table1, "table1_name1_uk", false, "name1");
-		DBIndex index1 = new DBUniqueIndex("index1", uk1);
+		DBIndex index1 = new DBUniqueIndex("index1", true, uk1);
 		
 		DefaultDBTable table2 = new DefaultDBTable("table2", schema);
 		DBColumn id2 = new DefaultDBColumn("id2", table2, Types.INTEGER, "int");
@@ -67,7 +67,7 @@ public abstract class AbstractModelTest {
 		DBPrimaryKeyConstraint pk4 = new DBPrimaryKeyConstraint(table4, "table4_pk", false, "id4");
 		DBForeignKeyConstraint fk4 = new DBForeignKeyConstraint("table4_fk2", false, table4, new String[] {"ref4_1", "ref4_2"}, 
 				table3, new String[] {"id3_1", "id3_2"});
-		DBIndex index4 = new DBNonUniqueIndex("index4", table4, "ref4_1", "ref4_2");
+		DBIndex index4 = new DBNonUniqueIndex("index4", true, table4, "ref4_1", "ref4_2");
 		
 		return db;
 	}

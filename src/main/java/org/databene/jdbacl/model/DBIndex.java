@@ -41,12 +41,15 @@ public abstract class DBIndex extends AbstractDBTableComponent implements MultiC
 
 	private static final long serialVersionUID = -1656761838194962745L;
 	
+    private boolean nameDeterministic;
+
     public DBIndex() {
-        this(null, null);
+        this(null, false, null);
     }
 
-    public DBIndex(String name, DBTable table) {
+    public DBIndex(String name, boolean nameDeterministic, DBTable table) {
         super(name, "index", table);
+        this.nameDeterministic = nameDeterministic;
         table.addIndex(this);
     }
 
@@ -60,6 +63,12 @@ public abstract class DBIndex extends AbstractDBTableComponent implements MultiC
         return name;
     }
 
+	public boolean isNameDeterministic() {
+		return nameDeterministic;
+	}
+	
+	
+	
     // java.lang.Object overrides --------------------------------------------------------------------------------------
 
     @Override

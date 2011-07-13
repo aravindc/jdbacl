@@ -212,6 +212,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		for (DBIndex index : indexes) {
 			AttributesImpl atts = createAttributes("name", index.getName());
 			addAttribute("unique", (index.isUnique() ? "true" : null), atts);
+			addAttribute("nameDeterministic", (index.isNameDeterministic() ? null : "false"), atts);
 			String[] columnNames = index.getColumnNames();
 			if (columnNames.length == 1)
 				addAttribute("column", columnNames[0], atts);

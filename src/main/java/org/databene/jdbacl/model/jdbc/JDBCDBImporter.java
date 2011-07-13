@@ -615,6 +615,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	        for (DBIndexInfo indexInfo : tableIndexes.values()) {
                 DBIndex index = null;
 	            try {
+                    boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
 	                if (indexInfo.unique) {
 	                	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
 	                	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
@@ -625,10 +626,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
 		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
 	                	}
-	                    index = new DBUniqueIndex(indexInfo.name, constraint);
+						index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
 		                ((DefaultDBTable) table).addIndex(index);
 	                } else {
-	                    index = new DBNonUniqueIndex(indexInfo.name, table, indexInfo.columnNames);
+	                    index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
 		                ((DefaultDBTable) table).addIndex(index);
 	                }
 	            } catch (ObjectNotFoundException e) {

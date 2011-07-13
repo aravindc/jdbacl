@@ -247,11 +247,13 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String name = e.getAttribute("name");
 		String uniqueSpec = e.getAttribute("unique");
 		boolean unique = (uniqueSpec != null && "true".equals(uniqueSpec));
+		String nameDeterministicSpec = e.getAttribute("nameDeterministic");
+		boolean nameDeterministic = (nameDeterministicSpec == null || "true".equals(nameDeterministicSpec));
 		String[] columnNames = parseColumnNames(e);
 		if (unique)
-			return new DBUniqueIndex(name, table.getUniqueConstraint(columnNames));
+			return new DBUniqueIndex(name, nameDeterministic, table.getUniqueConstraint(columnNames));
 		else
-			return new DBNonUniqueIndex(name, table, columnNames);
+			return new DBNonUniqueIndex(name, nameDeterministic, table, columnNames);
 	}
 
 	public String[] parseColumnNames(Element e) {

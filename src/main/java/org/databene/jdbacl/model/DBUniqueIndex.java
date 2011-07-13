@@ -41,8 +41,8 @@ public class DBUniqueIndex extends DBIndex {
     
 	private DBUniqueConstraint constraint;
 
-    public DBUniqueIndex(String name, DBUniqueConstraint constraint) {
-        super(name, constraint.getTable());
+    public DBUniqueIndex(String name, boolean nameDeterministic, DBUniqueConstraint constraint) {
+        super(name, nameDeterministic, constraint.getTable());
         this.constraint = constraint;
     }
 

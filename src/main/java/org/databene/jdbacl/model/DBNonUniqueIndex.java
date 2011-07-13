@@ -41,8 +41,8 @@ public class DBNonUniqueIndex extends DBIndex {
     
 	private String[] columnNames;
 
-    public DBNonUniqueIndex(String name, DBTable table, String ... columnNames) {
-        super(name, table);
+    public DBNonUniqueIndex(String name, boolean nameDeterministic, DBTable table, String ... columnNames) {
+        super(name, nameDeterministic, table);
         this.columnNames = columnNames;
     }
 
