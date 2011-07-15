@@ -56,8 +56,8 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("unchecked")
 public class LoggingPreparedStatementHandler implements InvocationHandler {
 	
-    private static final Logger sqlLogger = LoggerFactory.getLogger(LogCategories.SQL); 
-    private static final Logger jdbcLogger = LoggerFactory.getLogger(LogCategories.JDBC);
+    private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategories.SQL); 
+    private static final Logger JDBC_LOGGER = LoggerFactory.getLogger(LogCategories.JDBC);
 
 	private static volatile AtomicInteger openStatementCount;
     private static ResourceMonitor openStatementMonitor;
@@ -154,7 +154,7 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 	}
 
 	public int[] executeBatch() throws SQLException {
-		jdbcLogger.debug("executeBatch()");
+		JDBC_LOGGER.debug("executeBatch()");
 		clearParams();
 		return realStatement.executeBatch();
 	}
@@ -229,9 +229,9 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 	}
 
 	private void logAll(String method, String sql) {
-		if (jdbcLogger.isDebugEnabled())
-			jdbcLogger.debug(method + ": " + sql);
-		sqlLogger.debug(toString());
+		if (JDBC_LOGGER.isDebugEnabled())
+			JDBC_LOGGER.debug(method + ": " + sql);
+		SQL_LOGGER.debug("{}", this);
 	}
 
 	// java.lang.Object overrides --------------------------------------------------------------------------------------
