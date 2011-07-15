@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.databene.commons.HeavyweightIterator;
+import org.databene.commons.LogCategories;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.ResultSetIterator;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DBRowIterator implements HeavyweightIterator<DBRow> {
 	
-    private static final Logger SQL_LOGGER = LoggerFactory.getLogger("org.databene.SQL"); 
+    private static final Logger SQL_LOGGER = LoggerFactory.getLogger(LogCategories.SQL); 
 
     private DBTable table;
     private ResultSet resultSet;
@@ -54,8 +55,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 	    String sql = "SELECT * FROM " + table.getName();
 	    if (whereClause != null)
 	    	sql += " WHERE " + whereClause;
-        if (SQL_LOGGER.isDebugEnabled())
-            SQL_LOGGER.debug(sql);
+        SQL_LOGGER.debug(sql);
         Statement statement = connection.createStatement(
         		ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
         statement.setFetchSize(1000);
