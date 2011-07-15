@@ -17,3 +17,4 @@ Changes
 Bug fixes
 ---------
 - Bug fixes in column meta data import
+- Avoiding duplicate query logging
