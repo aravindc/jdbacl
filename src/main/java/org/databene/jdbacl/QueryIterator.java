@@ -28,8 +28,6 @@ import java.sql.Statement;
 import java.util.Iterator;
 
 import org.databene.commons.iterator.IteratorProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Performs a query and wraps the result set with an {@link Iterator} interface.<br/><br/>
@@ -39,15 +37,12 @@ import org.slf4j.LoggerFactory;
  */
 public class QueryIterator extends IteratorProxy<ResultSet> {
 
-    private static final Logger sqlLogger = LoggerFactory.getLogger("org.databene.SQL"); 
-
     public QueryIterator(String query, Connection connection, int fetchSize) {
 	    super(createSource(query, connection, fetchSize));
     }
 
 	private static Iterator<ResultSet> createSource(String query, Connection connection, int fetchSize) {
         try {
-            sqlLogger.debug(query);
             Statement statement = connection.createStatement(
             		ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
             statement.setFetchSize(fetchSize);
