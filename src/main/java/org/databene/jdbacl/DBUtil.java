@@ -118,17 +118,17 @@ public class DBUtil {
 		}
     }
     
-	public static Connection connect(String environment) throws ConnectFailedException {
+	public static Connection connect(String environment, boolean readOnly) throws ConnectFailedException {
 		JDBCConnectData connectData = DBUtil.getConnectData(environment);
-	    return connect(connectData);
+	    return connect(connectData, readOnly);
     }
 
-	public static Connection connect(JDBCConnectData data) throws ConnectFailedException {
+	public static Connection connect(JDBCConnectData data, boolean readOnly) throws ConnectFailedException {
 		if (StringUtil.isEmpty(data.url))
 			throw new ConfigurationError("No JDBC URL specified");
 		if (StringUtil.isEmpty(data.driver))
 			throw new ConfigurationError("No JDBC driver class name specified");
-	    return connect(data.url, data.driver, data.user, data.password, false);
+	    return connect(data.url, data.driver, data.user, data.password, readOnly);
     }
 
     public static Connection connect(String url, String driverClassName, String user, String password, boolean readOnly) throws ConnectFailedException {

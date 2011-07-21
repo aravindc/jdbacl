@@ -96,7 +96,7 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 			return;
 		}
 		String sequenceName = getClass().getSimpleName();
-		Connection connection = DBUtil.connect(data);
+		Connection connection = DBUtil.connect(data, false);
 		try {
 			dialect.createSequence(sequenceName, 23, connection);
 			DBSequence[] sequences = dialect.querySequences(connection);
