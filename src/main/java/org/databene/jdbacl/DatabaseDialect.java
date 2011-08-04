@@ -99,14 +99,16 @@ public abstract class DatabaseDialect {
     }
 
     public void setSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+		// TODO test
 		if (sequenceSupported) {
 			long old = DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection) - 1;
 			long increment = value - old;
-			if (increment < 0)
-				throw new RuntimeException("Trying to decrease value of sequence " + sequenceName + " from " + old + " to " + value);
-			DBUtil.executeUpdate("alter sequence " + sequenceName + " increment by " + increment, connection);
-			DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection);
-			DBUtil.executeUpdate("alter sequence " + sequenceName + " increment by 1", connection);
+			if (increment != 0) {
+				long formerIncrement = 1; // TODO get and restore former sequence increment (may differ from 1)
+				DBUtil.executeUpdate("alter sequence " + sequenceName + " increment by " + increment, connection);
+				DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection);
+				DBUtil.executeUpdate("alter sequence " + sequenceName + " increment by " + formerIncrement, connection);
+			}
 		} else
 			throw checkSequenceSupport("incrementSequence");
     }
