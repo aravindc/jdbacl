@@ -4,9 +4,10 @@ Release Notes jdbacl 0.6.10
 
 Enhancements
 ------------
-- recognition if a database constraint or index name is deterministic (explicitly defined or generated in a reproducible manner)
-- Added catalog and schema information to DBSequence
 - CreateExporter exports database meta data to a DDL file with CREATE TABLE and CREATE SEQUENCE commands.
+- recognition if a database constraint or index name is deterministic 
+  (explicitly defined or generated in a reproducible manner)
+- Added catalog and schema information to DBSequence
 
 
 Changes
