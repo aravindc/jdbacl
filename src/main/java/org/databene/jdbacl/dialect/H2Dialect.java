@@ -120,4 +120,14 @@ public class H2Dialect extends DatabaseDialect {
 		return !randomIndexNamePattern.matcher(indexName).matches();
 	}
 
+	@Override
+	public boolean supportsRegex() {
+		return true;
+	}
+	
+	@Override
+	public String regexQuery(String expression, boolean not, String regex) {
+		return expression + (not ? "NOT " : "") + " REGEXP '" + regex + "'"; // TODO test
+	}
+
 }

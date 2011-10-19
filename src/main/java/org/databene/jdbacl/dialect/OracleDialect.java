@@ -160,4 +160,14 @@ public class OracleDialect extends DatabaseDialect {
 		return !randomNamePattern.matcher(indexName).matches();
 	}
 
+	@Override
+	public boolean supportsRegex() {
+		return true;
+	}
+	
+	@Override
+	public String regexQuery(String expression, boolean not, String regex) {
+		return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')"; // TODO test
+	}
+
 }

@@ -69,4 +69,14 @@ public class MySQLDialect extends DatabaseDialect {
 		return true; // MySQL always creates deterministic names
 	}
 
+	@Override
+	public boolean supportsRegex() {
+		return true;
+	}
+	
+	@Override
+	public String regexQuery(String expression, boolean not, String regex) {
+		return expression + (not ? "NOT " : "") + " REGEXP '" + regex + "'"; // TODO test
+	}
+
 }

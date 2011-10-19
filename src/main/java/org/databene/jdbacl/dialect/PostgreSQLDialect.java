@@ -92,4 +92,14 @@ public class PostgreSQLDialect extends DatabaseDialect {
 		return true; // PostgreSQL generates deterministic names
 	}
 
+	@Override
+	public boolean supportsRegex() {
+		return true;
+	}
+	
+	@Override
+	public String regexQuery(String expression, boolean not, String regex) {
+		return (not ? "NOT " : "") + expression + " ~ '" + regex + "'"; // TODO test
+	}
+
 }

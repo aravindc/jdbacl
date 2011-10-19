@@ -137,4 +137,14 @@ public class FirebirdDialect extends DatabaseDialect {
 		return !randomIndexNamePattern.matcher(indexName).matches();
 	}
 
+	@Override
+	public boolean supportsRegex() { // TODO since Firebird 2.5
+		return true;
+	}
+	
+	@Override
+	public String regexQuery(String expression, boolean not, String regex) {
+		return expression + (not ? " not " : " ") + "SIMILAR TO '" + regex + "'"; // TODO test
+	}
+	
 }

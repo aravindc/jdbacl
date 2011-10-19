@@ -128,4 +128,9 @@ public class HSQLDialect extends DatabaseDialect {
 		return !randomIndexNamePattern.matcher(indexName).matches();
 	}
 
+	@Override
+	public boolean supportsRegex() {
+		return false;
+	}
+	
 }
