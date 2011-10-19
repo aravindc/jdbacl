@@ -23,6 +23,8 @@ package org.databene.jdbacl.model;
 
 import java.sql.Types;
 
+import org.databene.commons.version.VersionNumber;
+
 /**
  * Abstract parent class for testing XML in-/output of jdbacl models.<br/><br/>
  * Created: 28.11.2010 09:58:56
@@ -35,7 +37,7 @@ public abstract class AbstractModelTest {
 
 	@SuppressWarnings("unused")
 	protected static Database createTestModel() {
-		Database db = new DefaultDatabase("db1");
+		Database db = new DefaultDatabase("db1", "hsql", VersionNumber.valueOf("1.5.8"));
 		DBCatalog catalog = new DBCatalog("cat1", db);
 		DBSchema schema = new DBSchema("schema1", catalog);
 		
