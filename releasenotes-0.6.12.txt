@@ -1,0 +1,16 @@
+Release Notes jdbacl 0.6.12
+---------------------------
+
+
+Enhancements
+------------
+- Introduced VersionProvider feature
+- Added regular expression support to DatabaseDialect
+
+Changes
+-------
+- 
+
+Bug fixes
+---------
+- 
