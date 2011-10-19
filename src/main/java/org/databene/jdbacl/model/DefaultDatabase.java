@@ -27,6 +27,7 @@ import java.util.List;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.collection.OrderedNameMap;
+import org.databene.commons.version.VersionNumber;
 
 /**
  * Default implementation of the {@link Database} interface.<br/><br/>
@@ -38,13 +39,26 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 	
 	private static final long serialVersionUID = -1873203097942961523L;
 	
-	OrderedNameMap<DBCatalog> catalogs;
+	private String productName;
+	private VersionNumber productVersion;
+	
+	private OrderedNameMap<DBCatalog> catalogs;
 	
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public DefaultDatabase(String name) {
+    public DefaultDatabase(String name, String productName, VersionNumber productVersion) {
         super(name, "database");
+        this.productName = productName;
+        this.productVersion = productVersion;
         this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
+    }
+    
+    public String getProductName() {
+    	return productName;
+    }
+    
+    public VersionNumber getProductVersion() {
+    	return productVersion;
     }
 
     // CompositeDBObject implementation --------------------------------------------------------------------------------

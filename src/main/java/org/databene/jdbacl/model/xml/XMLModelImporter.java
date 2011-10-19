@@ -31,6 +31,7 @@ import org.databene.commons.Assert;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
+import org.databene.commons.version.VersionNumber;
 import org.databene.commons.xml.XMLUtil;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
@@ -94,7 +95,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private Database parseDatabase(Element e) {
 		String name = e.getAttribute("name");
-		Database db = new DefaultDatabase(name);
+		String product = e.getAttribute("productName");
+		VersionNumber version = VersionNumber.valueOf(e.getAttribute("productVersion"));
+		Database db = new DefaultDatabase(name, product, version);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("catalog".equals(childName))

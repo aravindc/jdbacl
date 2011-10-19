@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl.model.jdbc;
 
+import org.databene.commons.CollectionUtil;
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
 import org.databene.commons.Escalator;
@@ -38,6 +39,7 @@ import org.databene.commons.ProgrammerError;
 import org.databene.commons.StringUtil;
 import org.databene.commons.Level;
 import org.databene.commons.collection.OrderedNameMap;
+import org.databene.commons.version.VersionNumber;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.DatabaseDialectManager;
@@ -212,12 +214,16 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         try {
             metaData = getConnection().getMetaData();
             productName = metaData.getDatabaseProductName();
-            if (LOGGER.isDebugEnabled())
-                LOGGER.debug("Product name: " + productName);
+            VersionNumber productVersion = new VersionNumber(
+            		CollectionUtil.<Object>toList(
+            				metaData.getDatabaseMajorVersion(),
+            				".",
+            				metaData.getDatabaseMinorVersion()));
+            LOGGER.debug("Product: {} {}", productName, productVersion);
             dialect = DatabaseDialectManager.getDialectForProduct(productName);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
-            database = new DefaultDatabase(productName);
+            database = new DefaultDatabase(productName, productName, productVersion);
             importCatalogs();
             importSchemas();
             importTables();
@@ -608,7 +614,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		        }
 	        } catch (SQLException e) {
         		// possibly we try to query a catalog to which we do not have access rights
-        		errorHandler.handleError("Error parsing metadata of catalog " + catalog.getName(), e);
+        		errorHandler.handleError("Error parsing index data of table " + table.getName(), e);
 			} finally {
 	        	DBUtil.close(indexSet);
 	        }

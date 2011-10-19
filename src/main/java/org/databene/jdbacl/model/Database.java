@@ -28,6 +28,8 @@ package org.databene.jdbacl.model;
 
 import java.util.List;
 
+import org.databene.commons.version.VersionNumber;
+
 /**
  * Represents a database.<br/><br/>
  * Created: 06.01.2007 18:34:20
@@ -35,7 +37,10 @@ import java.util.List;
  */
 public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, SequenceHolder {
 	
-    public List<DBCatalog> getCatalogs() ;
+	public String getProductName();
+	public VersionNumber getProductVersion();
+	
+    public List<DBCatalog> getCatalogs();
     public DBCatalog getCatalog(String catalogName);
     public void addCatalog(DBCatalog catalog);
     public void removeCatalog(DBCatalog catalog);
