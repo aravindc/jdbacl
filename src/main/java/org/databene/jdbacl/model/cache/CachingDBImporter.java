@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -75,7 +75,8 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	}
 	
 	public static File getCacheFile(String environment) {
-		String cacheDirectory = SystemInfo.getUserHome() + File.separator + "databene" + File.separator + "cache";
+		String SEP = File.separator;
+		String cacheDirectory = SystemInfo.getUserHome() + SEP + "databene" + SEP + "cache";
 		return new File(cacheDirectory, environment + CACHE_FILE_SUFFIX);
 	}
 	
@@ -85,9 +86,14 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 		return getCacheFile(environment);
 	}
 	
-	protected Database readCachedData(File cacheFile) throws ImportFailedException {
+	protected Database readCachedData(File cacheFile) throws ConnectFailedException, ImportFailedException {
 		LOGGER.info("Reading cached database meta data from file " + cacheFile.getPath());
-		return new XMLModelImporter(cacheFile).importDatabase();
+		try {
+			return new XMLModelImporter(cacheFile).importDatabase();
+		} catch (Exception e) {
+			LOGGER.info("Error reading cache file, reparsing database", e);
+			return importFreshData(cacheFile);
+		}
 	}
 
 	protected Database importFreshData(File file) throws ConnectFailedException, ImportFailedException {
