@@ -490,7 +490,8 @@ public class DBUtil {
 	    	resultSet = executeQuery(query, connection);
 	    	return parseResultSet(resultSet);
     	} finally {
-	    	closeResultSetAndStatement(resultSet);
+    		if (resultSet != null)
+    			closeResultSetAndStatement(resultSet);
     	}
     }
 
