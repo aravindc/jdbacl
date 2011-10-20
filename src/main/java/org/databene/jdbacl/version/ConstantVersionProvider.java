@@ -27,9 +27,9 @@ import org.databene.commons.version.VersionNumber;
 import org.databene.jdbacl.VersionProvider;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link VersionProvider} which uses a predefined constant value to provide version info.<br/><br/>
  * Created: 17.10.2011 12:13:57
- * @since TODO version
+ * @since 0.6.12
  * @author Volker Bergmann
  */
 public class ConstantVersionProvider implements VersionProvider {

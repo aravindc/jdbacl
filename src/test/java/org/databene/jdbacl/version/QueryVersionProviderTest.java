@@ -31,9 +31,9 @@ import org.databene.jdbacl.hsql.HSQLUtil;
 import org.junit.Test;
 
 /**
- * TODO Document class.<br/><br/>
+ * Tests the {@link QueryVersionProvider}.<br/><br/>
  * Created: 17.10.2011 16:31:16
- * @since TODO version
+ * @since 0.6.12
  * @author Volker Bergmann
  */
 public class QueryVersionProviderTest {

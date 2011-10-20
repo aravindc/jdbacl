@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO Document class.<br/><br/>
+ * Provides {@link DataIterator}-style access to a {@link ResultSet}.<br/><br/>
  * Created: 03.08.2011 19:24:35
- * @since TODO version
+ * @since 0.6.10
  * @author Volker Bergmann
  */
 public class ResultSetDataIterator implements DataIterator<ResultSet> {

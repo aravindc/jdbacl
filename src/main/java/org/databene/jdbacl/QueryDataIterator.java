@@ -30,9 +30,9 @@ import org.databene.webdecs.DataIterator;
 import org.databene.webdecs.util.DataIteratorProxy;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link DataIterator} which provides the results of a SQL query.<br/><br/>
  * Created: 03.08.2011 19:25:54
- * @since TODO version
+ * @since 0.6.10
  * @author Volker Bergmann
  */
 public class QueryDataIterator extends DataIteratorProxy<ResultSet> {

@@ -30,9 +30,9 @@ import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.VersionProvider;
 
 /**
- * TODO Document class.<br/><br/>
+ * {@link VersionProvider} implementation which uses a SQL query to fetch the version number.<br/><br/>
  * Created: 17.10.2011 16:03:18
- * @since TODO version
+ * @since 0.6.12
  * @author Volker Bergmann
  */
 public class QueryVersionProvider implements VersionProvider {
