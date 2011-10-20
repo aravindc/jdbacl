@@ -214,13 +214,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         try {
             metaData = getConnection().getMetaData();
             productName = metaData.getDatabaseProductName();
-            VersionNumber productVersion = new VersionNumber(
-            		CollectionUtil.<Object>toList(
-            				metaData.getDatabaseMajorVersion(),
-            				".",
-            				metaData.getDatabaseMinorVersion()));
+            VersionNumber productVersion = VersionNumber.valueOf(metaData.getDatabaseMajorVersion() + "." + 
+            		metaData.getDatabaseMinorVersion());
             LOGGER.debug("Product: {} {}", productName, productVersion);
-            dialect = DatabaseDialectManager.getDialectForProduct(productName);
+            dialect = DatabaseDialectManager.getDialectForProduct(productName, productVersion);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
             database = new DefaultDatabase(productName, productName, productVersion);
