@@ -53,11 +53,11 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
         this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
     }
     
-    public String getProductName() {
+    public String getDatabaseProductName() {
     	return productName;
     }
     
-    public VersionNumber getProductVersion() {
+    public VersionNumber getDatabaseProductVersion() {
     	return productVersion;
     }
 

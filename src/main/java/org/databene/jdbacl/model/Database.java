@@ -37,8 +37,8 @@ import org.databene.commons.version.VersionNumber;
  */
 public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, SequenceHolder {
 	
-	public String getProductName();
-	public VersionNumber getProductVersion();
+	public String getDatabaseProductName();
+	public VersionNumber getDatabaseProductVersion();
 	
     public List<DBCatalog> getCatalogs();
     public DBCatalog getCatalog(String catalogName);

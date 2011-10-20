@@ -95,8 +95,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private Database parseDatabase(Element e) {
 		String name = e.getAttribute("name");
-		String product = e.getAttribute("productName");
-		VersionNumber version = VersionNumber.valueOf(e.getAttribute("productVersion"));
+		String product = e.getAttribute("databaseProductName");
+		VersionNumber version = VersionNumber.valueOf(e.getAttribute("databaseProductVersion"));
 		Database db = new DefaultDatabase(name, product, version);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();

@@ -94,8 +94,8 @@ public class XMLModelExporter implements DBMetaDataExporter {
 	private void exportDatabase(Database database, SimpleXMLWriter writer)
 			throws SAXException {
 		AttributesImpl attribs = createAttributes("name", database.getName());
-		addAttribute("productName", database.getProductName(), attribs);
-		addAttribute("productVersion", database.getProductVersion().toString(), attribs);
+		addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
+		addAttribute("databaseProductVersion", database.getDatabaseProductVersion().toString(), attribs);
 		writer.startElement("database", attribs);
 		for (DBCatalog catalog : database.getCatalogs())
 			exportCatalog(catalog, writer);
