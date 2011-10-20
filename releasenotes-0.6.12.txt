@@ -9,7 +9,7 @@ Enhancements
 
 Changes
 -------
-- 
+- Supporting different database dialects for different product versions
 
 Bug fixes
 ---------
