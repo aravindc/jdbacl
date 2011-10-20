@@ -54,7 +54,7 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
     
     public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
-        super(name, nameDeterministic, "foreign key", owner);
+        super(name, nameDeterministic, "foreign key constraint", owner);
         Assert.notNull(refereeTable, "refereeTable");
         this.fkColumnNames = fkColumnNames;
         this.refereeTable = refereeTable;
