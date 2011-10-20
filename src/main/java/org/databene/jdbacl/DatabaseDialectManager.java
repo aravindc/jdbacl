@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -25,8 +25,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.databene.commons.BeanUtil;
-import org.databene.commons.ConfigurationError;
+import org.databene.commons.DeploymentError;
 import org.databene.commons.IOUtil;
+import org.databene.commons.version.VersionNumber;
 import org.databene.jdbacl.dialect.UnknownDialect;
 
 /**
@@ -39,18 +40,28 @@ public class DatabaseDialectManager {
 
     private static final String FILENAME = "org/databene/jdbacl/databene.db_dialect.properties";
 
-    public static DatabaseDialect getDialectForProduct(String productName) { 
+    private static Map<String, String> mappings;
+    
+    static {
+    	try {
+    		mappings = IOUtil.readProperties(FILENAME);
+    	} catch (IOException e) {
+			throw new DeploymentError("Configuration file not found: " + FILENAME);
+		}
+    }
+    
+    public static DatabaseDialect getDialectForProduct(String productName, VersionNumber version) {
         String normalizedProductName = productName.toLowerCase().replace(' ', '_');
-        try {
-            Map<String, String> mappings = IOUtil.readProperties(FILENAME);
-            for (Map.Entry<String, String> entry : mappings.entrySet())
-	            if (normalizedProductName.contains(entry.getKey())) {
-                    return (DatabaseDialect) BeanUtil.newInstance(entry.getValue());
-            }
-            return new UnknownDialect(productName);
-        } catch (IOException e) {
-            throw new ConfigurationError("Database dialect mapping not found: " + FILENAME, e);
+        for (Map.Entry<String, String> entry : mappings.entrySet()) {
+        	String[] tokens = entry.getKey().split(" ");
+        	String p = tokens[0];
+        	String v = null;
+        	if (tokens.length == 2)
+            	v = tokens[1];
+            if (normalizedProductName.contains(p) && (v == null || version.compareTo(VersionNumber.valueOf(v)) >= 0))
+                return (DatabaseDialect) BeanUtil.newInstance(entry.getValue());
         }
+        return new UnknownDialect(productName);
     }
 
 }
