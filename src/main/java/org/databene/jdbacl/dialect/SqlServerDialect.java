@@ -72,14 +72,4 @@ public class SqlServerDialect extends DatabaseDialect {
 		return !randomNamePattern.matcher(indexName).matches();
 	}
 
-	@Override
-	public boolean supportsRegex() {
-		return true;
-	}
-	
-	@Override
-	public String regexQuery(String expression, boolean not, String regex) {
-		return "dbo.RegexMatch(" + expression + ", N'" + regex + "' ) " + (not ? "!" : "") + "= 0"; // TODO test
-	}
-
 }
