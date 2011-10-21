@@ -408,6 +408,10 @@ public class SQLUtil {
 		return dbObject.getObjectType() + ' ' + name;
 	}
 
+	public static String removeComments(String sql) {
+		return StringUtil.removeSection(sql, "/*", "*/");
+	}
+
 	// private helpers -------------------------------------------------------------------------------------------------
 	
 	private static String quoteNameIfNecessary(String name) {
