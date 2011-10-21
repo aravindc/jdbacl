@@ -49,7 +49,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
     }
 
     public DBSequence[] querySequences(Connection connection) throws SQLException {
-		throw new UnsupportedOperationException(); // TODO v0.6.10 implement PostgreSQLDialect.querySequences()
+		throw new UnsupportedOperationException(); // TODO v0.6.13 implement PostgreSQLDialect.querySequences()
 	}
 
     @Override
@@ -99,7 +99,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	
 	@Override
 	public String regexQuery(String expression, boolean not, String regex) {
-		return (not ? "NOT " : "") + expression + " ~ '" + regex + "'"; // TODO test
+		return (not ? "NOT " : "") + expression + " ~ '" + regex + "'";
 	}
 
 }
