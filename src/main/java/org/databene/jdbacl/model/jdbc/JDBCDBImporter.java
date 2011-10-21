@@ -26,7 +26,6 @@
 
 package org.databene.jdbacl.model.jdbc;
 
-import org.databene.commons.CollectionUtil;
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
 import org.databene.commons.Escalator;
@@ -95,7 +94,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	
     Connection _connection;
     DatabaseDialect dialect;
-    String productName;
+    String databaseProductName;
 
     Escalator escalator = new LoggerEscalator();
     ErrorHandler errorHandler;
@@ -145,8 +144,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	/**
      * @return the productName
      */
-    public String getProductName() {
-        return productName;
+    public String getDatabaseProductName() {
+        return databaseProductName;
     }
     
     public void setFaultTolerant(boolean faultTolerant) {
@@ -213,14 +212,14 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         tableNameFilter = new TableNameFilter();
         try {
             metaData = getConnection().getMetaData();
-            productName = metaData.getDatabaseProductName();
+            databaseProductName = metaData.getDatabaseProductName();
             VersionNumber productVersion = VersionNumber.valueOf(metaData.getDatabaseMajorVersion() + "." + 
             		metaData.getDatabaseMinorVersion());
-            LOGGER.debug("Product: {} {}", productName, productVersion);
-            dialect = DatabaseDialectManager.getDialectForProduct(productName, productVersion);
+            LOGGER.debug("Product: {} {}", databaseProductName, productVersion);
+            dialect = DatabaseDialectManager.getDialectForProduct(databaseProductName, productVersion);
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
-            database = new DefaultDatabase(productName, productName, productVersion);
+            database = new DefaultDatabase(databaseProductName, databaseProductName, productVersion);
             importCatalogs();
             importSchemas();
             importTables();
@@ -383,7 +382,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     }
 
 	private boolean isOracle() {
-		return productName.toLowerCase().startsWith("oracle");
+		return databaseProductName.toLowerCase().startsWith("oracle");
 	}
 
     private void importColumns() {
@@ -429,7 +428,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            String defaultValue = columnSet.getString(13);
 
 	            // Bug fix 3075401: boolean value generation problem in postgresql 8.4
-	            if (sqlType == Types.BIT && "bool".equals(columnType.toLowerCase()) && productName.toLowerCase().startsWith("postgres")) {
+	            if (sqlType == Types.BIT && "bool".equals(columnType.toLowerCase()) && databaseProductName.toLowerCase().startsWith("postgres")) {
 	            	sqlType = Types.BOOLEAN;
 	            }
 	            
