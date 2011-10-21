@@ -167,7 +167,7 @@ public class OracleDialect extends DatabaseDialect {
 	
 	@Override
 	public String regexQuery(String expression, boolean not, String regex) {
-		return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')"; // TODO test
+		return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')";
 	}
 
 }

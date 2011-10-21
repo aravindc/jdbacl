@@ -127,7 +127,7 @@ public class H2Dialect extends DatabaseDialect {
 	
 	@Override
 	public String regexQuery(String expression, boolean not, String regex) {
-		return expression + (not ? "NOT " : "") + " REGEXP '" + regex + "'"; // TODO test
+		return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
 	}
 
 }

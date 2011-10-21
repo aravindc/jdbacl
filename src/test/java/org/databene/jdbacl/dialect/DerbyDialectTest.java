@@ -82,4 +82,10 @@ public class DerbyDialectTest extends DatabaseDialectTest<DerbyDialect> {
 		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
+	@Test(expected = UnsupportedOperationException.class)
+	public void testRegex() {
+		assertFalse(dialect.supportsRegex());
+		dialect.regexQuery("code", false, "[A-Z]{4}");
+	}
+	
 }

@@ -83,4 +83,11 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
 		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
+	@Test
+	public void testRegex() {
+		assertTrue(dialect.supportsRegex());
+		assertEquals("code ~ '[A-Z]{5}'", dialect.regexQuery("code", false, "[A-Z]{5}"));
+		assertEquals("NOT code ~ '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
+	}
+	
 }

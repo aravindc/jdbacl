@@ -95,4 +95,11 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 		assertTrue(dialect.isDeterministicIndexName("USER_NAME_IDX"));
 	}
 	
+	@Test
+	public void testRegex() {
+		assertTrue(dialect.supportsRegex());
+		assertEquals("code REGEXP '[A-Z]{5}'", dialect.regexQuery("code", false, "[A-Z]{5}"));
+		assertEquals("code NOT REGEXP '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
+	}
+	
 }

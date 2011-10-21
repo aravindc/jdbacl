@@ -102,4 +102,11 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 		assertTrue(dialect.isDeterministicCheckName("USER_NAME_NOT_NULL"));
 	}
 	
+	@Test
+	public void testRegex() {
+		assertTrue(dialect.supportsRegex());
+		assertEquals("REGEXP_LIKE(code, '[A-Z]{5}')", dialect.regexQuery("code", false, "[A-Z]{5}"));
+		assertEquals("NOT REGEXP_LIKE(code, '[A-Z]{5}')", dialect.regexQuery("code", true, "[A-Z]{5}"));
+	}
+	
 }
