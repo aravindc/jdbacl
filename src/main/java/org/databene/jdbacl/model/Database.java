@@ -40,6 +40,17 @@ public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, Seq
 	public String getDatabaseProductName();
 	public VersionNumber getDatabaseProductVersion();
 	
+	/* TODO v0.6.13
+	public Date getImportDate();
+	public String getUser();
+	public String getTableInclusionPattern();
+	public String getTableExclusionPattern();
+	public boolean isImportedSequences();
+	public boolean isImportedIndexes();
+	public boolean isImportedChecks();
+	public boolean isImportedUKs();
+	*/
+	
     public List<DBCatalog> getCatalogs();
     public DBCatalog getCatalog(String catalogName);
     public void addCatalog(DBCatalog catalog);
