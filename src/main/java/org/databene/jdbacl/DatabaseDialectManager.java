@@ -50,6 +50,9 @@ public class DatabaseDialectManager {
 		}
     }
     
+    /**
+     * @param version if no version is specified, the newest one is assumed
+     */
     public static DatabaseDialect getDialectForProduct(String productName, VersionNumber version) {
         String normalizedProductName = productName.toLowerCase().replace(' ', '_');
         for (Map.Entry<String, String> entry : mappings.entrySet()) {
@@ -58,7 +61,7 @@ public class DatabaseDialectManager {
         	String v = null;
         	if (tokens.length == 2)
             	v = tokens[1];
-            if (normalizedProductName.contains(p) && (v == null || version.compareTo(VersionNumber.valueOf(v)) >= 0))
+            if (normalizedProductName.contains(p) && (v == null || version == null || version.compareTo(VersionNumber.valueOf(v)) >= 0))
                 return (DatabaseDialect) BeanUtil.newInstance(entry.getValue());
         }
         return new UnknownDialect(productName);
