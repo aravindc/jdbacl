@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.databene.commons.TimeUtil;
+import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
@@ -42,16 +43,6 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 	    super(new OracleDialect());
     }
 
-	@Test
-	public void testnextSequenceValue() {
-		assertEquals("select SEQ.nextval from dual", dialect.renderFetchSequenceValue("SEQ"));
-	}
-	
-	@Test
-	public void testDropSequence() {
-		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
-	}
-	
 	@Test
 	public void testFormatDate() {
 		Date date = TimeUtil.date(1971, 1, 3, 13, 14, 15, 0);
@@ -107,6 +98,23 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 		assertTrue(dialect.supportsRegex());
 		assertEquals("REGEXP_LIKE(code, '[A-Z]{5}')", dialect.regexQuery("code", false, "[A-Z]{5}"));
 		assertEquals("NOT REGEXP_LIKE(code, '[A-Z]{5}')", dialect.regexQuery("code", true, "[A-Z]{5}"));
+	}
+	
+	@Test
+	public void testRenderCreateSequence() {
+		assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
+		assertEquals("CREATE SEQUENCE my_seq START WITH 10 INCREMENT BY 2 MAXVALUE 999 MINVALUE 5 CYCLE CACHE 3 ORDER", 
+				dialect.renderCreateSequence(createConfiguredSequence()));
+	}
+	
+	@Test
+	public void testnextSequenceValue() {
+		assertEquals("select SEQ.nextval from dual", dialect.renderFetchSequenceValue("SEQ"));
+	}
+	
+	@Test
+	public void testDropSequence() {
+		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
 	}
 	
 }

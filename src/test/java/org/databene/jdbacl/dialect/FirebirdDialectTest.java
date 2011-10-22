@@ -23,6 +23,10 @@ package org.databene.jdbacl.dialect;
 
 import static org.junit.Assert.*;
 
+import java.sql.Connection;
+
+import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
@@ -37,11 +41,6 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
 	    super(new FirebirdDialect());
     }
 
-	@Test
-	public void testSequencesOnline() throws Exception {
-		testSequencesOnline("firebird");
-	}
-	
 	@Test
 	public void testFormatDate() {
 		assertEquals("'1971-02-03'", dialect.formatValue(DATETIME_19710203131415));
@@ -86,6 +85,33 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
 	public void testRegex() {
 		assertFalse(dialect.supportsRegex());
 		dialect.regexQuery("code", false, "[A-Z]{4}");
+	}
+	
+	@Test
+	public void testRenderCreateSequence() {
+		assertEquals("CREATE GENERATOR my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
+		assertEquals("CREATE GENERATOR my_seq; SET GENERATOR my_seq TO 9;", 
+				dialect.renderCreateSequence(createConfiguredSequence()));
+	}
+	
+	@Test
+	public void testSequencesOnline() throws Exception {
+		testSequencesOnline("firebird");
+	}
+	
+	@Test // requires a Firebird installation configured as environment named 'firebird'
+	public void testSetNextSequenceValue() throws Exception {
+		if (!DBUtil.existsEnvironment("firebird")) {
+			logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'firebird' environment defined");
+			return;
+		}
+		Connection connection = DBUtil.connect("firebird", false);
+		String sequenceName = getClass().getSimpleName();
+		DBUtil.executeUpdate("create sequence " + sequenceName, connection);
+		dialect.setNextSequenceValue(sequenceName, 123, connection);
+		String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
+		assertEquals(123L, DBUtil.queryScalar(seqValQuery, connection));
+		DBUtil.executeUpdate("drop sequence " + sequenceName, connection);
 	}
 	
 }

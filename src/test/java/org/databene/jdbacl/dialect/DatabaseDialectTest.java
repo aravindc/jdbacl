@@ -23,6 +23,7 @@ package org.databene.jdbacl.dialect;
 
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -39,6 +40,8 @@ import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parent class for testing concrete {@link DatabaseDialect} implementations.<br/><br/>
@@ -48,6 +51,8 @@ import org.junit.Test;
  */
 public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	
+	protected Logger logger;
+
 	protected E dialect;
 	
 	protected final static Date DATETIME_19710203131415 = TimeUtil.date(1971, 1, 3, 13, 14, 15, 0);
@@ -56,6 +61,7 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	
 	public DatabaseDialectTest(E dialect) {
 	    this.dialect = dialect;
+	    this.logger = LoggerFactory.getLogger(getClass());
     }
 
 	@Test
@@ -109,4 +115,16 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 		}
 	}
 	
+	protected DBSequence createConfiguredSequence() {
+		DBSequence seq = new DBSequence("my_seq", null);
+		seq.setStart(new BigInteger("10"));
+		seq.setIncrement(new BigInteger("2"));
+		seq.setMaxValue(new BigInteger("999"));
+		seq.setMinValue(new BigInteger("5"));
+		seq.setCycle(true);
+		seq.setCache(3L);
+		seq.setOrder(true);
+		return seq;
+	}
+
 }

@@ -23,6 +23,10 @@ package org.databene.jdbacl.dialect;
 
 import static org.junit.Assert.*;
 
+import java.sql.Connection;
+
+import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
@@ -32,21 +36,11 @@ import org.junit.Test;
  * @author Volker Bergmann
  */
 public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect> {
-
+	
 	public PostgreSQLDialectTest() {
 	    super(new PostgreSQLDialect());
     }
 
-	@Test
-	public void testnextSequenceValue() {
-		assertEquals("select nextval('SEQ')", dialect.renderFetchSequenceValue("SEQ"));
-	}
-	
-	@Test
-	public void testDropSequence() {
-		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
-	}
-	
 	@Test
 	public void testFormatDate() {
 		assertEquals("date '1971-02-03'", dialect.formatValue(DATETIME_19710203131415));
@@ -88,6 +82,42 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
 		assertTrue(dialect.supportsRegex());
 		assertEquals("code ~ '[A-Z]{5}'", dialect.regexQuery("code", false, "[A-Z]{5}"));
 		assertEquals("NOT code ~ '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
+	}
+	
+	@Test
+	public void testRenderCreateSequence() {
+		assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
+		assertEquals("CREATE SEQUENCE my_seq START WITH 10 INCREMENT BY 2 MAXVALUE 999 MINVALUE 5 CYCLE CACHE 3", 
+				dialect.renderCreateSequence(createConfiguredSequence()));
+	}
+	
+	@Test // requires a PostgreSQL installation configured as environment named 'postgres'
+	public void testSetNextSequenceValue() throws Exception {
+		if (!DBUtil.existsEnvironment("postgres")) {
+			logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'postgres' " +
+					"environment defined");
+			return;
+		}
+		Connection connection = DBUtil.connect("postgres", false);
+		String sequenceName = getClass().getSimpleName();
+		try {
+			DBUtil.executeUpdate("create sequence " + sequenceName, connection);
+			dialect.setNextSequenceValue(sequenceName, 123, connection);
+			String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
+			assertEquals(123L, DBUtil.queryScalar(seqValQuery, connection));
+		} finally {
+			DBUtil.executeUpdate("drop sequence " + sequenceName, connection);
+		}
+	}
+	
+	@Test
+	public void testRenderFetchSequenceValue() {
+		assertEquals("select nextval('SEQ')", dialect.renderFetchSequenceValue("SEQ"));
+	}
+	
+	@Test
+	public void testDropSequence() {
+		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
 	}
 	
 }

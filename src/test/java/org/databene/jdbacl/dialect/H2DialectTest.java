@@ -25,6 +25,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
+
+import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
@@ -39,21 +43,6 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 	    super(new H2Dialect());
     }
 
-	@Test
-	public void testnextSequenceValue() {
-		assertEquals("select next value for SEQ", dialect.renderFetchSequenceValue("SEQ"));
-	}
-	
-	@Test
-	public void testDropSequence() {
-		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
-	}
-	
-	@Test
-	public void testSequencesOnline() throws Exception {
-		testSequencesOnline("h2");
-	}
-	
 	@Test
 	public void testFormatDate() {
 		assertEquals("'1971-02-03'", dialect.formatValue(DATETIME_19710203131415));
@@ -100,6 +89,42 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 		assertTrue(dialect.supportsRegex());
 		assertEquals("code REGEXP '[A-Z]{5}'", dialect.regexQuery("code", false, "[A-Z]{5}"));
 		assertEquals("code NOT REGEXP '[A-Z]{5}'", dialect.regexQuery("code", true, "[A-Z]{5}"));
+	}
+	
+	@Test
+	public void testRenderCreateSequence() {
+		assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
+		assertEquals("CREATE SEQUENCE my_seq START WITH 10 INCREMENT BY 2 CYCLE", 
+				dialect.renderCreateSequence(createConfiguredSequence()));
+	}
+	
+	@Test
+	public void testSequencesOnline() throws Exception {
+		testSequencesOnline("h2");
+	}
+	
+	@Test
+	public void testRenderFetchSequenceValue() {
+		assertEquals("select next value for SEQ", dialect.renderFetchSequenceValue("SEQ"));
+	}
+	
+	@Test
+	public void testSetNextSequenceValue() throws Exception {
+		Connection connection = H2Util.connectInMemoryDB(getClass().getSimpleName());
+		String sequenceName = getClass().getSimpleName();
+		try {
+			DBUtil.executeUpdate("create sequence " + sequenceName, connection);
+			dialect.setNextSequenceValue(sequenceName, 123, connection);
+			String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
+			assertEquals(123L, DBUtil.queryScalar(seqValQuery, connection));
+		} finally {
+			DBUtil.executeUpdate("drop sequence " + sequenceName, connection);
+		}
+	}
+	
+	@Test
+	public void testDropSequence() {
+		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
 	}
 	
 }
