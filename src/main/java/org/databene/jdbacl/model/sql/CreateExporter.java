@@ -30,6 +30,8 @@ import java.util.Set;
 
 import org.databene.commons.IOUtil;
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBMetaDataExporter;
@@ -66,8 +68,10 @@ public class CreateExporter implements DBMetaDataExporter {
 
 	private void exportSequences(Database database, PrintWriter out) {
 		List<DBSequence> sequences = database.getSequences(true);
+		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
+			database.getDatabaseProductName(), database.getDatabaseProductVersion());
 		for (DBSequence sequence : sequences) {
-			SQLUtil.renderCreateSequence(sequence, out);
+			out.print(dialect.renderCreateSequence(sequence));
 			out.println(';');
 			out.println();
 		}
