@@ -35,17 +35,15 @@ public class DBSequence extends AbstractDBObject implements DBPackageComponent {
 
 	private static final long serialVersionUID = 8602052311285255364L;
 
-	private static final long CACHE_DEFAULT = 20; // TODO v0.7 this applies only for Oracle
-	
 	private String catalogName;
 	private String schemaName;
 	private BigInteger start = BigInteger.ONE;
 	private BigInteger increment = BigInteger.ONE;
 	private BigInteger maxValue = null;
 	private BigInteger minValue = null;
-	private boolean cycle = false;
-	private long cache = CACHE_DEFAULT;
-	private boolean order = false;
+	private Boolean cycle;
+	private Long cache;
+	private Boolean order;
 	private BigInteger lastNumber = BigInteger.ZERO;
 
 	public DBSequence(String name, DBSchema owner) {
@@ -125,39 +123,27 @@ public class DBSequence extends AbstractDBObject implements DBPackageComponent {
 		this.minValue = minValue;
 	}
 
-	public boolean isCycle() {
+	public Boolean isCycle() {
 		return cycle;
 	}
 
-	public Boolean getCycleIfNotDefault() {
-		return (cycle ? cycle : null);
-	}
-
-	public void setCycle(boolean cycle) {
+	public void setCycle(Boolean cycle) {
 		this.cycle = cycle;
 	}
 
-	public long getCache() {
+	public Long getCache() {
 		return cache;
 	}
 	
-	public Long getCacheIfNotDefault() {
-		return (cache != CACHE_DEFAULT ? cache : null);
-	}
-	
-	public void setCache(long cache) {
+	public void setCache(Long cache) {
 		this.cache = cache;
 	}
 
-	public boolean isOrder() {
+	public Boolean isOrder() {
 		return order;
 	}
 
-	public Boolean getOrderIfNotDefault() {
-		return (order ? true : null);
-	}
-	
-	public void setOrder(boolean order) {
+	public void setOrder(Boolean order) {
 		this.order = order;
 	}
 
@@ -185,27 +171,6 @@ public class DBSequence extends AbstractDBObject implements DBPackageComponent {
 			this.order == that.isOrder();
 	}
 
-	public String createDDL() {
-		StringBuilder builder = new StringBuilder("create sequence ").append(name);
-		if (!BigInteger.ONE.equals(start))
-			builder.append(" start with ").append(start);
-		if (!BigInteger.ONE.equals(increment))
-			builder.append(" increment by ").append(increment);
-		if (maxValue != null)
-			builder.append(" maxvalue ").append(maxValue);
-		if (minValue != null)
-			builder.append(" minvalue ").append(minValue);
-		if (cycle)
-			builder.append(" cycle ");
-		if (cache <= 1)
-			builder.append(" nocache ");
-		else if (cache != CACHE_DEFAULT)
-			builder.append(" cache ").append(cache);
-		if (order)
-			builder.append(" order");
-		return builder.toString();
-	}
-	
 	public String dropDDL() {
 		return "drop sequence " + name;
 	}
