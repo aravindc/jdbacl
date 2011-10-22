@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -58,6 +59,7 @@ import static org.databene.commons.xml.SimpleXMLWriter.*;
  */
 public class XMLModelExporter implements DBMetaDataExporter {
 	
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private String encoding;
 	private File file;
 	
@@ -96,6 +98,14 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		AttributesImpl attribs = createAttributes("name", database.getName());
 		addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
 		addAttribute("databaseProductVersion", database.getDatabaseProductVersion().toString(), attribs);
+		addAttribute("importDate", sdf.format(database.getImportDate()), attribs);
+		addAttribute("user", database.getUser(), attribs);
+		addAttribute("tableInclusionPattern", database.getTableInclusionPattern(), attribs);
+		addAttribute("tableExclusionPattern", database.getTableExclusionPattern(), attribs);
+		addAttribute("importedChecks", String.valueOf(database.isImportedChecks()), attribs);
+		addAttribute("importedUKs", String.valueOf(database.isImportedUKs()), attribs);
+		addAttribute("importedIndexes", String.valueOf(database.isImportedIndexes()), attribs);
+		addAttribute("importedSequences", String.valueOf(database.isImportedSequences()), attribs);
 		writer.startElement("database", attribs);
 		for (DBCatalog catalog : database.getCatalogs())
 			exportCatalog(catalog, writer);
@@ -242,9 +252,9 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		addIfNotNull("increment", sequence.getIncrementIfNotDefault(), atts);
 		addIfNotNull("maxValue", sequence.getMaxValueIfNotDefault(), atts);
 		addIfNotNull("minValue", sequence.getMinValueIfNotDefault(), atts);
-		addIfNotNull("cycle", sequence.getCycleIfNotDefault(), atts);
-		addIfNotNull("cache", sequence.getCacheIfNotDefault(), atts);
-		addIfNotNull("order", sequence.getOrderIfNotDefault(), atts);
+		addIfNotNull("cycle", sequence.isCycle(), atts);
+		addIfNotNull("cache", sequence.getCache(), atts);
+		addIfNotNull("order", sequence.isOrder(), atts);
 		writer.startElement("sequence", atts);
 		writer.endElement("sequence");
 	}

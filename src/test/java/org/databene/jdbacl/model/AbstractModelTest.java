@@ -23,6 +23,7 @@ package org.databene.jdbacl.model;
 
 import java.sql.Types;
 
+import org.databene.commons.TimeUtil;
 import org.databene.commons.version.VersionNumber;
 
 /**
@@ -37,7 +38,16 @@ public abstract class AbstractModelTest {
 
 	@SuppressWarnings("unused")
 	protected static Database createTestModel() {
-		Database db = new DefaultDatabase("db1", "hsql", VersionNumber.valueOf("1.5.8"));
+		DefaultDatabase db = new DefaultDatabase("db1", "hsql", VersionNumber.valueOf("1.5.8"));
+    	db.setImportDate(TimeUtil.date(2011, 9, 21, 16, 50, 38, 0));
+    	db.setUser("Alice");
+    	db.setTableInclusionPattern("MY_.*");
+    	db.setTableExclusionPattern(".*_JN");
+    	db.setImportedChecks(true);
+    	db.setImportedUKs(true);
+    	db.setImportedIndexes(true);
+    	db.setImportedSequences(true);
+		
 		DBCatalog catalog = new DBCatalog("cat1", db);
 		DBSchema schema = new DBSchema("schema1", catalog);
 		

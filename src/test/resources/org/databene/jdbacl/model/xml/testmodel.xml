@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database name="db1" databaseProductName="hsql" databaseProductVersion="1.5.8">
+<database name="db1" databaseProductName="hsql" databaseProductVersion="1.5.8" importDate="2011-10-21 16:50:38" user="Alice" tableInclusionPattern="MY_.*" tableExclusionPattern=".*_JN" importedChecks="true" importedUKs="true" importedIndexes="true" importedSequences="true">
   <catalog name="cat1">
     <schema name="schema1">
       <table name="table1">

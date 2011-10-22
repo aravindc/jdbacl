@@ -22,6 +22,7 @@
 package org.databene.jdbacl.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.databene.commons.ObjectNotFoundException;
@@ -41,6 +42,14 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 	
 	private String productName;
 	private VersionNumber productVersion;
+	private Date importDate;
+	private String user;
+	private String tableInclusionPattern;
+	private String tableExclusionPattern;
+	private boolean importedChecks;
+	private boolean importedUKs;
+	private boolean importedIndexes;
+	private boolean importedSequences;
 	
 	private OrderedNameMap<DBCatalog> catalogs;
 	
@@ -60,6 +69,70 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
     public VersionNumber getDatabaseProductVersion() {
     	return productVersion;
     }
+    
+	public Date getImportDate() {
+		return importDate;
+	}
+
+	public void setImportDate(Date importDate) {
+		this.importDate = importDate;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getTableInclusionPattern() {
+		return tableInclusionPattern;
+	}
+
+	public void setTableInclusionPattern(String tableInclusionPattern) {
+		this.tableInclusionPattern = tableInclusionPattern;
+	}
+
+	public String getTableExclusionPattern() {
+		return tableExclusionPattern;
+	}
+
+	public void setTableExclusionPattern(String tableExclusionPattern) {
+		this.tableExclusionPattern = tableExclusionPattern;
+	}
+
+	public boolean isImportedChecks() {
+		return importedChecks;
+	}
+
+	public void setImportedChecks(boolean importedChecks) {
+		this.importedChecks = importedChecks;
+	}
+
+	public boolean isImportedUKs() {
+		return importedUKs;
+	}
+
+	public void setImportedUKs(boolean importedUKs) {
+		this.importedUKs = importedUKs;
+	}
+
+	public boolean isImportedIndexes() {
+		return importedIndexes;
+	}
+
+	public void setImportedIndexes(boolean importedIndexes) {
+		this.importedIndexes = importedIndexes;
+	}
+
+	public boolean isImportedSequences() {
+		return importedSequences;
+	}
+
+	public void setImportedSequences(boolean importedSequences) {
+		this.importedSequences = importedSequences;
+	}
 
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 

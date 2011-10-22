@@ -97,7 +97,17 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String name = e.getAttribute("name");
 		String product = e.getAttribute("databaseProductName");
 		VersionNumber version = VersionNumber.valueOf(e.getAttribute("databaseProductVersion"));
-		Database db = new DefaultDatabase(name, product, version);
+		DefaultDatabase db = new DefaultDatabase(name, product, version);
+    	db.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
+    	db.setUser(e.getAttribute("user"));
+    	db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
+    	db.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
+    	db.setImportedChecks(XMLUtil.getBooleanAttribute(e, "importedChecks"));
+    	db.setImportedUKs(XMLUtil.getBooleanAttribute(e, "importedUKs"));
+    	db.setImportedIndexes(XMLUtil.getBooleanAttribute(e, "importedIndexes"));
+    	db.setImportedSequences(XMLUtil.getBooleanAttribute(e, "importedSequences"));
+
+		// import catalogs
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("catalog".equals(childName))

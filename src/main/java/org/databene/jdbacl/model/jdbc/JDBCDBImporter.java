@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 /**
@@ -101,7 +102,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     TableNameFilter tableNameFilter;
 
 	DatabaseMetaData metaData;
-	Database database;
+	DefaultDatabase database;
 
     public JDBCDBImporter(String environment) {
         this(DBUtil.getConnectData(environment));
@@ -220,6 +221,14 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
             	DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
             database = new DefaultDatabase(databaseProductName, databaseProductName, productVersion);
+        	database.setImportDate(new Date());
+        	database.setUser(user);
+        	database.setTableInclusionPattern(includeTables != null ? includeTables.pattern() : null);
+        	database.setTableExclusionPattern(excludeTables != null ? excludeTables.pattern() : null);
+        	database.setImportedChecks(importingChecks);
+        	database.setImportedUKs(importingUKs);
+        	database.setImportedIndexes(importingIndexes);
+        	database.setImportedSequences(importingSequences);
             importCatalogs();
             importSchemas();
             importTables();
