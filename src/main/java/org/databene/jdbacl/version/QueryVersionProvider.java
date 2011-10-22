@@ -59,7 +59,7 @@ public class QueryVersionProvider implements VersionProvider {
 		if (query == null)
 			throw new ConfigurationError("Query text undefined");
 		try {
-			Object result = DBUtil.query(query, connection);
+			Object result = DBUtil.queryAndSimplify(query, connection);
 			if (result.getClass().isArray())
 				throw new ConfigurationError(getClass() + " expects a single value as result of query " + query);
 			return VersionNumber.valueOf(result.toString());
