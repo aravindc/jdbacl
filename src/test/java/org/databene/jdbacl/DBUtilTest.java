@@ -53,10 +53,10 @@ public class DBUtilTest {
 		ErrorHandler errorHandler = new ErrorHandler(getClass());
 		DBExecutionResult result = DBUtil.runScript(SCRIPT_FILE, Encodings.ISO_8859_1, connection, true, errorHandler);
 		assertTrue(result.changedStructure);
-		Object[][] rows = (Object[][]) DBUtil.query("select * from T1", connection);
+		Object[][] rows = (Object[][]) DBUtil.queryAndSimplify("select * from T1", connection);
 		assertEquals(1, rows.length);
 		assertTrue(Arrays.equals(ArrayUtil.buildObjectArrayOfType(Object.class, 1, "R&B"), rows[0]));
-		int count = (Integer) DBUtil.query("select count(*) from T1", connection);
+		int count = (Integer) DBUtil.queryAndSimplify("select count(*) from T1", connection);
 		assertEquals(1, count);
 	}
 	
