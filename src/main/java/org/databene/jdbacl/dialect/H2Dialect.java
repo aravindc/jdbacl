@@ -64,6 +64,11 @@ public class H2Dialect extends DatabaseDialect {
     }
 
 	@Override
+	public boolean isSequenceBoundarySupported() {
+		return false;
+	}
+	
+	@Override
     public DBSequence[] querySequences(Connection connection) throws SQLException {
         String query = "select SEQUENCE_CATALOG, SEQUENCE_SCHEMA, SEQUENCE_NAME, CURRENT_VALUE, INCREMENT, CACHE from information_schema.sequences";
         // TODO v0.7 restrict to catalog and schema, see http://www.h2database.com/html/grammar.html
@@ -87,7 +92,7 @@ public class H2Dialect extends DatabaseDialect {
     }
 
 	@Override
-	public void setSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+	public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
 	    DBUtil.executeUpdate(setSequenceValue(sequenceName, value), connection);
 	}
 

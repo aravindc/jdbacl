@@ -26,10 +26,14 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.List;
 
+import org.databene.commons.ArrayBuilder;
+import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
 
@@ -48,8 +52,49 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN);
     }
 
+    @Override
+    protected String sequenceNoCycle() {
+    	return "NO CYCLE";
+    }
+    
+    @Override
+    public String renderCreateSequence(DBSequence sequence) {
+    	/* PostgreSQL syntax:
+			create sequence xyz 
+			start [with] 1
+			increment [by] 1 
+			minvalue 1 | no minvalue
+			maxvalue 999999999 | no maxvalue
+			CACHE 1
+			[NO] CYCLE
+    	 */
+    	String result = super.renderCreateSequence(sequence);
+    	Long cache = sequence.getCache();
+    	if (cache != null)
+    		result += " CACHE " + cache;
+    	return result;
+    }
+    
     public DBSequence[] querySequences(Connection connection) throws SQLException {
-		throw new UnsupportedOperationException(); // TODO v0.6.13 implement PostgreSQLDialect.querySequences()
+    	// query sequence names
+    	List<Object[]> rows = DBUtil.query("select relname from pg_class where relkind = 'S'", connection);
+    	ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class, rows.size());
+    	for (Object[] row : rows) {
+    		String name = (String) row[0];
+    		// query sequence details
+    		Object[] details = DBUtil.querySingleRow("select sequence_name, start_value, increment_by, " +
+    				"max_value, min_value, is_cycled, cache_value, last_value from " + name, connection);
+    		DBSequence sequence = new DBSequence(name, null);
+    		sequence.setStart(new BigInteger(details[1].toString()));
+    		sequence.setIncrement(new BigInteger(details[2].toString()));
+    		sequence.setMaxValue(new BigInteger(details[3].toString()));
+    		sequence.setMinValue(new BigInteger(details[4].toString()));
+    		sequence.setCycle(Boolean.valueOf(details[5].toString()));
+    		sequence.setCache(Long.parseLong(details[6].toString()));
+    		sequence.setLastNumber(new BigInteger(details[7].toString()));
+    		builder.add(sequence);
+    	}
+    	return builder.toArray();
 	}
 
     @Override
@@ -101,5 +146,5 @@ public class PostgreSQLDialect extends DatabaseDialect {
 	public String regexQuery(String expression, boolean not, String regex) {
 		return (not ? "NOT " : "") + expression + " ~ '" + regex + "'";
 	}
-
+	
 }

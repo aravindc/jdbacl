@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl.dialect;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -72,14 +73,28 @@ public class FirebirdDialect extends DatabaseDialect {
 	    return true;
     }
 
+	@Override
+	public boolean isSequenceBoundarySupported() {
+		return false;
+	}
+	
     @Override
     public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
     	DBUtil.executeUpdate(renderCreateSequence(name), connection);
     	DBUtil.executeUpdate(renderSetSequenceValue(name, initialValue), connection);
     }
+
+    @Override
+    public String renderCreateSequence(DBSequence sequence) {
+    	String result = renderCreateSequence(sequence.getName());
+    	BigInteger start = sequence.getStart();
+		if (start != null && isNotOne(start))
+    		result += "; " + renderSetSequenceValue(sequence.getName(), start.longValue()) + ";";
+		return result;
+    }
     
     public String renderCreateSequence(String name) {
-        return "create generator " + name;
+        return "CREATE GENERATOR " + name;
     }
     
     @Override
@@ -109,12 +124,12 @@ public class FirebirdDialect extends DatabaseDialect {
     }
     
     @Override
-    public void setSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
-    	DBUtil.executeUpdate("set generator " + sequenceName + " to " + value, connection);
+    public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+    	DBUtil.executeUpdate(renderSetSequenceValue(sequenceName, value), connection);
     }
     
     public String renderSetSequenceValue(String sequenceName, long value) {
-        return "set generator " + sequenceName + " to " + (value - 1);
+        return "SET GENERATOR " + sequenceName + " TO " + (value - 1);
     }
 
 	@Override

@@ -93,13 +93,13 @@ public class HSQLDialect extends DatabaseDialect {
     public String renderFetchSequenceValue(String sequenceName) {
         return "call next value for " + sequenceName;
     }
-
+	
 	@Override
-	public void setSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
-	    DBUtil.executeUpdate(setSequenceValue(sequenceName, value), connection);
+	public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+	    DBUtil.executeUpdate(renderSequenceValue(sequenceName, value), connection);
 	}
-
-	public String setSequenceValue(String sequenceName, long value) {
+	
+	public String renderSequenceValue(String sequenceName, long value) {
 	    return "alter sequence " + sequenceName + " restart with " + value;
     }
 	

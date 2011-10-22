@@ -77,6 +77,30 @@ public class OracleDialect extends DatabaseDialect {
 	}
 	
 	@Override
+	public String renderCreateSequence(DBSequence sequence) {
+		/* Oracle sequence syntax:
+			CREATE SEQUENCE [myschema.]xyz 
+			START WITH 1
+			INCREMENT BY 1 
+			MINVALUE 1 | NOMINVALUE
+			MAXVALUE 999999999 | NOMAXVALUE
+			CACHE 1 | NOCACHE
+			CYCLE | NOCYCLE
+			ORDER | NOORDER
+		 */
+		String result = super.renderCreateSequence(sequence);
+		// apply cache settings
+    	Long cache = sequence.getCache();
+    	if (cache != null)
+    		result += " CACHE " + cache;
+		// if applicable, append ORDER. This is purely oracle
+		Boolean order = sequence.isOrder();
+		if (order != null)
+			result += (order ? " ORDER" : "NOORDER");
+		return result;
+	}
+	
+	@Override
     public String renderFetchSequenceValue(String sequenceName) {
         return "select " + sequenceName + ".nextval from dual";
     }
