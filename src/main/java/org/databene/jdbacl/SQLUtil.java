@@ -22,7 +22,6 @@
 package org.databene.jdbacl;
 
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -37,7 +36,6 @@ import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBNotNullConstraint;
 import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
-import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 
@@ -64,20 +62,6 @@ public class SQLUtil {
 	
 	private static final Set<String> PROCEDURE_CALLS = CollectionUtil.toSet(
 			"execute", "exec", "call");
-	
-	public static void renderCreateSequence(DBSequence sequence, PrintWriter out) {
-		out.print("create sequence ");
-		out.print(sequence.getName());
-		if (BigInteger.ONE.compareTo(sequence.getStart()) != 0) {
-			out.print(" start with ");
-			out.print(sequence.getStart());
-		}
-		if (BigInteger.ONE.compareTo(sequence.getIncrement()) != 0) {
-			out.print(" increment by ");
-			out.print(sequence.getIncrement());
-		}
-		// TODO v0.6.10 support other sequence options: maxValue, minValue, cycle, cache, order
-	}
 	
 	public static Object[] parseColumnTypeAndSize(String spec) {
 		int lparen = spec.indexOf('(');
