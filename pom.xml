@@ -6,11 +6,11 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.6.12</version>
+    <version>0.6.13</version>
 
     <properties>
-    	<commons_version>0.5.10</commons_version>
-    	<webdecs_version>0.6.2</webdecs_version>
+    	<commons_version>0.5.11</commons_version>
+    	<webdecs_version>0.6.3</webdecs_version>
     	<contiperf_version>2.0.0</contiperf_version>
     </properties>
 
@@ -123,6 +123,21 @@
 		    <version>2.1.6</version>
 		    <scope>provided</scope>
 		</dependency>
+
+		<dependency> <!-- needed for firebird -->
+		    <groupId>javax.resource</groupId>
+		    <artifactId>connector-api</artifactId>
+		    <version>1.5</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<dependency>
+		    <groupId>postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+		    <version>8.4-701.jdbc4</version>
+		    <scope>provided</scope>
+		</dependency>
+		
     </dependencies>
     
     <build>
