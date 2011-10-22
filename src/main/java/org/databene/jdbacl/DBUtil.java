@@ -36,6 +36,7 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.JDBCConnectData;
 import org.databene.commons.LogCategories;
+import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.ReaderLineIterator;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
@@ -97,6 +98,15 @@ public class DBUtil {
     
     
     // connection handling ---------------------------------------------------------------------------------------------
+    
+    public static boolean existsEnvironment(String environment) {
+    	try {
+    		getConnectData(environment);
+    		return true;
+    	} catch (Exception e) {
+    		return false;
+    	}
+    }
     
     public static JDBCConnectData getConnectData(String environment) {
 		try {
@@ -287,15 +297,8 @@ public class DBUtil {
 		return LoggingResultSetHandler.getOpenResultSetCount();
 	}
 
-    public static Object parseResultSet(ResultSet resultSet) throws SQLException { 
-        List<Object[]> rows = new ArrayList<Object[]>();
-        while (resultSet.next()) {
-            int columnCount = resultSet.getMetaData().getColumnCount();
-            Object[] cells = new Object[columnCount];
-            for (int i = 0; i < columnCount; i++)
-                cells[i] = resultSet.getObject(i + 1);
-            rows.add(cells);
-        }
+    public static Object parseAndSimplifyResultSet(ResultSet resultSet) throws SQLException {
+    	List<Object[]> rows = parseResultSet(resultSet);
         if (rows.size() == 1 && rows.get(0).length == 1)
         	return rows.get(0)[0];
         else {
@@ -303,6 +306,21 @@ public class DBUtil {
 	        return rows.toArray(array);
         }
     }
+    
+    public static List<Object[]> parseResultSet(ResultSet resultSet) throws SQLException { 
+        List<Object[]> rows = new ArrayList<Object[]>();
+        while (resultSet.next())
+            rows.add(parseResultRow(resultSet));
+        return rows;
+    }
+
+	protected static Object[] parseResultRow(ResultSet resultSet) throws SQLException {
+		int columnCount = resultSet.getMetaData().getColumnCount();
+		Object[] cells = new Object[columnCount];
+		for (int i = 0; i < columnCount; i++)
+		    cells[i] = resultSet.getObject(i + 1);
+		return cells;
+	}
 
     /** @deprecated replaced by ConvertingIterable(ResultSetIterator, ResultSetConverter) */
     @Deprecated
@@ -315,10 +333,7 @@ public class DBUtil {
     /** @deprecated replaced by ResultSetConverter */
     @Deprecated
     public static Object[] currentLine(ResultSet resultSet) throws SQLException {
-        int columnCount = resultSet.getMetaData().getColumnCount();
-        Object[] cells = new Object[columnCount];
-        for (int i = 0; i < columnCount; i++)
-            cells[i] = resultSet.getObject(i + 1);
+        Object[] cells = parseResultRow(resultSet);
         return cells;
     }
 
@@ -330,7 +345,7 @@ public class DBUtil {
         for (int i = 1; i <= columnCount; i++)
             builder.append(metaData.getColumnName(i)).append(i < columnCount ? ", " : SystemInfo.getLineSeparator());
         // format cells
-        Object parsed = parseResultSet(resultSet);
+        Object parsed = parseAndSimplifyResultSet(resultSet);
         if (parsed instanceof Object[][]) {
 	        for (Object[] row : (Object[][]) parsed) {
 	            builder.append(ArrayFormat.format(", ", row)).append(SystemInfo.getLineSeparator());
@@ -421,7 +436,7 @@ public class DBUtil {
 			        if (sql.length() > 0 && (!ignoreComments || !StringUtil.startsWithIgnoreCase(sql, "COMMENT"))) {
 			        	try {
 				        	if (SQLUtil.isQuery(sql))
-				        		result = query(sql, connection);
+				        		result = queryAndSimplify(sql, connection);
 				        	else {
 				        		result = executeUpdate(sql, connection);
 				        		if (!Boolean.TRUE.equals(changedStructure)) {
@@ -484,11 +499,38 @@ public class DBUtil {
     	}
     }
 
-    public static Object query(String query, Connection connection) throws SQLException {
+    public static Object queryAndSimplify(String query, Connection connection) throws SQLException {
+    	ResultSet resultSet = null;
+    	try {
+	    	resultSet = executeQuery(query, connection);
+	    	return parseAndSimplifyResultSet(resultSet);
+    	} finally {
+    		if (resultSet != null)
+    			closeResultSetAndStatement(resultSet);
+    	}
+    }
+
+    public static List<Object[]> query(String query, Connection connection) throws SQLException {
     	ResultSet resultSet = null;
     	try {
 	    	resultSet = executeQuery(query, connection);
 	    	return parseResultSet(resultSet);
+    	} finally {
+    		if (resultSet != null)
+    			closeResultSetAndStatement(resultSet);
+    	}
+    }
+
+    public static Object[] querySingleRow(String query, Connection connection) throws SQLException {
+    	ResultSet resultSet = null;
+    	try {
+	    	resultSet = executeQuery(query, connection);
+	    	if (!resultSet.next())
+	    		throw new ObjectNotFoundException("Database query did not return a result: " + query);
+	    	Object[] result = parseResultRow(resultSet);
+	    	if (resultSet.next())
+	    		throw new IllegalStateException("One-row database query returned multiple rows: " + query);
+			return result;
     	} finally {
     		if (resultSet != null)
     			closeResultSetAndStatement(resultSet);
