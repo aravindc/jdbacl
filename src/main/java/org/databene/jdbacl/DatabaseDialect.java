@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -36,6 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBCatalog;
@@ -83,6 +85,10 @@ public abstract class DatabaseDialect {
     	return sequenceSupported;
     }
 
+	public boolean isSequenceBoundarySupported() {
+    	return sequenceSupported;
+    }
+
     public DBSequence[] querySequences(Connection connection) throws SQLException {
 		throw new UnsupportedOperationException();
 	}
@@ -94,17 +100,46 @@ public abstract class DatabaseDialect {
 			throw checkSequenceSupport("createSequence");
     }
     
+	public String renderCreateSequence(DBSequence sequence) {
+		StringBuilder builder = new StringBuilder("CREATE SEQUENCE ").append(sequence.getName());
+		BigInteger start = sequence.getStart();
+		if (start != null && isNotOne(start))
+			builder.append(" START WITH ").append(start);
+		BigInteger increment = sequence.getIncrement();
+		if (increment != null && isNotOne(increment))
+			builder.append(" INCREMENT BY ").append(increment);
+		if (isSequenceBoundarySupported()) {
+			BigInteger maxValue = sequence.getMaxValue();
+			if (maxValue != null)
+				builder.append(" MAXVALUE ").append(maxValue);
+			BigInteger minValue = sequence.getMinValue();
+			if (minValue != null)
+				builder.append(" MINVALUE ").append(minValue);
+		}
+		Boolean cycle = sequence.isCycle(); 
+		if (cycle != null)
+			builder.append(cycle ? " CYCLE" : " " + sequenceNoCycle());
+		return builder.toString();
+	}
+	
+	protected String sequenceNoCycle() {
+		return "NOCYCLE";
+	}
+
+	protected static boolean isNotOne(BigInteger i) {
+		return (BigInteger.ONE.compareTo(i) != 0);
+	}
+
     public String renderFetchSequenceValue(String sequenceName) {
 		throw checkSequenceSupport("nextSequenceValue");
     }
 
-    public void setSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
-		// TODO test
+    public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
 		if (sequenceSupported) {
-			long old = DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection) - 1;
-			long increment = value - old;
+			long old = DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection);
+			long increment = value - old - 1;
 			if (increment != 0) {
-				long formerIncrement = 1; // TODO get and restore former sequence increment (may differ from 1)
+				BigInteger formerIncrement = getSequence(sequenceName, connection).getIncrement();
 				DBUtil.executeUpdate("alter sequence " + sequenceName + " increment by " + increment, connection);
 				DBUtil.queryLong(renderFetchSequenceValue(sequenceName), connection);
 				DBUtil.executeUpdate("alter sequence " + sequenceName + " increment by " + formerIncrement, connection);
@@ -113,6 +148,14 @@ public abstract class DatabaseDialect {
 			throw checkSequenceSupport("incrementSequence");
     }
     
+	private DBSequence getSequence(String sequenceName, Connection connection) throws SQLException {
+		DBSequence[] sequences = querySequences(connection);
+		for (DBSequence seq : sequences)
+			if (seq.getName().equalsIgnoreCase(sequenceName))
+				return seq;
+		throw new ObjectNotFoundException("No sequence found with name '" + sequenceName + "'");
+	}
+
 	public String renderDropSequence(String sequenceName) {
 		if (sequenceSupported)
 			return "drop sequence " + sequenceName;
