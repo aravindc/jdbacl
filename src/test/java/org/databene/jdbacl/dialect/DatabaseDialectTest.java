@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -25,12 +25,10 @@ import static org.junit.Assert.*;
 
 import java.math.BigInteger;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.databene.commons.ConnectFailedException;
 import org.databene.commons.DatabeneTestUtil;
 import org.databene.commons.JDBCConnectData;
 import org.databene.commons.NameUtil;
@@ -95,7 +93,7 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	    }
     }
 	
-	protected void testSequencesOnline(String databaseId) throws SQLException, ConnectFailedException {
+	protected void testSequencesOnline(String databaseId) throws Exception {
 		JDBCConnectData data = DatabeneTestUtil.getConnectData(databaseId);
 		if (data == null) {
 			System.out.println("Skipping test: testSequencesOnline(" + databaseId + ")");
