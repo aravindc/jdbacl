@@ -47,8 +47,8 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 
 	@Test
 	public void testRenderCreateSequence() {
-		assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
-		assertEquals("CREATE SEQUENCE my_seq START WITH 10 INCREMENT BY 2 MAXVALUE 999 MINVALUE 5 CYCLE", 
+		assertEquals("CREATE SEQUENCE my_seq AS BIGINT", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
+		assertEquals("CREATE SEQUENCE my_seq AS BIGINT START WITH 10 INCREMENT BY 2 MAXVALUE 999 MINVALUE 5 CYCLE", 
 				dialect.renderCreateSequence(createConfiguredSequence()));
 	}
 	
@@ -73,7 +73,7 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection));
 			dialect.setNextSequenceValue(sequenceName, 123, connection);
 			String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
-			assertEquals(123, DBUtil.queryScalar(seqValQuery, connection));
+			assertEquals(123L, DBUtil.queryScalar(seqValQuery, connection));
 		} finally {
 			DBUtil.executeUpdate("DROP SEQUENCE " + sequenceName + " RESTRICT", connection);
 			DBUtil.close(connection);

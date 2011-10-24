@@ -47,7 +47,7 @@ public class Derby10_6Dialect extends DerbyDialect {
 	public String renderCreateSequence(DBSequence sequence) {
 		/*
 			CREATE SEQUENCE [ schemaName. ] SQL92Identifier
-			TODO [AS dataType] 
+			AS dataType 
 			| START WITH signedInteger 
 			| INCREMENT BY signedInteger 
 			| MAXVALUE signedInteger | NO MAXVALUE 
@@ -55,6 +55,12 @@ public class Derby10_6Dialect extends DerbyDialect {
 			| CYCLE | NO CYCLE 
 		 */
 		return super.renderCreateSequence(sequence);
+	}
+	
+	@Override
+	protected String renderSequenceNameAndType(DBSequence sequence) {
+		String schemaName = sequence.getSchemaName();
+		return (schemaName != null ? schemaName + '.' : "") + sequence.getName() + " AS BIGINT";
 	}
 	
 	@Override

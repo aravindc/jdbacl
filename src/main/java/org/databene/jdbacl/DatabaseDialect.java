@@ -101,7 +101,8 @@ public abstract class DatabaseDialect {
     }
     
 	public String renderCreateSequence(DBSequence sequence) {
-		StringBuilder builder = new StringBuilder("CREATE SEQUENCE ").append(sequence.getName());
+		StringBuilder builder = new StringBuilder("CREATE SEQUENCE ");
+		builder.append(renderSequenceNameAndType(sequence));
 		BigInteger start = sequence.getStart();
 		if (start != null && isNotOne(start))
 			builder.append(" START WITH ").append(start);
@@ -120,6 +121,10 @@ public abstract class DatabaseDialect {
 		if (cycle != null)
 			builder.append(cycle ? " CYCLE" : " " + sequenceNoCycle());
 		return builder.toString();
+	}
+
+	protected String renderSequenceNameAndType(DBSequence sequence) {
+		return sequence.getName();
 	}
 	
 	protected String sequenceNoCycle() {

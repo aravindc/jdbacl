@@ -102,8 +102,8 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 	
 	@Test
 	public void testRenderCreateSequence() {
-		assertEquals("CREATE SEQUENCE my_seq", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
-		assertEquals("CREATE SEQUENCE my_seq START WITH 10 INCREMENT BY 2 MAXVALUE 999 MINVALUE 5 CYCLE CACHE 3 ORDER", 
+		assertEquals("CREATE SEQUENCE \"my_seq\"", dialect.renderCreateSequence(new DBSequence("my_seq", null)));
+		assertEquals("CREATE SEQUENCE \"my_seq\" START WITH 10 INCREMENT BY 2 MAXVALUE 999 MINVALUE 5 CYCLE CACHE 3 ORDER", 
 				dialect.renderCreateSequence(createConfiguredSequence()));
 	}
 	

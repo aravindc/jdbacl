@@ -102,6 +102,12 @@ public class OracleDialect extends DatabaseDialect {
 	}
 	
 	@Override
+	protected String renderSequenceNameAndType(DBSequence sequence) {
+		String schemaName = sequence.getSchemaName();
+		return (schemaName != null ? "\"" + schemaName + "\"." : "") + '"' + sequence.getName() + '"';
+	}
+	
+	@Override
     public String renderFetchSequenceValue(String sequenceName) {
         return "select " + sequenceName + ".nextval from dual";
     }
