@@ -47,7 +47,11 @@ public class DerbyDialect extends DatabaseDialect {
 	Pattern randomIndexNamePattern = Pattern.compile("SQL\\d+");
 
     public DerbyDialect() {
-	    super("derby", false, false, DATE_PATTERN, TIME_PATTERN);
+	    this(false);
+    }
+
+    public DerbyDialect(boolean sequenceSupported) {
+	    super("derby", false, sequenceSupported, DATE_PATTERN, TIME_PATTERN);
     }
 
 	@Override
