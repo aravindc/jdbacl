@@ -148,7 +148,7 @@ public abstract class DatabaseDialect {
 			throw checkSequenceSupport("incrementSequence");
     }
     
-	private DBSequence getSequence(String sequenceName, Connection connection) throws SQLException {
+	public DBSequence getSequence(String sequenceName, Connection connection) throws SQLException {
 		DBSequence[] sequences = querySequences(connection);
 		for (DBSequence seq : sequences)
 			if (seq.getName().equalsIgnoreCase(sequenceName))
