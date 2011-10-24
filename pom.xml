@@ -137,6 +137,12 @@
 		    <version>8.4-701.jdbc4</version>
 		    <scope>provided</scope>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.derby</groupId>
+		    <artifactId>derby</artifactId>
+		    <version>10.7.1.1</version>
+		    <scope>provided</scope>
+		</dependency>
 		
     </dependencies>
     
