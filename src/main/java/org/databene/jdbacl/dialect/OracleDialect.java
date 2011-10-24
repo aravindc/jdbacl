@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import org.databene.commons.ArrayBuilder;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
+import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBSequence;
@@ -114,21 +115,29 @@ public class OracleDialect extends DatabaseDialect {
 	@Override
 	public DBSequence[] querySequences(Connection connection) throws SQLException {
 		Statement statement = connection.createStatement();
-		ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
-				"cycle_flag, order_flag, cache_size, last_number from user_sequences");
-		ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
-		while (resultSet.next()) {
-			DBSequence sequence = new DBSequence(resultSet.getString(1), null);
-			sequence.setMinValue(new BigInteger(resultSet.getString(2)));
-			sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
-			sequence.setIncrement(new BigInteger(resultSet.getString(4)));
-			sequence.setCycle("Y".equals(resultSet.getString(5)));
-			sequence.setOrder("Y".equals(resultSet.getString(6)));
-			sequence.setCache(resultSet.getLong(7));
-			sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
-			builder.add(sequence);
+		try {
+			ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
+					"cycle_flag, order_flag, cache_size, last_number from user_sequences");
+			try {
+				ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+				while (resultSet.next()) {
+					DBSequence sequence = new DBSequence(resultSet.getString(1), null);
+					sequence.setMinValue(new BigInteger(resultSet.getString(2)));
+					sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
+					sequence.setIncrement(new BigInteger(resultSet.getString(4)));
+					sequence.setCycle("Y".equals(resultSet.getString(5)));
+					sequence.setOrder("Y".equals(resultSet.getString(6)));
+					sequence.setCache(resultSet.getLong(7));
+					sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
+					builder.add(sequence);
+				}
+				return builder.toArray();
+			} finally {
+				DBUtil.close(resultSet);
+			}
+		} finally {
+			DBUtil.close(statement);
 		}
-		return builder.toArray();
 	}
 	
 	public DBCheckConstraint[] queryCheckConstraints(Connection connection, String schemaName) throws SQLException {
