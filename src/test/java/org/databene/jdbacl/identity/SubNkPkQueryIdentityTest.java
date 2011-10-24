@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 
 import org.databene.commons.HeavyweightIterator;
-import org.databene.jdbacl.hsql.HSQLUtil;
+import org.databene.jdbacl.dialect.HSQLUtil;
 import org.databene.jdbacl.identity.mem.MemKeyMapper;
 import org.databene.jdbacl.model.Database;
 import org.junit.Test;

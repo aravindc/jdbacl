@@ -32,7 +32,7 @@ import java.util.Arrays;
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.Encodings;
 import org.databene.commons.ErrorHandler;
-import org.databene.jdbacl.hsql.HSQLUtil;
+import org.databene.jdbacl.dialect.HSQLUtil;
 
 import org.junit.Test;
 import static junit.framework.Assert.*;

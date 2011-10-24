@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.databene.jdbacl.hsql;
+package org.databene.jdbacl.dialect;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -41,7 +41,7 @@ import org.databene.jdbacl.DBUtil;
  * @since 0.4.3
  * @author Volker Bergmann
  */
-public class HSQLUtil { // TODO move to package .../jdbacle/dialect
+public class HSQLUtil {
 	
 	public static final String IN_MEMORY_URL_PREFIX = "jdbc:hsqldb:mem:";
 	public static final String DRIVER = "org.hsqldb.jdbcDriver";

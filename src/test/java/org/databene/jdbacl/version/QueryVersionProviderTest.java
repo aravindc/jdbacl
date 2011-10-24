@@ -27,7 +27,7 @@ import java.sql.Connection;
 
 import org.databene.commons.version.VersionNumber;
 import org.databene.jdbacl.DBUtil;
-import org.databene.jdbacl.hsql.HSQLUtil;
+import org.databene.jdbacl.dialect.HSQLUtil;
 import org.junit.Test;
 
 /**

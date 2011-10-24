@@ -32,7 +32,7 @@ import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.SystemInfo;
 import org.databene.jdbacl.DBUtil;
-import org.databene.jdbacl.hsql.HSQLUtil;
+import org.databene.jdbacl.dialect.HSQLUtil;
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.IdentityProvider;
 import org.databene.jdbacl.identity.NkPkQueryIdentity;

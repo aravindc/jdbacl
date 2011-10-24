@@ -30,6 +30,7 @@ import java.sql.Connection;
 
 import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.dialect.HSQLUtil;
 import org.junit.Test;
 import static junit.framework.Assert.*;
 

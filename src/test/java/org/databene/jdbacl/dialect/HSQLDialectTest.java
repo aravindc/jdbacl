@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 
 import org.databene.jdbacl.DBUtil;
-import org.databene.jdbacl.hsql.HSQLUtil;
 import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 

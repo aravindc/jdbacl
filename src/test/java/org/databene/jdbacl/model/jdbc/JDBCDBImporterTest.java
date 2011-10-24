@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.databene.commons.ErrorHandler;
 import org.databene.jdbacl.DBUtil;
-import org.databene.jdbacl.hsql.HSQLUtil;
+import org.databene.jdbacl.dialect.HSQLUtil;
 import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBNonUniqueIndex;
 import org.databene.jdbacl.model.DBSchema;
