@@ -32,9 +32,9 @@ import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
- * TODO Document class.<br/><br/>
+ * Tests the {@link Derby10_6Dialect}.<br/><br/>
  * Created: 24.10.2011 10:33:53
- * @since TODO version
+ * @since 0.6.13
  * @author Volker Bergmann
  */
 public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> {
@@ -56,28 +56,7 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 	public void testRenderDropSequence() {
 		assertEquals("DROP SEQUENCE my_seq RESTRICT", dialect.renderDropSequence("my_seq"));
 	}
-	
-	@Test
-	public void testSetNextSequenceValue() throws Exception {
-		/* TODO
-		if (!DBUtil.existsEnvironment("postgres")) {
-			logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'postgres' " +
-					"environment defined");
-			return;
-		}
-		Connection connection = DBUtil.connect("postgres", false);
-		String sequenceName = getClass().getSimpleName();
-		try {
-			DBUtil.executeUpdate("create sequence " + sequenceName, connection);
-			dialect.setNextSequenceValue(sequenceName, 123, connection);
-			String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
-			assertEquals(123L, DBUtil.queryScalar(seqValQuery, connection));
-		} finally {
-			DBUtil.executeUpdate("drop sequence " + sequenceName, connection);
-		}
-		*/
-	}
-	
+		
 	@Test
 	public void testSequencesOnline() throws Exception {
 		if (!DBUtil.existsEnvironment(ENVIRONMENT)) {
@@ -92,6 +71,9 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 			String[] sequenceNames = NameUtil.getNames(sequences);
 			assertTrue(StringUtil.containsIgnoreCase(sequenceName, sequenceNames));
 			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection));
+			dialect.setNextSequenceValue(sequenceName, 123, connection);
+			String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
+			assertEquals(123, DBUtil.queryScalar(seqValQuery, connection));
 		} finally {
 			DBUtil.executeUpdate("DROP SEQUENCE " + sequenceName + " RESTRICT", connection);
 			DBUtil.close(connection);
@@ -100,7 +82,7 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 	
 	@Test
 	public void testRenderFetchSequenceValue() {
-		assertEquals("VALUES NEXT VALUE FOR my_seq", dialect.renderFetchSequenceValue("my_seq"));
+		assertEquals("VALUES (NEXT VALUE FOR my_seq)", dialect.renderFetchSequenceValue("my_seq"));
 	}
 	
 }
