@@ -108,12 +108,12 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 	}
 	
 	@Test
-	public void testnextSequenceValue() {
+	public void testRenderFetchSequenceValue() {
 		assertEquals("select SEQ.nextval from dual", dialect.renderFetchSequenceValue("SEQ"));
 	}
 	
 	@Test
-	public void testDropSequence() {
+	public void testRenderDropSequence() {
 		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
 	}
 	
