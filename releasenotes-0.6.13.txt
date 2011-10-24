@@ -27,4 +27,5 @@ Changes
 
 Bug fixes
 ---------
-- 
+- Resource leak in OracleDialect's sequence query
+- PostgreSQL sequence query not implemented
