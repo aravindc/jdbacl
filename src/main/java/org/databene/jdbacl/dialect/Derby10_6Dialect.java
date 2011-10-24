@@ -58,6 +58,11 @@ public class Derby10_6Dialect extends DerbyDialect {
 	}
 	
 	@Override
+	protected String sequenceNoCycle() {
+		return "NO CYCLE";
+	}
+	
+	@Override
 	public String renderDropSequence(String sequenceName) {
 		return "DROP SEQUENCE " + sequenceName + " RESTRICT";
 	}
@@ -86,4 +91,16 @@ public class Derby10_6Dialect extends DerbyDialect {
 		return "VALUES (NEXT VALUE FOR " + sequenceName + ")";
 	}
 	
+    @Override
+    public void setNextSequenceValue(String sequenceName, long nextValue, Connection connection) throws SQLException {
+    	DBSequence sequence = getSequence(sequenceName, connection);
+    	BigInteger lastNumber = sequence.getLastNumber();
+    	long defaultNext = lastNumber.add(BigInteger.ONE).longValue();
+    	if (nextValue != defaultNext) {
+    		DBUtil.executeUpdate(renderDropSequence(sequenceName), connection);
+    		sequence.setStart(BigInteger.valueOf(nextValue));
+    		DBUtil.executeUpdate(renderCreateSequence(sequence), connection);
+    	}
+    }
+    
 }
