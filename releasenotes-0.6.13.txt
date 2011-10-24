@@ -4,6 +4,9 @@ Release Notes jdbacl 0.6.13
 
 Enhancements
 ------------
+- Completed sequence support on PostgreSQL
+- Introduced sequence support on Derby 10.6+
+- Completed CREATE SEQUENCE rendering with advanced options
 - Created H2Util class
 - created method DatabaseDialect.renderCreateSequence()
 - new properties in Database interface:
