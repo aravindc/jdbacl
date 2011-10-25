@@ -141,6 +141,15 @@ public class SQLUtilTest {
 		assertTrue(SQLUtil.mutatesDataOrStructure(TRUNCATE));
 		assertNull(SQLUtil.mutatesDataOrStructure(CALL));
 	}
+	
+	@Test
+	public void testRemoveComments() {
+		assertEquals("select a from b", SQLUtil.removeComments("select a from b"));
+		assertEquals("select a from b", SQLUtil.removeComments("select a/*, x, y */ from b"));
+		assertEquals("select a from b", SQLUtil.removeComments("select a /*, x, y */from b/* join c on ref=id*/"));
+	}
+	
+	// helpers ---------------------------------------------------------------------------------------------------------
 
 	public void checkParsing(String spec, Object... expected) {
 		Object[] actual = SQLUtil.parseColumnTypeAndSize(spec);
