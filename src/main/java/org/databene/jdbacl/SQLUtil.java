@@ -393,7 +393,13 @@ public class SQLUtil {
 	}
 
 	public static String removeComments(String sql) {
-		return StringUtil.removeSection(sql, "/*", "*/");
+		String result = sql;
+		String tmp;
+		do {
+			tmp = result;
+			result = StringUtil.removeSection(tmp, "/*", "*/");
+		} while (!result.equals(tmp));
+		return result;
 	}
 
 	// private helpers -------------------------------------------------------------------------------------------------
