@@ -148,6 +148,20 @@ public class SQLUtilTest {
 		assertEquals("select a from b", SQLUtil.removeComments("select a/*, x, y */ from b"));
 		assertEquals("select a from b", SQLUtil.removeComments("select a /*, x, y */from b/* join c on ref=id*/"));
 	}
+
+	@Test
+	public void testNormalize() {
+		assertEquals("select x from t", SQLUtil.normalize("select x from t", false));
+		assertEquals("select min (x) from t", SQLUtil.normalize("select min(x) from t", false));
+		assertEquals("select min (x) - 2 from t", SQLUtil.normalize("select min(x)-2 from t", false));
+		assertEquals("select 3.141 * 2 - 6.0 from t", SQLUtil.normalize("select 3.141*2-6.0 from t", false));
+		assertEquals("select t_id from s.t", SQLUtil.normalize("select t_id from s.t", false));
+		assertEquals("select 'id', id from \"x\".\"t\"", SQLUtil.normalize("select 'id',id from \"x\".\"t\"", false));
+		assertEquals("select a /* x, y */ from b", SQLUtil.normalize("select a /*x,y*/ from b", false));
+		assertEquals("select a from b", SQLUtil.normalize("select a /*x,y*/ from b", true));
+		assertEquals("select a from b -- ignore this", SQLUtil.normalize("select a from b--ignore this", false));
+		assertEquals("select a from b", SQLUtil.normalize("select a from b--ignore this", true));
+	}
 	
 	// helpers ---------------------------------------------------------------------------------------------------------
 

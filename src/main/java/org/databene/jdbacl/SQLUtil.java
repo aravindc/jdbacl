@@ -21,7 +21,10 @@
 
 package org.databene.jdbacl;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -402,8 +405,77 @@ public class SQLUtil {
 		return result;
 	}
 
+	public static String normalize(String sql, boolean removeComments) {
+		if (removeComments)
+			sql = sql.replace("--", "//");
+		StreamTokenizer tokenizer = new StreamTokenizer(new StringReader(sql));
+		tokenizer.resetSyntax();
+		tokenizer.wordChars('A', 'Z');
+		tokenizer.wordChars('a', 'z');
+		tokenizer.wordChars('0', '9');
+		tokenizer.wordChars('_', '_');
+		tokenizer.whitespaceChars(' ', ' ');
+		tokenizer.whitespaceChars('\n', '\n');
+		tokenizer.whitespaceChars('\r', '\r');
+		tokenizer.whitespaceChars('\t', '\t');
+		tokenizer.quoteChar('\'');
+		tokenizer.quoteChar('"');
+		if (removeComments) {
+			tokenizer.slashStarComments(true);
+			tokenizer.slashSlashComments(true);
+		}
+		// TODO handle -- line comments
+		StringBuilder builder = new StringBuilder();
+		int lastTtype = StreamTokenizer.TT_EOF;
+		try {
+			while (tokenizer.nextToken() != StreamTokenizer.TT_EOF) {
+				int ttype = tokenizer.ttype;
+				if (builder.length() > 0 // insert space if this is not the beginning of the string 
+						&& ttype != ')' && ttype != ',' && lastTtype != '(' // no space for brackets and lists
+						&& lastTtype != '.' && ttype != '.' // no space around '.' 
+						&& !(lastTtype == '/' && ttype =='*') // preserve /* if it has not been filtered out 
+						&& !(lastTtype == '-' && ttype =='-') // preserve -- if it has not been filtered out
+						&& !(lastTtype == '*' && ttype =='/')) // preserve */ if it has not been filtered out
+					builder.append(' ');
+				switch (ttype) {
+					case StreamTokenizer.TT_WORD: builder.append(tokenizer.sval); break;
+					case StreamTokenizer.TT_NUMBER: builder.append(renderNumber(tokenizer)); break;
+					case '"': builder.append('"').append(tokenizer.sval).append('"'); break;
+					case '\'': builder.append('\'').append(tokenizer.sval).append('\''); break;
+					default: builder.append((char) ttype);
+				}				
+				lastTtype = ttype;
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return builder.toString();
+	}
+
+	protected static String renderNumber(StreamTokenizer tokenizer) {
+		double value = tokenizer.nval;
+		if (Math.floor(value) == value)
+			return renderLong((long) value);
+		else
+			return renderDouble(value);
+	}
+
 	// private helpers -------------------------------------------------------------------------------------------------
 	
+	private static String renderLong(long value) {
+		if (value > 0)
+			return String.valueOf(value);
+		else
+			return "- " + String.valueOf(Math.abs(value));
+	}
+
+	private static String renderDouble(double value) {
+		if (value > 0)
+			return String.valueOf(value);
+		else
+			return "- " + String.valueOf(Math.abs(value));
+	}
+
 	private static String quoteNameIfNecessary(String name) {
 		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
     }
