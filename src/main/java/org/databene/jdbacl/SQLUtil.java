@@ -424,7 +424,6 @@ public class SQLUtil {
 			tokenizer.slashStarComments(true);
 			tokenizer.slashSlashComments(true);
 		}
-		// TODO handle -- line comments
 		StringBuilder builder = new StringBuilder();
 		int lastTtype = StreamTokenizer.TT_EOF;
 		try {
