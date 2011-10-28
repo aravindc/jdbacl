@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBCatalog;
@@ -296,4 +297,18 @@ public abstract class DatabaseDialect {
 		throw new UnsupportedOperationException(system + " does not support regular expressions");
 	}
 
+	public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
+		StringBuilder builder = new StringBuilder(); // TODO support different database versions, this is for HSQLDB
+		builder.append("case");
+		for (int i = 0; i < whenThenExpressionPairs.length; i += 2) {
+			builder.append(" when ").append(whenThenExpressionPairs[i]); // when part
+			builder.append(" then ").append(whenThenExpressionPairs[i + 1]); // then part
+		}
+		if (!StringUtil.isEmpty(elseExpression))
+			builder.append(" else ").append(elseExpression);
+		builder.append(" end");
+		builder.append(" as ").append(columnName);
+		return builder.toString();
+	}
+	
 }
