@@ -340,10 +340,22 @@ public class SQLUtil {
 		return appendConstraintName(constraint, builder, nameSpec);
 	}
 	
-	public static String leftJoin(String refererAlias, String[] refererColumns, 
+	public static String leftJoin(String alias1, String[] columns1, 
+			String table2, String alias2, String[] columns2) {
+		return join("left", alias1, columns1, table2, alias2, columns2);
+	}
+
+	public static String innerJoin(String alias1, String[] columns1, 
+			String table2, String alias2, String[] columns2) {
+		return join("inner", alias1, columns1, table2, alias2, columns2);
+	}
+
+	public static String join(String type, String refererAlias, String[] refererColumns, 
 			String refereeTable, String refereeAlias, String[] refereeColumns) {
-		StringBuilder builder = new StringBuilder("left join ");
-		builder.append(refereeTable).append(" ").append(refereeAlias).append(" on "); 
+		StringBuilder builder = new StringBuilder();
+		if (!StringUtil.isEmpty(type) && !"inner".equalsIgnoreCase(type))
+			builder.append(type).append(" join ");
+		builder.append(refereeTable).append(" as ").append(refereeAlias).append(" on "); 
 		for (int i = 0; i < refererColumns.length; i++) {
 			if (i > 0)
 				builder.append(" and ");
@@ -457,6 +469,16 @@ public class SQLUtil {
 			return renderLong((long) value);
 		else
 			return renderDouble(value);
+	}
+
+	public static String renderColumnListWithTableName(String table, String... columns) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < columns.length; i++) {
+			if (i > 0)
+				builder.append(", ");
+			builder.append(table).append('.').append(columns[i]);
+		}
+		return builder.toString();
 	}
 
 	// private helpers -------------------------------------------------------------------------------------------------
