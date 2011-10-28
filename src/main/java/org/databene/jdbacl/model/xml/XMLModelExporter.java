@@ -80,7 +80,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		OutputStream out = new FileOutputStream(file);
 		SimpleXMLWriter writer = null;
 		try {
-			writer = new SimpleXMLWriter(out, encoding);
+			writer = new SimpleXMLWriter(out, encoding, true);
 			writer.startDocument();
 			exportDatabase(database, writer);
 			writer.endDocument();
