@@ -163,6 +163,11 @@ public class SQLUtilTest {
 		assertEquals("select a from b", SQLUtil.normalize("select a from b--ignore this", true));
 	}
 	
+	@Test
+	public void testRenderColumnListWithTableName() {
+		assertEquals("t.x, t.y", SQLUtil.renderColumnListWithTableName("t", "x", "y"));
+	}
+	
 	// helpers ---------------------------------------------------------------------------------------------------------
 
 	public void checkParsing(String spec, Object... expected) {
