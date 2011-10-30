@@ -143,6 +143,9 @@ public class DBUtil {
 
     public static Connection connect(String url, String driverClassName, String user, String password, boolean readOnly) throws ConnectFailedException {
 		try {
+			if (driverClassName == null)
+				throw new ConfigurationError("No JDBC driver class name provided");
+			
 			// Instantiate driver
             Class<Driver> driverClass = BeanUtil.forName(driverClassName);
             Driver driver = driverClass.newInstance();
