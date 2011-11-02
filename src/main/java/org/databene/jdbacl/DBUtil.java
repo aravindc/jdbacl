@@ -34,7 +34,6 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
-import org.databene.commons.JDBCConnectData;
 import org.databene.commons.LogCategories;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.ReaderLineIterator;

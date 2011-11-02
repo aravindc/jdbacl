@@ -21,8 +21,8 @@
 
 package org.databene.jdbacl.sql;
 
-import org.databene.commons.Expression;
-import org.databene.commons.expression.ConstantExpression;
+import org.databene.script.Expression;
+import org.databene.script.expression.ConstantExpression;
 
 /**
  * {@link Expression} which represents a database column.<br/><br/>

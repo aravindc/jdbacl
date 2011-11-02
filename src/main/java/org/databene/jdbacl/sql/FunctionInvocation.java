@@ -22,8 +22,8 @@
 package org.databene.jdbacl.sql;
 
 import org.databene.commons.Context;
-import org.databene.commons.Expression;
-import org.databene.commons.expression.CompositeExpression;
+import org.databene.script.Expression;
+import org.databene.script.expression.CompositeExpression;
 
 /**
  * Represents the invocation of a function.<br/><br/>

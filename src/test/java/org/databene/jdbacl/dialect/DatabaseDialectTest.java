@@ -29,13 +29,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.databene.commons.DatabeneTestUtil;
-import org.databene.commons.JDBCConnectData;
 import org.databene.commons.NameUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.TimeUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.DatabaseTestUtil;
+import org.databene.jdbacl.JDBCConnectData;
 import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
     }
 	
 	protected void testSequencesOnline(String databaseId) throws Exception {
-		JDBCConnectData data = DatabeneTestUtil.getConnectData(databaseId);
+		JDBCConnectData data = DatabaseTestUtil.getConnectData(databaseId);
 		if (data == null) {
 			System.out.println("Skipping test: testSequencesOnline(" + databaseId + ")");
 			return;

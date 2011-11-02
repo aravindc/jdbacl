@@ -25,12 +25,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.databene.commons.CollectionUtil;
-import org.databene.commons.Expression;
 import org.databene.commons.StringUtil;
-import org.databene.commons.expression.WrapperExpression;
 import org.databene.jdbacl.sql.ColumnExpression;
 import org.databene.jdbacl.sql.SQLParserUtil;
 import org.databene.jdbacl.sql.parser.ANTLRNoCaseStringStream;
+import org.databene.script.Expression;
+import org.databene.script.expression.WrapperExpression;
 
 /**
  * Represents a database check constraint.<br/><br/>

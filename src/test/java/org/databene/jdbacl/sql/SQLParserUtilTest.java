@@ -23,11 +23,11 @@ package org.databene.jdbacl.sql;
 
 import static org.junit.Assert.*;
 
-import org.databene.commons.Expression;
-import org.databene.commons.expression.EqualsExpression;
-import org.databene.commons.expression.LogicalComplementExpression;
 import org.databene.jdbacl.sql.SQLParserUtil;
 import org.databene.jdbacl.sql.parser.ANTLRNoCaseStringStream;
+import org.databene.script.Expression;
+import org.databene.script.expression.EqualsExpression;
+import org.databene.script.expression.LogicalComplementExpression;
 import org.junit.Test;
 
 /**

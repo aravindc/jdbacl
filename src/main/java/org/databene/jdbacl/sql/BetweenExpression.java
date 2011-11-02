@@ -21,8 +21,8 @@
 
 package org.databene.jdbacl.sql;
 
-import org.databene.commons.Expression;
-import org.databene.commons.expression.InRangeExpression;
+import org.databene.script.Expression;
+import org.databene.script.expression.InRangeExpression;
 
 /**
  * {@link Expression} implementation for the SQL BETWEEN function.<br/><br/>
@@ -38,7 +38,7 @@ public class BetweenExpression extends InRangeExpression {
 
 	@Override
 	public String toString() {
-		return "(" + terms[0] + " between " + terms[1] + " and " + terms[2] + ")";
+		return "(" + terms[0] + " BETWEEN " + terms[1] + " AND " + terms[2] + ")";
 	}
 	
 }
