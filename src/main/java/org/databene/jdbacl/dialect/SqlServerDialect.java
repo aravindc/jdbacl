@@ -23,6 +23,7 @@ package org.databene.jdbacl.dialect;
 
 import java.util.regex.Pattern;
 
+import org.databene.commons.StringUtil;
 import org.databene.jdbacl.DatabaseDialect;
 
 /**
@@ -72,4 +73,18 @@ public class SqlServerDialect extends DatabaseDialect {
 		return !randomNamePattern.matcher(indexName).matches();
 	}
 
+	public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(columnName).append(" = "); // applying column name
+		builder.append("CASE");
+		for (int i = 0; i < whenThenExpressionPairs.length; i += 2) {
+			builder.append(" WHEN ").append(whenThenExpressionPairs[i]); // when part
+			builder.append(" THEN ").append(whenThenExpressionPairs[i + 1]); // then part
+		}
+		if (!StringUtil.isEmpty(elseExpression))
+			builder.append(" ELSE ").append(elseExpression); // else part
+		builder.append(" END"); // closing the case
+		return builder.toString();
+	}
+	
 }
