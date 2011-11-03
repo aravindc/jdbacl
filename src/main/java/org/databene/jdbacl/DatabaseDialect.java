@@ -298,16 +298,17 @@ public abstract class DatabaseDialect {
 	}
 
 	public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
-		StringBuilder builder = new StringBuilder(); // TODO support different database versions, this is for HSQLDB
-		builder.append("case");
+		StringBuilder builder = new StringBuilder();
+		builder.append("CASE");
 		for (int i = 0; i < whenThenExpressionPairs.length; i += 2) {
-			builder.append(" when ").append(whenThenExpressionPairs[i]); // when part
-			builder.append(" then ").append(whenThenExpressionPairs[i + 1]); // then part
+			builder.append(" WHEN ").append(whenThenExpressionPairs[i]); // when part
+			builder.append(" THEN ").append(whenThenExpressionPairs[i + 1]); // then part
 		}
 		if (!StringUtil.isEmpty(elseExpression))
-			builder.append(" else ").append(elseExpression);
-		builder.append(" end");
-		builder.append(" as ").append(columnName);
+			builder.append(" ELSE ").append(elseExpression); // else part
+		builder.append(" END"); // closing the case
+		if (columnName != null)
+			builder.append(" AS ").append(columnName); // applying column name
 		return builder.toString();
 	}
 	
