@@ -95,4 +95,10 @@ public class DB2DialectTest extends DatabaseDialectTest<DB2Dialect> {
 		dialect.regexQuery("code", false, "[A-Z]{4}");
 	}
 	
+	@Test
+	public void testRenderCase() {
+		assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col", 
+				dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
+	}
+	
 }

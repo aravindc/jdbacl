@@ -82,4 +82,10 @@ public class SqlServerDialectTest extends DatabaseDialectTest<SqlServerDialect> 
 		dialect.regexQuery("code", false, "[A-Z]{4}");
 	}
 	
+	@Test
+	public void testRenderCase() {
+		assertEquals("col = CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END", 
+				dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
+	}
+	
 }

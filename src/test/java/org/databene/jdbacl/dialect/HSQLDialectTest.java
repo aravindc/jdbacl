@@ -122,4 +122,10 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
 		assertEquals("drop sequence SEQ", dialect.renderDropSequence("SEQ"));
 	}
 	
+	@Test
+	public void testRenderCase() {
+		assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col", 
+				dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
+	}
+	
 }
