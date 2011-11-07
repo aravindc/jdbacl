@@ -339,6 +339,10 @@ public class DBUtil {
         return cells;
     }
 
+	public static long countRows(String tableName, Connection connection) {
+		return DBUtil.queryLong("select count(*) from " + tableName, connection);
+	}
+
     public static String format(ResultSet resultSet) throws SQLException {
         StringBuilder builder = new StringBuilder();
         // format column names

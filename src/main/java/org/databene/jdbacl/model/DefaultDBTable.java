@@ -285,8 +285,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 	}
 
 	public long getRowCount(Connection connection) {
-		Object result = DBUtil.queryScalar("select count(*) from " + name, connection);
-		return ((Number) result).longValue();
+		return DBUtil.countRows(name, connection);
 	}
 
 	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
