@@ -96,12 +96,12 @@ public abstract class AbstractIdentityTest {
 	protected IdentityProvider createIdentities(Database database) {
 		IdentityProvider identityProvider = new IdentityProvider();
 
-		NkPkQueryIdentity countryIdentity = new NkPkQueryIdentity(database.getTable("country"));
-		countryIdentity.setNkPkQuery("select code, code from country");
+		NkPkQueryIdentity countryIdentity = new NkPkQueryIdentity(
+				"country", "select code, code from country");
 		identityProvider.registerIdentity(countryIdentity, "country");
 		
 		SubNkPkQueryIdentity stateIdentity = new SubNkPkQueryIdentity(
-			identityProvider, database.getTable("state"), "country");
+			"state", new String[] { "country" }, identityProvider);
 		stateIdentity.setSubNkPkQuery("select code, id from state where country = ?");
 		identityProvider.registerIdentity(stateIdentity, "state");
 		

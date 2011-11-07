@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.KeyMapper;
+import org.databene.jdbacl.model.Database;
 
 /**
  * In-memory implementation of the mapping functionality needed for source database tables.<br/><br/>
@@ -38,8 +39,8 @@ public class SourceTableMapper extends AbstractTableMapper {
 	
 	Map<Object, Object> sourcePkToTargetPk;
 	
-	public SourceTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel table) {
-		super(root, connection, dbId, table);
+	public SourceTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel table, Database database) {
+		super(root, connection, dbId, table, database);
 	    this.sourcePkToTargetPk = new HashMap<Object, Object>(1000);
     }
 	

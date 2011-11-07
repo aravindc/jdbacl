@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -29,10 +29,12 @@ import org.databene.commons.ArrayFormat;
 import org.databene.commons.Assert;
 import org.databene.commons.ErrorHandler;
 import org.databene.commons.Level;
+import org.databene.commons.Named;
 import org.databene.commons.bean.HashCodeBuilder;
 import org.databene.commons.iterator.TableRowIterator;
+import org.databene.jdbacl.ArrayResultSetIterator;
 import org.databene.jdbacl.model.DBRow;
-import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,25 +45,29 @@ import org.slf4j.LoggerFactory;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public abstract class IdentityModel {
+public abstract class IdentityModel implements Named {
 	
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	ErrorHandler errorHandler = new ErrorHandler("DBMerger", Level.warn);
-	DBTable table;
-	long count;
+	
+	String tableName;
 	private Set<String> unimportantColumns;
 
-	public IdentityModel(DBTable table) {
-		Assert.notNull(table, "table");
-		this.table = table;
+	public IdentityModel(String tableName) {
+		Assert.notNull(tableName, "tableName");
+		this.tableName = tableName;
 	    this.unimportantColumns = new HashSet<String>();
     }
 	
 	// properties ------------------------------------------------------------------------------------------------------
 	
-	public DBTable getTable() {
-		return table;
+	public String getTableName() {
+		return tableName;
+	}
+
+	public String getName() {
+		return tableName;
 	}
 	
 	public void addIrrelevantColumn(String unimportantColumn) {
@@ -70,29 +76,33 @@ public abstract class IdentityModel {
 
 	// functional interface --------------------------------------------------------------------------------------------
 
-	public abstract TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper);
-	
+	public abstract TableRowIterator createNkPkIterator(
+			Connection connection, String dbId, KeyMapper mapper, Database database);
+
 	public String extractNK(Object[] nkPkTuple) {
 		return String.valueOf(nkPkTuple[0]);
 	}
 
 	public Object extractPK(Object[] nkPkTuple) {
-		String[] idColumnNames = table.getPKColumnNames();
-		if (idColumnNames.length == 1)
+		if (nkPkTuple.length == 2)
 			return nkPkTuple[1];
-		else if (idColumnNames.length > 1) {
-			Object[] pk = new Object[idColumnNames.length];
-			for (int i = 0; i < idColumnNames.length; i++)
+		else if (nkPkTuple.length > 2) {
+			Object[] pk = new Object[nkPkTuple.length - 1];
+			for (int i = 0; i < nkPkTuple.length - 1; i++)
 				pk[i] = nkPkTuple[1 + i];
 			return pk;
 		} else
-			throw new UnsupportedOperationException("Table " + table.getName() + " does not have a primary key");
+			throw new UnsupportedOperationException("Table " + tableName + " does not have a primary key");
 	}
-	
+
 	public abstract String getDescription();
 	
 	// non-public helpers ----------------------------------------------------------------------------------------------
 
+	protected TableRowIterator query(String query, Connection connection) {
+		Assert.notEmpty(query, "query");
+		return new ArrayResultSetIterator(connection, query);
+	}
 	protected void handleNKNotFound(String naturalKey, String tableName, String sourceDbId, String targetDbId) {
 	    String message = "Missing entry: " + sourceDbId + '.' + tableName + "[" + naturalKey + "]" + 
 	    	" does not appear in " + targetDbId;
@@ -116,7 +126,7 @@ public abstract class IdentityModel {
 
 	@Override
 	public int hashCode() {
-		return HashCodeBuilder.hashCode(table);
+		return HashCodeBuilder.hashCode(tableName);
 	}
 	
 	@Override
@@ -126,12 +136,12 @@ public abstract class IdentityModel {
 		if (obj == null || this.getClass() != obj.getClass())
 			return false;
 		IdentityModel that = (IdentityModel) obj;
-		return this.table.equals(that.table);
+		return this.tableName.equals(that.tableName);
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "(" + table.getName() + ")";
+		return getClass().getSimpleName() + "(" + tableName + ")";
 	}
 
 }

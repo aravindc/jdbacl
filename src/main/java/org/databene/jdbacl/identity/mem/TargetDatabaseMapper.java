@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.KeyMapper;
+import org.databene.jdbacl.model.Database;
 
 /**
  * In-memory implementation of the mapping functionality needed for a target database.<br/><br/>
@@ -39,12 +40,14 @@ public class TargetDatabaseMapper {
 	KeyMapper root;
 	Connection target;
 	String targetDbId;
+	Database database;
 	Map<String, TargetTableMapper> tableMappers;
 	
-	public TargetDatabaseMapper(KeyMapper root, Connection target, String targetDbId) {
+	public TargetDatabaseMapper(KeyMapper root, Connection target, String targetDbId, Database database) {
 		this.root = root;
 		this.target = target;
 		this.targetDbId = targetDbId;
+		this.database = database;
 		tableMappers = new HashMap<String, TargetTableMapper>(500);
     }
 	
@@ -69,10 +72,10 @@ public class TargetDatabaseMapper {
 	// helpers ---------------------------------------------------------------------------------------------------------
 	
 	private TargetTableMapper getOrCreateTableMapper(Connection target, String targetDbId, IdentityModel identity) {
-		String tableName = identity.getTable().getName();
+		String tableName = identity.getTableName();
 		TargetTableMapper result = tableMappers.get(tableName);
 		if (result == null) {
-			result = new TargetTableMapper(root, target, targetDbId, identity);
+			result = new TargetTableMapper(root, target, targetDbId, identity, database);
 			tableMappers.put(tableName, result);
 		}
 		return result;

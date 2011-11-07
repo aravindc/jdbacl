@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -24,7 +24,7 @@ package org.databene.jdbacl.identity;
 import java.sql.Connection;
 
 import org.databene.commons.iterator.TableRowIterator;
-import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.Database;
 
 /**
  * {@link IdentityModel} for a flat, non-recursive and independent table.<br/><br/>
@@ -34,14 +34,10 @@ import org.databene.jdbacl.model.DBTable;
  */
 public class NkPkQueryIdentity extends IdentityModel {
 	
-	String nkPkQuery;
+	private String nkPkQuery;
 
-	public NkPkQueryIdentity(DBTable table) {
-		this(table, null);
-    }
-
-	public NkPkQueryIdentity(DBTable table, String nkPkQuery) {
-		super(table);
+	public NkPkQueryIdentity(String tableName, String nkPkQuery) {
+		super(tableName);
 		setNkPkQuery(nkPkQuery);
     }
 
@@ -55,8 +51,8 @@ public class NkPkQueryIdentity extends IdentityModel {
 	}
 
 	@Override
-	public TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper) {
-		return table.query(nkPkQuery, connection);
+	public TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+		return query(nkPkQuery, connection);
     }
 
 }

@@ -30,9 +30,7 @@ import org.databene.commons.ConfigurationError;
 import org.databene.commons.converter.ThreadSafeConverter;
 import org.databene.commons.iterator.ConvertingIterator;
 import org.databene.commons.iterator.TableRowIterator;
-import org.databene.jdbacl.model.DBColumn;
-import org.databene.jdbacl.model.DBForeignKeyConstraint;
-import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.Database;
 
 /**
  * {@link IdentityModel} implementation based on a unique-key-constraint.<br/><br/>
@@ -44,8 +42,8 @@ public class UniqueKeyIdentity extends IdentityModel {
 	
 	private String[] columnNames;
 
-	public UniqueKeyIdentity(DBTable table, String... columnNames) {
-		super(table);
+	public UniqueKeyIdentity(String tableName, String... columnNames) {
+		super(tableName);
 		setColumns(columnNames);
 	}
 
@@ -55,21 +53,22 @@ public class UniqueKeyIdentity extends IdentityModel {
 	
 	@Override
 	public TableRowIterator createNkPkIterator(
-			Connection connection, String dbId, KeyMapper mapper) {
+			Connection connection, String dbId, KeyMapper mapper, Database database) {
 		if (ArrayUtil.isEmpty(columnNames))
 			throw new ConfigurationError("No unique key columns defined");
 		StringBuilder builder = new StringBuilder("select ");
 		builder.append(columnNames[0]);
 		for (int i = 1; i < columnNames.length; i++)
 			builder.append(", ").append(columnNames[i]);
-		for (String columnName : table.getPKColumnNames())
+		String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
+		for (String columnName : pkColumnNames)
 			builder.append(", ").append(columnName);
 			
-		builder.append(" from ").append(table.getName());
+		builder.append(" from ").append(tableName);
 		String query = builder.toString();
-		TableRowIterator rawIterator = table.query(query, connection);
+		TableRowIterator rawIterator = query(query, connection);
 		ColumnToNkConverter converter = new ColumnToNkConverter(dbId, mapper);
-		return new UniqueKeyNkPkIterator(rawIterator, converter);
+		return new UniqueKeyNkPkIterator(rawIterator, converter, pkColumnNames);
 	}
 
 	@Override
@@ -78,14 +77,15 @@ public class UniqueKeyIdentity extends IdentityModel {
 	}
 
 	public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TableRowIterator {
+		
+		String[] pkColumnNames;
 
-		public UniqueKeyNkPkIterator(TableRowIterator rawIterator,
-				ColumnToNkConverter converter) {
+		public UniqueKeyNkPkIterator(TableRowIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
 			super(rawIterator, converter);
+			this.pkColumnNames = columnNames;
 		}
 
 		public String[] getColumnLabels() {
-			String[] pkColumnNames = table.getPKColumnNames();
 			String[] labels = new String[1 + pkColumnNames.length];
 			labels[0] = "NK";
 			for (int i = 1; i < labels.length; i++)
@@ -108,38 +108,9 @@ public class UniqueKeyIdentity extends IdentityModel {
 
 		public Object[] convert(Object[] raw) {
 			NKBuilder nkBuilder = new NKBuilder();
-			boolean used[] = new boolean[columnNames.length];
-			for (int i = 0; i < columnNames.length; i++) { // only mutate uk columns, not the PK!
-				if (used[i])
-					continue;
+			for (int i = 0; i < columnNames.length; i++) {
 				Object value = raw[i];
-				DBColumn column = table.getColumn(columnNames[i]);
-				DBForeignKeyConstraint fk = column.getForeignKeyConstraint();
-				if (value == null || fk == null) {
-					// plain or null valued columns can be used as they are
-					nkBuilder.addComponent(value);
-				} else {
-					// a foreign key value needs to be replaced by the referred object's natural key
-					String parentTableName = fk.getRefereeTable().getName();
-					IdentityModel identity = mapper.getIdentityProvider().getIdentity(parentTableName);
-					// build PK of the referenced row
-					Object refereePK = value;
-					String[] fkColumnNames = fk.getColumnNames();
-					if (fkColumnNames.length > 1) {
-						ArrayBuilder<Object> builder = new ArrayBuilder<Object>(Object.class);
-						for (int j = 0; j < fkColumnNames.length; j++) {
-							int fkColumnIndex = ArrayUtil.indexOf(fkColumnNames[j], columnNames);
-							if (fkColumnIndex < 0)
-								throw new ConfigurationError("Incomplete foreign-key setup in " + table.getName() + 
-										" identity definition: Missing column: " + fkColumnNames[j]);
-							builder.add(raw[fkColumnIndex]);
-							used[j] = true;
-						}
-						refereePK = builder.toArray();
-					}
-					Object fkValue = mapper.getNaturalKey(dbId, identity, refereePK);
-					nkBuilder.addComponent(fkValue);
-				}
+				nkBuilder.addComponent(value);
 			}
 			ArrayBuilder<Object> arrayBuilder = new ArrayBuilder<Object>(Object.class);
 			arrayBuilder.add(nkBuilder.toString());

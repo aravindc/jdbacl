@@ -55,7 +55,7 @@ public class SimpleTranscoderTest extends AbstractIdentityTest {
 
 		IdentityProvider identityProvider = createIdentities(database);
 
-		MemKeyMapper mapper = new MemKeyMapper(source, "s", target, "t", identityProvider);
+		MemKeyMapper mapper = new MemKeyMapper(source, "s", target, "t", identityProvider, database);
 		
 		// country
 		DBRow country = countryTable.queryByPK("DE", source);

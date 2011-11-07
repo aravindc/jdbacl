@@ -24,7 +24,7 @@ package org.databene.jdbacl.identity;
 import java.sql.Connection;
 
 import org.databene.commons.iterator.TableRowIterator;
-import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.Database;
 
 /**
  * {@link IdentityModel} implementation that represents a missing identity definition.<br/><br/>
@@ -34,17 +34,17 @@ import org.databene.jdbacl.model.DBTable;
  */
 public class NoIdentity extends IdentityModel {
 	
-	public NoIdentity(DBTable table) {
-		super(table);
+	public NoIdentity(String tableName) {
+		super(tableName);
     }
 
 	@Override
 	public String getDescription() {
-		return "No identity defined for table " + table;
+		return "No identity defined for table " + tableName;
 	}
 
 	@Override
-	public TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper) {
+	public TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 		throw new RuntimeException(getDescription());
     }
 

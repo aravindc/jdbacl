@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.KeyMapper;
+import org.databene.jdbacl.model.Database;
 
 /**
  * In-memory implementation of the mapping functionality needed for source databases.<br/><br/>
@@ -40,11 +41,13 @@ public class SourceDatabaseMapper {
 	Connection connection;
 	String dbId;
 	Map<String, SourceTableMapper> tableMappers;
+	Database database;
 	
-	public SourceDatabaseMapper(KeyMapper root, Connection connection, String dbId) {
+	public SourceDatabaseMapper(KeyMapper root, Connection connection, String dbId, Database database) {
 		this.root = root;
 		this.connection = connection;
 		this.dbId = dbId;
+		this.database = database;
 	    this.tableMappers = new HashMap<String, SourceTableMapper>(500);
     }
 	
@@ -65,10 +68,10 @@ public class SourceDatabaseMapper {
 	// helper methods --------------------------------------------------------------------------------------------------
 
 	private SourceTableMapper getOrCreateTableMapper(IdentityModel identity) {
-		String tableName = identity.getTable().getName();
+		String tableName = identity.getTableName();
 	    SourceTableMapper mapper = tableMappers.get(tableName);
 	    if (mapper == null) {
-	    	mapper = new SourceTableMapper(root, connection, dbId, identity);
+	    	mapper = new SourceTableMapper(root, connection, dbId, identity, database);
 	    	tableMappers.put(tableName, mapper);
 	    }
 	    return mapper;

@@ -49,12 +49,12 @@ public class UniqueKeyIdentityTest extends AbstractIdentityTest {
 		Database database = importDatabase(connection);
 		IdentityProvider identityProvider = createIdentities(database);
 		DBTable countryDbTable = database.getTable("country");
-		UniqueKeyIdentity countryIdentity = new UniqueKeyIdentity(countryDbTable);
+		UniqueKeyIdentity countryIdentity = new UniqueKeyIdentity(
+				countryDbTable.getName(), new String[] { "CODE" });
 		identityProvider.registerIdentity(countryIdentity, "country");
-		countryIdentity.setColumns(new String[] { "CODE" });
 
-		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider);
-		HeavyweightIterator<Object[]> iterator = countryIdentity.createNkPkIterator(connection, "db", mapper);
+		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
+		HeavyweightIterator<Object[]> iterator = countryIdentity.createNkPkIterator(connection, "db", mapper, database);
 		expectCountryNkPk("DE", "DE", iterator);
 		expectCountryNkPk("FR", "FR", iterator);
 		expectCountryNkPk("UK", "UK", iterator);

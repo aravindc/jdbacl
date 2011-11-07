@@ -29,6 +29,7 @@ import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.bean.ObjectOrArray;
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.KeyMapper;
+import org.databene.jdbacl.model.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,12 +50,14 @@ public abstract class AbstractTableMapper {
 	protected IdentityModel identity;
 	private   Map<ObjectOrArray, String> pkToNk;
 	private   MapperState state;
+	Database database;
 
-	public AbstractTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel identity) {
+	public AbstractTableMapper(KeyMapper root, Connection connection, String dbId, IdentityModel identity, Database database) {
 		this.root = root;
 		this.connection = connection;
 		this.dbId = dbId;
 		this.identity = identity;
+	    this.database = database;
 	    this.pkToNk = new HashMap<ObjectOrArray, String>(1000);
 	    this.state = MapperState.CREATED;
     }
@@ -77,8 +80,8 @@ public abstract class AbstractTableMapper {
 	
 	private void populate() {
 		this.state = MapperState.POPULATING;
-		LOGGER.debug("Populating key mapper for table {} on database {}", identity.getTable().getName(), dbId);
-	    HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, dbId, root);
+		LOGGER.debug("Populating key mapper for table {} on database {}", identity.getTableName(), dbId);
+	    HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, dbId, root, database);
 	    while (iterator.hasNext()) {
 	    	Object[] nkPkTuple = iterator.next();
 	    	Object pk = identity.extractPK(nkPkTuple);

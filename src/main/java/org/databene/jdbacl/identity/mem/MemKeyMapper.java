@@ -29,6 +29,7 @@ import org.databene.commons.ConfigurationError;
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.IdentityProvider;
 import org.databene.jdbacl.identity.KeyMapper;
+import org.databene.jdbacl.model.Database;
 
 /**
  * In-memory implementation of a {@link KeyMapper}.<br/><br/>
@@ -39,13 +40,15 @@ import org.databene.jdbacl.identity.KeyMapper;
 public class MemKeyMapper extends KeyMapper {
 
 	TargetDatabaseMapper targetDBMapper;
+	private Database database;
 	private Map<String, SourceDatabaseMapper> sourceDBMappers;
 
-	public MemKeyMapper(Connection source, String sourceDbId, Connection target, String targetDbId, IdentityProvider identityProvider) {
+	public MemKeyMapper(Connection source, String sourceDbId, Connection target, String targetDbId, IdentityProvider identityProvider, Database database) {
 		super(identityProvider);
 		sourceDBMappers = new HashMap<String, SourceDatabaseMapper>();
 		setTarget(target, targetDbId);
 		createSourceDBMapper(source, sourceDbId);
+		this.database = database;
     }
 	
 	// KeyMapper interface implementation ------------------------------------------------------------------------------
@@ -86,7 +89,7 @@ public class MemKeyMapper extends KeyMapper {
 	
 	private void setTarget(Connection target, String targetDbId) {
 		if (targetDBMapper == null)
-			targetDBMapper = new TargetDatabaseMapper(this, target, targetDbId);
+			targetDBMapper = new TargetDatabaseMapper(this, target, targetDbId, database);
 		else if (!(targetDBMapper.getDbId()).equals(targetDbId))
 			throw new ConfigurationError("'target' has already been set to a different database: " + 
 					targetDBMapper.getDbId());
@@ -95,14 +98,14 @@ public class MemKeyMapper extends KeyMapper {
     public void registerSource(String sourceDbId, Connection connection) {
 	    SourceDatabaseMapper mapper = sourceDBMappers.get(sourceDbId);
 	    if (mapper == null) {
-	    	mapper = new SourceDatabaseMapper(this, connection, sourceDbId);
+	    	mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
 	    	sourceDBMappers.put(sourceDbId, mapper);
 	    }
     }
 
     private void createSourceDBMapper(Connection connection, String sourceDbId) {
 	    String sourceId = sourceDbId;
-		SourceDatabaseMapper mapper = new SourceDatabaseMapper(this, connection, sourceDbId);
+		SourceDatabaseMapper mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);
     	sourceDBMappers.put(sourceId, mapper);
     }
 

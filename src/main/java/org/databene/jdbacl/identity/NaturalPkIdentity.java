@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -23,11 +23,10 @@ package org.databene.jdbacl.identity;
 
 import java.sql.Connection;
 
-import org.databene.commons.ArrayFormat;
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.iterator.TableRowIterator;
-import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.Database;
 
 /**
  * {@link IdentityModel} implementation for tables which have a natural key as primary key.<br/><br/>
@@ -37,30 +36,30 @@ import org.databene.jdbacl.model.DBTable;
  */
 public class NaturalPkIdentity extends IdentityModel {
 	
-	public NaturalPkIdentity(DBTable table) {
-		super(table);
+	public NaturalPkIdentity(String tableName) {
+		super(tableName);
 	}
 
 	@Override
 	public TableRowIterator createNkPkIterator(
-			Connection connection, String dbId, KeyMapper mapper) {
-		String[] pkColumns = table.getPKColumnNames();
-		if (ArrayUtil.isEmpty(pkColumns))
-			throw new ConfigurationError("Table '" + table.getName() + "' has no primary key");
+			Connection connection, String dbId, KeyMapper mapper, Database database) {
+		String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
+		if (ArrayUtil.isEmpty(pkColumnNames))
+			throw new ConfigurationError("Table '" + tableName + "' has no primary key");
 		StringBuilder builder = new StringBuilder("select ");
-		builder.append(pkColumns[0]);
-		for (int i = 1; i < pkColumns.length; i++)
-			builder.append(" || '|' || ").append(pkColumns[i]);
-		for (String columnName : pkColumns)
-			builder.append(", ").append(columnName);
-		builder.append(" from ").append(table.getName());
+		builder.append(pkColumnNames[0]);
+		for (int i = 1; i < pkColumnNames.length; i++)
+			builder.append(" || '|' || ").append(pkColumnNames[i]);
+		for (String pkColumnName : pkColumnNames)
+			builder.append(", ").append(pkColumnName);
+		builder.append(" from ").append(tableName);
 		String query = builder.toString();
-		return table.query(query, connection);
+		return query(query, connection);
 	}
 
 	@Override
 	public String getDescription() {
-		return "Identity definition by primary: " + ArrayFormat.format(table.getPKColumnNames());
+		return tableName + " identity by primary key";
 	}
 
 }

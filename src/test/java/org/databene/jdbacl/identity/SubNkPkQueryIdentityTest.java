@@ -49,8 +49,8 @@ public class SubNkPkQueryIdentityTest extends AbstractIdentityTest {
 		IdentityProvider identityProvider = createIdentities(database);
 		IdentityModel identity = identityProvider.getIdentity("state");
 
-		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider);
-		HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, "db", mapper);
+		MemKeyMapper mapper = new MemKeyMapper(connection, "db", null, null, identityProvider, database);
+		HeavyweightIterator<Object[]> iterator = identity.createNkPkIterator(connection, "db", mapper, database);
 		expectStateNkPk("DE|BY", 1, iterator);
 		assertFalse(iterator.hasNext());
 		
