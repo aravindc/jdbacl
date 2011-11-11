@@ -30,16 +30,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.databene.commons.collection.OrderedNameMap;
+
 /**
  * Represents a JDBC database schema.<br/><br/>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> implements TableHolder, SequenceHolder, Serializable {
+public class DBSchema extends AbstractCompositeDBObject<DBObject> implements TableHolder, SequenceHolder, Serializable {
 
     private static final long serialVersionUID = 5890222751656809426L;
     
-    PackageAndTableSupport support;
+	private List<DBObject> components;
+	private OrderedNameMap<DBTable> tables;
+	private OrderedNameMap<DBSequence> sequences;
+    private OrderedNameMap<DBTrigger> triggers;
+    private OrderedNameMap<DBPackage> packages;
     
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -51,7 +57,11 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
     	super(name, "schema");
     	if (catalog != null)
     		catalog.addSchema(this);
-    	this.support = new PackageAndTableSupport();
+		this.components = new ArrayList<DBObject>();
+		this.tables = OrderedNameMap.createCaseInsensitiveMap();
+		this.sequences = OrderedNameMap.createCaseInsensitiveMap();
+    	this.triggers = OrderedNameMap.createCaseInsensitiveMap();
+    	this.packages = OrderedNameMap.createCaseInsensitiveMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
@@ -76,44 +86,65 @@ public class DBSchema extends AbstractCompositeDBObject<DBPackageComponent> impl
 
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
-	public List<DBPackageComponent> getComponents() {
-		return support.getComponents();
+	public List<DBObject> getComponents() {
+		return components;
 	}
 	
     // table operations ------------------------------------------------------------------------------------------------
 
     public List<DBTable> getTables() {
-        return getTables(false);
+		return tables.values();
     }
 
-    public List<DBTable> getTables(boolean recursive) {
-		return getTables(recursive, new ArrayList<DBTable>());
-    }
-
-    public List<DBTable> getTables(boolean recursive, List<DBTable> result) {
-		return support.getTables(recursive, result);
-    }
-
+	public List<DBTable> getTables(boolean recursive) {
+		return getTables();
+	}
+	
     public DBTable getTable(String tableName) {
-        return support.getTable(tableName);
+        return tables.get(tableName);
     }
 
     public void addTable(DBTable table) {
-    	support.addTable(table);
+        tables.put(table.getName(), table);
+        components.add(table);
     }
 
     public void removeTable(DBTable table) {
-        support.removeTable(table);
+        tables.remove(table.getName());
+        components.remove(table);
     }
     
     // sequence operations ---------------------------------------------------------------------------------------------
 
-	public void addSequence(DBSequence sequence) {
-		support.addSequence(sequence);
-	}
-
+    public void addSequence(DBSequence sequence) {
+    	this.sequences.put(sequence.getName(), sequence);
+    	components.add(sequence);
+    }
+    
 	public List<DBSequence> getSequences(boolean recursive) {
-		return support.getSequences(recursive);
+		return sequences.values();
+	}
+	
+	// trigger operations ----------------------------------------------------------------------------------------------
+
+	public List<DBTrigger> getTriggers() {
+		return triggers.values();
+	}
+	
+	public void addTrigger(DBTrigger trigger) {
+		triggers.put(trigger.getName(), trigger);
+		components.add(trigger);
+	}
+	
+	// package operations ----------------------------------------------------------------------------------------------
+
+	public List<DBPackage> getPackages() {
+		return packages.values();
+	}
+	
+	public void addPackage(DBPackage pkg) {
+		packages.put(pkg.getName(), pkg);
+		components.add(pkg);
 	}
 
 }
