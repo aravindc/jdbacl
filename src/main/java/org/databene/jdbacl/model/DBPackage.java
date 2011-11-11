@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,92 +21,106 @@
 
 package org.databene.jdbacl.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.databene.commons.NullSafeComparator;
+import org.databene.commons.anno.Nullable;
+import org.databene.commons.collection.OrderedNameMap;
+
 /**
- * Represents a database package.<br/><br/>
- * Created: 05.12.2010 11:06:48
- * @since 0.6.4
+ * Represents a database packet which can hold {@link DBProcedure}s.<br/><br/>
+ * Created: 07.11.2011 15:42:47
+ * @since 0.7.0
  * @author Volker Bergmann
  */
-public class DBPackage extends AbstractCompositeDBObject<DBPackageComponent> implements DBPackageComponent, TableHolder, SequenceHolder {
+public class DBPackage extends AbstractCompositeDBObject<DBProcedure> {
+	
+	private static final long serialVersionUID = 5001335810310474145L;
+	
+	private @Nullable String subObjectName;
+	private String objectId;
+	private @Nullable String dataObjectId;
+	private String objectType;
+	private String status;
+	
+	private OrderedNameMap<DBProcedure> procedures;
 
-    private static final long serialVersionUID = 5890222751656809426L;
-    
-    PackageAndTableSupport support;
-    
-    // constructors ----------------------------------------------------------------------------------------------------
-
-    public DBPackage(String name) {
-        this(name, null);
-    }
-
-    public DBPackage(String name, CompositeDBObject<? extends DBObject> parent) {
-    	super(name, "package");
-    	if (parent instanceof DBPackage)
-			((DBPackage) parent).addPackage(this);
-    	this.support = new PackageAndTableSupport();
-    }
-
-    private void addPackage(DBPackage dbPackage) {
-		support.addPackage(dbPackage);
+	public DBPackage(String name, DBSchema owner) {
+		super(name, "package", owner);
+		this.procedures = OrderedNameMap.createCaseInsensitiveMap();
+		if (owner != null)
+			owner.addPackage(this);
 	}
 
-	public DBSchema getSchema() {
-		CompositeDBObject<?> parent = getOwner();
-        while (parent != null && !(parent instanceof DBSchema))
-        	parent = parent.getOwner();
-        return (DBSchema) parent;
-    }
+	public String getSubObjectName() {
+		return subObjectName;
+	}
 
-	public DBCatalog getCatalog() {
-        return getSchema().getCatalog();
-    }
+	public void setSubObjectName(String subObjectName) {
+		this.subObjectName = subObjectName;
+	}
 
-    // CompositeDBObject implementation --------------------------------------------------------------------------------
+	public String getObjectId() {
+		return objectId;
+	}
 
-	public List<DBPackageComponent> getComponents() {
-		List<DBPackageComponent> result = new ArrayList<DBPackageComponent>();
-		result.addAll(support.getTables());
-		result.addAll(support.getPackages());
-		return result;
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
+
+	public String getDataObjectId() {
+		return dataObjectId;
+	}
+
+	public void setDataObjectId(String dataObjectId) {
+		this.dataObjectId = dataObjectId;
+	}
+
+	public String getObjectType() {
+		return objectType;
+	}
+
+	public void setObjectType(String objectType) {
+		this.objectType = objectType;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public List<DBProcedure> getProcedures() {
+		return procedures.values();
+	}
+
+	public void setProcedures(OrderedNameMap<DBProcedure> procedures) {
+		this.procedures = procedures;
+	}
+
+	public List<DBProcedure> getComponents() {
+		return procedures.values();
+	}
+
+	public void addProcedure(DBProcedure procedure) {
+		this.procedures.put(procedure.getName(), procedure);
+		procedure.setOwner(this);
+	}
+
+	@Override
+	public boolean isIdentical(DBObject other) {
+		if (this == other)
+			return true;
+		if (other == null || other.getClass() != this.getClass())
+			return false;
+		DBPackage that = (DBPackage) other;
+		return NullSafeComparator.equals(this.subObjectName, that.subObjectName)
+			&& this.objectId.equals(that.objectId)
+			&& NullSafeComparator.equals(this.dataObjectId, that.dataObjectId)
+			&& this.objectType.equals(that.objectType)
+			&& this.status.equals(that.status);
 	}
 	
-    // table operations ------------------------------------------------------------------------------------------------
-
-    public List<DBTable> getTables() {
-        return support.getTables();
-    }
-
-    public List<DBTable> getTables(boolean recursive) {
-		return support.getTables(recursive);
-    }
-
-    public List<DBTable> getTables(boolean recursive, List<DBTable> result) {
-    	return support.getTables(recursive, result);
-    }
-
-    public DBTable getTable(String tableName) {
-        return support.getTable(tableName);
-    }
-
-    public void addTable(DBTable table) {
-        support.addTable(table);
-    }
-
-    public void removeTable(DBTable table) {
-        support.removeTable(table);
-    }
-
-    // sequence operations ---------------------------------------------------------------------------------------------
-    
-	public List<DBSequence> getSequences(boolean recursive) {
-		return support.getSequences(recursive);
-	}
-
-	public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
-		return support.getSequences(recursive, result);
-	}
-
 }
