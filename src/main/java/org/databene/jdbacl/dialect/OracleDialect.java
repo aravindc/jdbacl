@@ -33,15 +33,24 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.databene.commons.ArrayBuilder;
+import org.databene.commons.CollectionUtil;
+import org.databene.commons.NameUtil;
+import org.databene.commons.OrderedMap;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBCheckConstraint;
+import org.databene.jdbacl.model.DBPackage;
+import org.databene.jdbacl.model.DBProcedure;
+import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.model.DBTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,4 +218,125 @@ public class OracleDialect extends DatabaseDialect {
 		return (not ? "NOT " : "") + "REGEXP_LIKE(" + expression + ", '" + regex + "')";
 	}
 
+	/*
+	@Override
+	public List<DBIndex> queryIndexes(DBSchema schema, Connection connection) throws SQLException {
+		String query = "SELECT INDEX_NAME, INDEX_TYPE, TABLE_OWNER, TABLE_NAME, TABLE_TYPE, UNIQUENESS" +
+				" FROM USER_INDEXES";
+		if (schema != null)
+			query += " WHERE TABLE_OWNER = '" + schema.getName().toUpperCase() + "'";
+		List<Object[]> indexInfos = DBUtil.query(query, connection);
+		OrderedMap<String, DBIndex> indexes = new OrderedMap<String, DBIndex>();
+		for (int i = 0; i < indexInfos.size(); i++) {
+			Object[] indexInfo = indexInfos.get(i);
+			String ownerName = (String) indexInfo[2];
+			if (schema == null || schema.getName().equals(ownerName)) {
+				boolean unique = "UNIQUE".equalsIgnoreCase(indexInfo[5].toString());
+				String name = (String) indexInfo[0];
+				String tableName = (String) indexInfo[3];
+				boolean deterministicName = isDeterministicIndexName(name);
+				DBTable table = schema.getTable(tableName);
+				DBIndex index;
+				if (unique) {
+					DBUniqueConstraint uk = table.getUniqueConstraint(name);
+					index = new DBUniqueIndex(name, deterministicName, uk);
+				} else {
+					index = new DBNonUniqueIndex(name, deterministicName, table);
+				}
+				indexes.put(index.getName(), index);
+				LOGGER.debug("Imported index {}", index);
+			}
+		}
+		
+		// query package procedures
+		query = "SELECT INDEX_NAME, TABLE_NAME, COLUMN_NAME, COLUMN_POSITION FROM USER_IND_COLUMNS";
+		if (schema != null)
+			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
+		query += " ORDER BY INDEX_NAME, COLUMN_POSITION";
+		List<Object[]> colInfos = DBUtil.query(query, connection);
+		for (int i = 0; i < colInfos.size(); i++) {
+			Object[] colInfo = colInfos.get(i);
+			DBIndex index = indexes.get((String) colInfo[0]);
+			String columnName = (String) colInfo[2];
+			index.addColumnName(columnName);
+			LOGGER.debug("Imported index column {}.{}", index.getName(), columnName);
+		}		
+		return indexes.values();
+	}
+	*/
+	
+	@Override
+	public List<DBTrigger> queryTriggers(DBSchema schema, Connection connection) throws SQLException {
+		String query = "SELECT OWNER, TRIGGER_NAME, TRIGGER_TYPE, TRIGGERING_EVENT, TABLE_OWNER, BASE_OBJECT_TYPE, " +
+			"TABLE_NAME, COLUMN_NAME, REFERENCING_NAMES, WHEN_CLAUSE, STATUS, DESCRIPTION, ACTION_TYPE, " +
+			"TRIGGER_BODY FROM SYS.ALL_TRIGGERS";
+		if (schema != null)
+			query += " WHERE OWNER = '" + schema.getName().toUpperCase() + "'";
+		List<Object[]> triggerInfos = DBUtil.query(query, connection);
+		List<DBTrigger> triggers = new ArrayList<DBTrigger>();
+		for (int i = 0; i < triggerInfos.size(); i++) {
+			Object[] triggerInfo = triggerInfos.get(i);
+			DBTrigger trigger = new DBTrigger((String) triggerInfo[1], schema);
+			trigger.setTriggerType((String) triggerInfo[2]);
+			trigger.setTriggeringEvent((String) triggerInfo[3]);
+			trigger.setTableOwner((String) triggerInfo[4]);
+			trigger.setBaseObjectType((String) triggerInfo[5]);
+			trigger.setTableName((String) triggerInfo[6]);
+			trigger.setColumnName((String) triggerInfo[7]);
+			trigger.setReferencingNames((String) triggerInfo[8]);
+			trigger.setWhenClause((String) triggerInfo[9]);
+			trigger.setStatus((String) triggerInfo[10]);
+			trigger.setDescription((String) triggerInfo[11]);
+			trigger.setActionType((String) triggerInfo[12]);
+			trigger.setTriggerBody((String) triggerInfo[13]);
+			triggers.add(trigger);
+			LOGGER.debug("Imported trigger: {}", trigger.getName());
+		}
+		return triggers;
+	}
+	
+	@Override
+	public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
+		
+		// query packages
+		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
+				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
+		if (schema != null)
+			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
+		List<Object[]> pkgInfos = DBUtil.query(query, connection);
+		OrderedMap<String, DBPackage> packages = new OrderedMap<String, DBPackage>();
+		for (int i = 0; i < pkgInfos.size(); i++) {
+			Object[] pkgInfo = pkgInfos.get(i);
+			String ownerName = (String) pkgInfo[0];
+			if (schema == null || schema.getName().equals(ownerName)) {
+				String name = (String) pkgInfo[1];
+				DBPackage pkg = new DBPackage(name, schema);
+				pkg.setSubObjectName((String) pkgInfo[2]);
+				pkg.setObjectId(pkgInfo[3].toString());
+				pkg.setObjectType((String) pkgInfo[4]);
+				pkg.setStatus((String) pkgInfo[5]);
+				packages.put(pkg.getName(), pkg);
+				LOGGER.debug("Imported package {}", pkg);
+			}
+		}
+		
+		// query package procedures
+		query = "SELECT OBJECT_NAME, PROCEDURE_NAME, OBJECT_ID, SUBPROGRAM_ID, OVERLOAD" +
+			" FROM SYS.USER_PROCEDURES WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'" +
+			" AND PROCEDURE_NAME IS NOT NULL AND OBJECT_NAME IN (" + 
+			CollectionUtil.formatCommaSeparatedList(NameUtil.getNames(packages.values()), '\'') + ")";
+		List<Object[]> procInfos = DBUtil.query(query, connection);
+		for (int i = 0; i < procInfos.size(); i++) {
+			Object[] procInfo = procInfos.get(i);
+			DBPackage owner = packages.get((String) procInfo[0]);
+			String name = (String) procInfo[1];
+			DBProcedure proc = new DBProcedure(name, owner);
+			proc.setObjectId(procInfo[2].toString());
+			proc.setSubProgramId(procInfo[3].toString());
+			proc.setOverload((String) procInfo[4]);
+			LOGGER.debug("Imported package procedure {}.{}", owner.getName(),  proc.getName());
+		}		
+		return packages.values();
+	}
+	
 }
