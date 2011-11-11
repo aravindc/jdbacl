@@ -33,6 +33,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +43,11 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBCatalog;
+import org.databene.jdbacl.model.DBPackage;
+import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.DBTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -312,4 +316,33 @@ public abstract class DatabaseDialect {
 		return builder.toString();
 	}
 	
+    /* TODO implement queries for indexes, views, functions and procedures
+    public List<DBView> queryViews(Connection connection) throws SQLException {
+		return new ArrayList<DBView>();
+		// ORA: select VIEW_NAME, OWNER from SYS.ALL_VIEWS order by OWNER, VIEW_NAME
+	}
+
+    public List<DBIndex> queryIndexes(DBSchema schema, Connection connection) throws SQLException {
+		return new ArrayList<DBIndex>();
+	}
+
+    public List<DBFunction> queryFunctions(Connection connection) throws SQLException {
+		return new ArrayList<DBTrigger>();
+		// ORA: select OBJECT_NAME, OWNER from SYS.ALL_OBJECTS where upper(OBJECT_TYPE) = upper('FUNCTION') order by OWNER, OBJECT_NAME 
+	}
+
+    public List<DBProcedure> queryProcedures(Connection connection) throws SQLException {
+		return new ArrayList<DBTrigger>();
+		// ORA: select OBJECT_NAME, OWNER from SYS.ALL_OBJECTS where upper(OBJECT_TYPE) = upper('PROCEDURE') order by OWNER, OBJECT_NAME 
+	}
+	*/
+	
+    public List<DBTrigger> queryTriggers(DBSchema schema, Connection connection) throws SQLException {
+		return new ArrayList<DBTrigger>();
+	}
+
+    public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
+		return new ArrayList<DBPackage>();
+	}
+
 }
