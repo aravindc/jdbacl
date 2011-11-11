@@ -33,26 +33,26 @@ import org.databene.commons.collection.OrderedNameMap;
  * @since 0.6.8
  * @author Volker Bergmann
  */
-public class PackageAndTableSupport implements TableHolder, SequenceHolder {
+public class TableContainerSupport implements TableHolder, SequenceHolder {
 
-	private OrderedNameMap<DBPackage> packages;
+	private OrderedNameMap<TableContainer> subContainers;
 	private OrderedNameMap<DBTable> tables;
 	private OrderedNameMap<DBSequence> sequences;
 	
-    public PackageAndTableSupport() {
-    	this.packages = OrderedNameMap.createCaseInsensitiveMap();
+    public TableContainerSupport() {
+    	this.subContainers = OrderedNameMap.createCaseInsensitiveMap();
 		this.tables = OrderedNameMap.createCaseInsensitiveMap();
 		this.sequences = OrderedNameMap.createCaseInsensitiveMap();
     }
 
-    // package operations ----------------------------------------------------------------------------------------------
+    // sub container operations ----------------------------------------------------------------------------------------
 
-    public void addPackage(DBPackage dbPackage) {
-		packages.put(dbPackage.getName(), dbPackage);
+    public void addSubContainer(TableContainer subContainer) {
+		subContainers.put(subContainer.getName(), subContainer);
 	}
 
-	public Collection<DBPackage> getPackages() {
-		return packages.values();
+	public Collection<TableContainer> getSubContainers() {
+		return subContainers.values();
 	}
     
     // table operations ------------------------------------------------------------------------------------------------
@@ -68,8 +68,8 @@ public class PackageAndTableSupport implements TableHolder, SequenceHolder {
     public List<DBTable> getTables(boolean recursive, List<DBTable> result) {
     	result.addAll(tables.values());
     	if (recursive)
-    		for (DBPackage subPackage : packages.values())
-    			subPackage.getTables(recursive, result);
+    		for (TableContainer subContainer : subContainers.values())
+    			subContainer.getTables(recursive, result);
 		return result;
     }
 
@@ -98,15 +98,15 @@ public class PackageAndTableSupport implements TableHolder, SequenceHolder {
     public List<DBSequence> getSequences(boolean recursive, List<DBSequence> result) {
     	result.addAll(sequences.values());
     	if (recursive)
-    		for (DBPackage subPackage : packages.values())
-    			subPackage.getSequences(recursive, result);
+    		for (TableContainer subContainer : subContainers.values())
+    			subContainer.getSequences(recursive, result);
 		return result;
     }
 
-	public List<DBPackageComponent> getComponents() {
-		List<DBPackageComponent> result = new ArrayList<DBPackageComponent>();
+	public List<ContainerComponent> getComponents() {
+		List<ContainerComponent> result = new ArrayList<ContainerComponent>();
 		result.addAll(getTables(false));
-		result.addAll(getPackages());
+		result.addAll(getSubContainers());
 		result.addAll(getSequences(false));
 		return result;
 	}
