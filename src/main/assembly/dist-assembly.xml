@@ -36,6 +36,12 @@
             <outputDirectory>test</outputDirectory>
         </fileSet>
 
+		<!-- batch files -->
+		<fileSet>
+			<directory>src/main/script</directory>
+			<outputDirectory>bin</outputDirectory>
+		</fileSet>
+
         <!-- doc -->
         <fileSet>
             <directory>target/site/apidocs</directory>
@@ -53,16 +59,26 @@
 	    </fileSet>
     </fileSets>
 
+    <files>
+		<file>
+			<source>src/test/resources/log4j.xml</source>
+			<outputDirectory>bin</outputDirectory>
+			<filtered>false</filtered>
+		</file>
+	</files>
+	
     <dependencySets>
         <dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
             <scope>compile</scope>
             <outputDirectory>lib</outputDirectory>
             <unpack>false</unpack>
-            <includes>
-                <include>org.databene:databene-commons:jar</include>
-                <include>org.slf4j:slf4j-api:jar</include>
-            </includes>
+        </dependencySet>
+        <dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+            <scope>provided</scope>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
         </dependencySet>
     </dependencySets>
 </assembly>
