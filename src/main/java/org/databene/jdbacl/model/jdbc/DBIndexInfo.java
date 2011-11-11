@@ -37,6 +37,7 @@ import org.databene.commons.ArrayUtil;
 class DBIndexInfo {
 	
     public String name;
+    public String tableName;
     public boolean unique;
     public String catalogName;
     public short type;
@@ -47,8 +48,9 @@ class DBIndexInfo {
 
     public String[] columnNames;
 
-    public DBIndexInfo(String name, short type, String catalogName, boolean unique, short ordinalPosition, String columnName, Boolean ascending, int cardinality, int pages, String filterCondition) {
+    public DBIndexInfo(String name, String tableName, short type, String catalogName, boolean unique, short ordinalPosition, String columnName, Boolean ascending, int cardinality, int pages, String filterCondition) {
         this.name = name;
+        this.tableName = tableName;
         this.unique = unique;
         this.catalogName = catalogName;
         this.type = type;
