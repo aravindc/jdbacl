@@ -31,7 +31,7 @@ import org.databene.commons.NullSafeComparator;
  * @since 0.6.8
  * @author Volker Bergmann
  */
-public class DBSequence extends AbstractDBObject implements DBPackageComponent {
+public class DBSequence extends AbstractDBObject implements ContainerComponent {
 
 	private static final long serialVersionUID = 8602052311285255364L;
 
