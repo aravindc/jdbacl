@@ -61,6 +61,14 @@ public class DBUniqueIndex extends DBIndex {
         return constraint.getColumnNames();
     }
 
+	@Override
+	public void addColumnName(String columnName) {
+		if (constraint == null)
+			constraint = new DBUniqueConstraint(getTable(), name, isNameDeterministic(), columnName);
+		else
+			constraint.addColumnName(columnName);
+	}
+    
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;
@@ -71,5 +79,5 @@ public class DBUniqueIndex extends DBIndex {
 			&& Arrays.equals(this.getColumnNames(), that.getColumnNames())
 			&& NullSafeComparator.equals(getOwner().getName(), that.getOwner().getName());
 	}
-    
+
 }

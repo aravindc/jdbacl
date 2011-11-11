@@ -28,6 +28,7 @@ package org.databene.jdbacl.model;
 
 import java.util.Arrays;
 
+import org.databene.commons.ArrayUtil;
 import org.databene.commons.NullSafeComparator;
 
 /**
@@ -54,6 +55,11 @@ public class DBNonUniqueIndex extends DBIndex {
     @Override
     public String[] getColumnNames() {
         return columnNames;
+    }
+    
+    @Override
+    public void addColumnName(String columnName) {
+    	this.columnNames = ArrayUtil.append(columnName, columnNames);
     }
     
 	public boolean isIdentical(DBObject other) {
