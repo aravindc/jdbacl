@@ -221,4 +221,20 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
         return sequences;
 	}
 
+	public List<DBTrigger> getTriggers() {
+    	List<DBTrigger> triggers = new ArrayList<DBTrigger>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBSchema schema : catalog.getSchemas())
+            	triggers.addAll(schema.getTriggers());
+        return triggers;
+	}
+
+	public List<DBPackage> getPackages() {
+    	List<DBPackage> packages = new ArrayList<DBPackage>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBSchema schema : catalog.getSchemas())
+            	packages.addAll(schema.getPackages());
+        return packages;
+	}
+
 }

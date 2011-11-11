@@ -91,6 +91,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	boolean importingUKs = true;
 	boolean importingSequences = false;
 	boolean importingChecks = true;
+	boolean importingTriggers = false;
+	boolean importingPackages = false;
 	boolean lazy = false;
 	
     Connection _connection;
@@ -191,8 +193,20 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	public void setImportingSequences(boolean importingSequences) {
 		this.importingSequences = importingSequences;
 	}
+	
+	public void setImportingTriggers(boolean importingTriggers) {
+		this.importingTriggers = importingTriggers;
+	}
 
-    public void setSchemaName(String schemaName) {
+	public boolean isImportingPackages() {
+		return importingPackages;
+	}
+
+	public void setImportingPackages(boolean importingPackages) {
+		this.importingPackages = importingPackages;
+	}
+
+	public void setSchemaName(String schemaName) {
 	    this.schemaName = schemaName;
     }
     
@@ -243,6 +257,10 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	            if (importingChecks)
 	            	importChecks();
             }
+            if (importingTriggers)
+            	importTriggers();
+            if (importingPackages)
+            	importPackages();
             long duration = System.currentTimeMillis() - startTime;
             LOGGER.info("Imported" + (lazy ? " core" : "") + " database metadata within " + duration + " ms.");
             return database;
@@ -385,8 +403,6 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 			dTable.setDoc(remarks);
 			table = dTable;
 		}
-        if (schema != null)
-            schema.addTable(table);
 	    return table;
     }
 
@@ -568,6 +584,92 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
     }
 
 	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) {
+	    for (DBSchema schema : catalog.getSchemas()) {
+	        LOGGER.debug("Importing indexes for schema '" + schema.getName() + "'");
+	        OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<DBIndexInfo>();
+	        ResultSet indexSet = null;
+	        try {
+		        indexSet = metaData.getIndexInfo(catalog.getName(), schema.getName(), null, !importingIndexes, false);
+		        //DBUtil.print(indexSet);
+		        while (indexSet.next()) {
+		            String indexName = null;
+		            try {
+		            	String tableName = indexSet.getString(3);
+		    	    	if (!tableSupported(tableName))
+		    	    		continue;
+		                boolean unique = !indexSet.getBoolean(4);
+		                String indexCatalogName = indexSet.getString(5);
+		                indexName = indexSet.getString(6);
+		                short indexType = indexSet.getShort(7);
+		                // not used: 
+		                // tableIndexStatistic - this identifies table statistics that are returned in conjuction with a table's index descriptions
+		                // tableIndexClustered - this is a clustered index
+		                // tableIndexHashed - this is a hashed index
+		                // tableIndexOther - this is some other style of index
+		                //
+		                short ordinalPosition = indexSet.getShort(8);
+		                if (ordinalPosition == 0)
+		                    continue;
+		                String columnName = indexSet.getString(9);
+		                String ascOrDesc = indexSet.getString(10);
+		                Boolean ascending = (ascOrDesc != null ? ascOrDesc.charAt(0) == 'A' : null);
+		                int cardinality = indexSet.getInt(11);
+		                int pages = indexSet.getInt(12);
+		                String filterCondition = indexSet.getString(13);
+		                if (LOGGER.isDebugEnabled())
+		                    LOGGER.debug("found " + (unique ? "unique index " : "index ") + indexName + ", " 
+		                            + indexCatalogName + ", " + indexType + ", " 
+		                            + ordinalPosition + ", " + columnName + ", " + ascOrDesc + ", " 
+		                            + cardinality + ", " + pages + ", " + filterCondition);
+		                DBIndexInfo index = indexes.get(indexName);
+		                if (index == null) {
+		                    index = new DBIndexInfo(indexName, tableName, indexType, indexCatalogName, unique,
+		                        ordinalPosition, columnName,
+		                        ascending, cardinality, pages, filterCondition);
+		                    indexes.put(indexName, index);
+		                } else {
+		                    index.addColumn(ordinalPosition, columnName);
+		                }
+		            } catch (Exception e) {
+		            	LOGGER.error("Error parsing indexes: ", e);
+		            }
+		        }
+	        } catch (SQLException e) {
+        		// possibly we try to query a catalog to which we do not have access rights
+        		errorHandler.handleError("Error parsing index data of schema " + schema.getName(), e);
+			} finally {
+	        	DBUtil.close(indexSet);
+	        }
+	        for (DBIndexInfo indexInfo : indexes.values()) {
+                DBIndex index = null;
+	            try {
+	            	DBTable table = schema.getTable(indexInfo.tableName);
+                    boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
+	                if (indexInfo.unique) {
+	                	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
+	                	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
+	                	DBUniqueConstraint constraint;
+	                	if (isPK) {
+	                		constraint = pk;
+	                	} else {
+	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
+		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
+	                	}
+						index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
+		                ((DefaultDBTable) table).addIndex(index);
+	                } else {
+	                    index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
+		                ((DefaultDBTable) table).addIndex(index);
+	                }
+	            } catch (ObjectNotFoundException e) {
+	                LOGGER.error("Error parsing index: " + index, e);
+	            }
+	        }
+	    }
+    }
+
+	/*
+	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) {
 	    for (DBTable table : catalog.getTables()) {
 	    	if (!tableSupported(table.getName()))
 	    		continue;
@@ -584,12 +686,12 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		                String indexCatalogName = indexSet.getString(5);
 		                indexName = indexSet.getString(6);
 		                short indexType = indexSet.getShort(7);
-		                /* not used: 
-		                 * tableIndexStatistic - this identifies table statistics that are returned in conjuction with a table's index descriptions
-		                 * tableIndexClustered - this is a clustered index
-		                 * tableIndexHashed - this is a hashed index
-		                 * tableIndexOther - this is some other style of index
-		                 */
+		                // not used: 
+		                // tableIndexStatistic - this identifies table statistics that are returned in conjuction with a table's index descriptions
+		                // tableIndexClustered - this is a clustered index
+		                // tableIndexHashed - this is a hashed index
+		                // tableIndexOther - this is some other style of index
+		                //
 		                short ordinalPosition = indexSet.getShort(8);
 		                if (ordinalPosition == 0)
 		                    continue;
@@ -649,6 +751,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	        }
 	    }
     }
+    */
+    
 
     private void importImportedKeys() {
         LOGGER.info("Importing imported keys");
@@ -802,6 +906,26 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 		} catch (Exception e) {
 			LOGGER.error("Error importing sequences", e);
 		}
+	}
+
+	private void importTriggers() throws SQLException {
+		for (DBCatalog catalog : database.getCatalogs())
+			for (DBSchema schema : catalog.getSchemas())
+				importTriggers(schema);
+	}
+
+	private void importTriggers(DBSchema schema) throws SQLException {
+		dialect.queryTriggers(schema, _connection);
+	}
+
+	private void importPackages() throws SQLException {
+		for (DBCatalog catalog : database.getCatalogs())
+			for (DBSchema schema : catalog.getSchemas())
+				importPackages(schema);
+	}
+
+	private void importPackages(DBSchema schema) throws SQLException {
+		dialect.queryPackages(schema, _connection);
 	}
 
 
