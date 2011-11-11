@@ -62,4 +62,6 @@ public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, Seq
 	public void removeTable(String tableName);
 
 	public List<DBSequence> getSequences();
+	public List<DBTrigger> getTriggers();
+	public List<DBPackage> getPackages();
 }
