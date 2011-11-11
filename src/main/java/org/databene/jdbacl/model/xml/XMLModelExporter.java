@@ -34,6 +34,9 @@ import org.databene.commons.Encodings;
 import org.databene.commons.IOUtil;
 import org.databene.commons.xml.SimpleXMLWriter;
 import org.databene.jdbacl.SQLUtil;
+import org.databene.jdbacl.model.DBPackage;
+import org.databene.jdbacl.model.DBProcedure;
+import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
@@ -126,6 +129,10 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			exportTable(table, writer);
 		for (DBSequence sequence : schema.getSequences(true))
 			exportSequence(sequence, writer);
+		for (DBTrigger trigger : schema.getTriggers())
+			exportTrigger(trigger, writer);
+		for (DBPackage pkg : schema.getPackages())
+			exportPackage(pkg, writer);
 		writer.endElement("schema");
 	}
 
@@ -257,6 +264,47 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		addIfNotNull("order", sequence.isOrder(), atts);
 		writer.startElement("sequence", atts);
 		writer.endElement("sequence");
+	}
+
+	private void exportTrigger(DBTrigger trigger, SimpleXMLWriter writer) throws SAXException {
+		AttributesImpl atts = createAttributes("name", trigger.getName());
+		addIfNotNull("triggerType", trigger.getTriggerType(), atts);
+		addIfNotNull("triggeringEvent", trigger.getTriggeringEvent(), atts);
+		addIfNotNull("tableOwner", trigger.getTableOwner(), atts);
+		addIfNotNull("baseObjectType", trigger.getBaseObjectType(), atts);
+		addIfNotNull("tableName", trigger.getTableName(), atts);
+		addIfNotNull("columnName", trigger.getColumnName(), atts);
+		addIfNotNull("referencingNames", trigger.getReferencingNames(), atts);
+		addIfNotNull("whenClause", trigger.getWhenClause(), atts);
+		addIfNotNull("status", trigger.getStatus(), atts);
+		addIfNotNull("description", trigger.getDescription(), atts);
+		addIfNotNull("actionType", trigger.getActionType(), atts);
+		addIfNotNull("triggerBody", trigger.getTriggerBody(), atts);
+		writer.startElement("trigger", atts);
+		writer.endElement("trigger");
+	}
+
+	private void exportPackage(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
+		AttributesImpl atts = createAttributes("name", pkg.getName());
+		addIfNotNull("subObjectName", pkg.getSubObjectName(), atts);
+		addIfNotNull("objectId", pkg.getObjectId(), atts);
+		addIfNotNull("dataObjectId", pkg.getDataObjectId(), atts);
+		addIfNotNull("objectType", pkg.getObjectType(), atts);
+		addIfNotNull("status", pkg.getStatus(), atts);
+		writer.startElement("package", atts);
+		exportPackageProcedures(pkg, writer);
+		writer.endElement("package");
+	}
+
+	private void exportPackageProcedures(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
+		for (DBProcedure procedure : pkg.getProcedures()) {
+			AttributesImpl atts = createAttributes("name", procedure.getName());
+			addIfNotNull("objectId", procedure.getObjectId(), atts);
+			addIfNotNull("subProgramId", procedure.getSubProgramId(), atts);
+			addIfNotNull("overload", procedure.getOverload(), atts);
+			writer.startElement("procedure", atts);
+			writer.endElement("procedure");
+		}
 	}
 
 	private void addIfNotNull(String name, Object value, AttributesImpl atts) {

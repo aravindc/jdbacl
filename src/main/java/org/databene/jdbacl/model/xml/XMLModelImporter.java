@@ -31,8 +31,12 @@ import org.databene.commons.Assert;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
+import org.databene.commons.SyntaxError;
 import org.databene.commons.version.VersionNumber;
 import org.databene.commons.xml.XMLUtil;
+import org.databene.jdbacl.model.DBPackage;
+import org.databene.jdbacl.model.DBProcedure;
+import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
@@ -139,7 +143,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			String childName = child.getNodeName();
 			if ("table".equals(childName))
 				parseTableName(child, schema);
-			else if (!"sequence".equals(childName))
+			else if (!"sequence".equals(childName) && !"trigger".equals(childName) && !"package".equals(childName))
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
 		for (Element child : children) {
@@ -148,6 +152,10 @@ public class XMLModelImporter implements DBMetaDataImporter {
 				parseTableStructure(child, schema);
 			else if ("sequence".equals(childName))
 				parseSequence(child, schema);
+			else if ("trigger".equals(childName))
+				parseTrigger(child, schema);
+			else if ("package".equals(childName))
+				parsePackage(child, schema);
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
@@ -307,6 +315,87 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		if (!StringUtil.isEmpty(order))
 			sequence.setOrder(Boolean.parseBoolean(order));
 		return sequence;
+	}
+
+	private DBTrigger parseTrigger(Element e, DBSchema schema) {
+		DBTrigger trigger = new DBTrigger(e.getAttribute("name"), schema);
+		String triggerType = e.getAttribute("triggerType");
+		if (!StringUtil.isEmpty(triggerType))
+			trigger.setTriggerType(triggerType);
+		String triggeringEvent = e.getAttribute("triggeringEvent");
+		if (!StringUtil.isEmpty(triggeringEvent))
+			trigger.setTriggeringEvent(triggeringEvent);
+		String tableOwner = e.getAttribute("tableOwner");
+		if (!StringUtil.isEmpty(tableOwner))
+			trigger.setTableOwner(tableOwner);
+		String baseObjectType = e.getAttribute("baseObjectType");
+		if (!StringUtil.isEmpty(baseObjectType))
+			trigger.setBaseObjectType(baseObjectType);
+		String tableName = e.getAttribute("tableName");
+		if (!StringUtil.isEmpty(tableName))
+			trigger.setTableName(tableName);
+		String columnName = e.getAttribute("columnName");
+		if (!StringUtil.isEmpty(columnName))
+			trigger.setColumnName(columnName);
+		String referencingNames = e.getAttribute("referencingNames");
+		if (!StringUtil.isEmpty(referencingNames))
+			trigger.setReferencingNames(referencingNames);
+		String whenClause = e.getAttribute("whenClause");
+		if (!StringUtil.isEmpty(whenClause))
+			trigger.setWhenClause(whenClause);
+		String status = e.getAttribute("status");
+		if (!StringUtil.isEmpty(status))
+			trigger.setStatus(status);
+		String description = e.getAttribute("description");
+		if (!StringUtil.isEmpty(description))
+			trigger.setDescription(description);
+		String actionType = e.getAttribute("actionType");
+		if (!StringUtil.isEmpty(actionType))
+			trigger.setActionType(actionType);
+		String triggerBody = e.getAttribute("triggerBody");
+		if (!StringUtil.isEmpty(triggerBody))
+			trigger.setTriggerBody(triggerBody);
+		return trigger;
+	}
+
+	private DBPackage parsePackage(Element e, DBSchema schema) {
+		DBPackage pkg = new DBPackage(e.getAttribute("name"), schema);
+		String subObjectName = e.getAttribute("subObjectName");
+		if (!StringUtil.isEmpty(subObjectName))
+			pkg.setSubObjectName(subObjectName);
+		String objectId = e.getAttribute("objectId");
+		if (!StringUtil.isEmpty(objectId))
+			pkg.setObjectId(objectId);
+		String dataObjectId = e.getAttribute("dataObjectId");
+		if (!StringUtil.isEmpty(dataObjectId))
+			pkg.setDataObjectId(dataObjectId);
+		String objectType = e.getAttribute("objectType");
+		if (!StringUtil.isEmpty(objectType))
+			pkg.setObjectType(objectType);
+		String status = e.getAttribute("status");
+		if (!StringUtil.isEmpty(status))
+			pkg.setStatus(status);
+		parsePackageProcedures(e, pkg);
+		return pkg;
+	}
+
+	private void parsePackageProcedures(Element pkgElement, DBPackage pkg) {
+		for (Element e : XMLUtil.getChildElements(pkgElement)) {
+			String nodeName = e.getNodeName();
+			if ("procedure".equals(nodeName)) {
+				DBProcedure procedure = new DBProcedure(e.getAttribute("name"), pkg);
+				String objectId = e.getAttribute("objectId");
+				if (!StringUtil.isEmpty(objectId))
+					procedure.setObjectId(objectId);
+				String subProgramId = e.getAttribute("subProgramId");
+				if (!StringUtil.isEmpty(subProgramId))
+					procedure.setSubProgramId(subProgramId);
+				String overload = e.getAttribute("overload");
+				if (!StringUtil.isEmpty(overload))
+					procedure.setOverload(overload);
+			} else
+				throw new SyntaxError("Illegal child element of <package>", XMLUtil.format(e));
+		}
 	}
 
 	public void close() throws IOException {
