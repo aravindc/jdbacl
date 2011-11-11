@@ -69,6 +69,8 @@ public class LazyTable implements DBTable {
 	    this.schema = schema;
 	    this.name = tableName;
 	    this.doc = doc;
+        if (schema != null)
+        	schema.addTable(this);
     }
 	
 	
@@ -198,6 +200,10 @@ public class LazyTable implements DBTable {
 
 	public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
 	    return getRealTable().getUniqueConstraints(includePK);
+    }
+
+	public DBUniqueConstraint getUniqueConstraint(String name) {
+	    return getRealTable().getUniqueConstraint(name);
     }
 
 	public Collection<DBTable> getReferrers() {

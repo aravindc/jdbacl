@@ -214,6 +214,15 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 		return null;
 	}
 
+	public DBUniqueConstraint getUniqueConstraint(String name) {
+		if (name.equalsIgnoreCase(pk.getName()))
+			return pk;
+		for (DBUniqueConstraint constraint : uniqueConstraints)
+			if (name.equals(constraint.getName()))
+				return constraint;
+		return null;
+	}
+
 	public void addUniqueConstraint(DBUniqueConstraint uk) {
 		uk.setTable(this);
 		if (uk instanceof DBPrimaryKeyConstraint)

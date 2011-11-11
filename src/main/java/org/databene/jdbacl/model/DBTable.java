@@ -41,7 +41,7 @@ import java.util.Set;
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */
-public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableComponent>, Dependent<DBTable>, MultiColumnObject {
+public interface DBTable extends ContainerComponent, CompositeDBObject<DBTableComponent>, Dependent<DBTable>, MultiColumnObject {
 
     String getName();
     String getDoc();
@@ -62,6 +62,7 @@ public interface DBTable extends DBPackageComponent, CompositeDBObject<DBTableCo
 	String[] getPKColumnNames();
 
 	Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK);
+	DBUniqueConstraint getUniqueConstraint(String name);
 	void addUniqueConstraint(DBUniqueConstraint uniqueConstraint);
 
 	List<DBCheckConstraint> getCheckConstraints();
