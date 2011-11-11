@@ -28,6 +28,7 @@ package org.databene.jdbacl.model;
 
 import java.util.Arrays;
 
+import org.databene.commons.ArrayUtil;
 import org.databene.commons.NullSafeComparator;
 import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
@@ -42,7 +43,7 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 
     private static final long serialVersionUID = -8241121848879185421L;
     
-	private final String[] columnNames;
+	private String[] columnNames;
 
     /**
      * @param name the constraint name - it may be null
@@ -60,6 +61,11 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
         return columnNames;
     }
 
+	public void addColumnName(String columnName) {
+		if (!ArrayUtil.contains(columnName, columnNames))
+			columnNames = ArrayUtil.append(columnName, columnNames);
+	}
+	
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;
@@ -75,5 +81,5 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 	public String toString() {
 		return SQLUtil.ukSpec(this, NameSpec.ALWAYS);
 	}
-	
+
 }
