@@ -27,6 +27,6 @@ package org.databene.jdbacl.model;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public interface DBPackageComponent extends DBObject {
+public interface ContainerComponent extends DBObject {
 
 }
