@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -56,7 +56,7 @@ public class JDBCDBImporterTest {
 		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
 		DBUtil.runScript("org/databene/jdbacl/model/jdbc/create_tables.hsql.sql", "ISO-8859-1", connection, true, new ErrorHandler(getClass()));
 		// run importer
-		JDBCDBImporter importer = new JDBCDBImporter(connection, "sa", "public", ".*", true);
+		JDBCDBImporter importer = new JDBCDBImporter(connection, "sa", "public");
 		Database db = importer.importDatabase();
 		// check schema
 		DBSchema schema = db.getCatalog(null).getSchema("public");
