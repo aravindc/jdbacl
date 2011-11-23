@@ -132,14 +132,12 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
     }
 
-    public JDBCDBImporter(Connection connection, String user, String schemaName, 
-    		String includeTables, boolean importingIndexes) {
+    public JDBCDBImporter(Connection connection, String user, String schemaName) {
     	this._connection = connection;
         this.user = user;
         this.schemaName = schemaName;
-        this.includeTables = Pattern.compile(includeTables != null ? includeTables : ".*");
-        this.importingIndexes = importingIndexes;
         this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
+        this.importingIndexes = true;
     }
 
     // properties ------------------------------------------------------------------------------------------------------
