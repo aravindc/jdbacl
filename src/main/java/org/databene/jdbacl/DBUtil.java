@@ -657,17 +657,26 @@ public class DBUtil {
 			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
 			String tableExclusionPattern, boolean lazy, boolean cached) 
 				throws ConnectFailedException, ImportFailedException {
-		DBMetaDataImporter importer = createImporter(environment, 
+		DBMetaDataImporter importer = configureImporter(new JDBCDBImporter(environment), 
 				importUKs, importIndexes, importSequences, importChecks, tableExclusionPattern, lazy);
 		if (cached)
 			importer = new CachingDBImporter(importer, environment);
 		return importer.importDatabase();
 	}
 
-	private static JDBCDBImporter createImporter(String environment, 
+	public static Database getMetaData(Connection connection, String user, String schemaName,
+			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+			String tableExclusionPattern, boolean lazy) 
+				throws ConnectFailedException, ImportFailedException {
+		JDBCDBImporter importer = new JDBCDBImporter(connection, user, schemaName);
+		configureImporter(importer, 
+				importUKs, importIndexes, importSequences, importChecks, tableExclusionPattern, lazy);
+		return importer.importDatabase();
+	}
+
+	private static JDBCDBImporter configureImporter(JDBCDBImporter importer, 
 			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
 			String tableExclusionPattern, boolean lazy) {
-		JDBCDBImporter importer = new JDBCDBImporter(environment);
 		importer.setExcludeTables(tableExclusionPattern);
 		importer.setLazy(lazy);
 		importer.setImportingUKs(importUKs);
