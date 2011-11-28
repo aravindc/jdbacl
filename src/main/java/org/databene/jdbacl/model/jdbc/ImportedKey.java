@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl.model.jdbc;
 
+import org.databene.commons.ObjectNotFoundException;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBTable;
@@ -159,10 +160,15 @@ class ImportedKey {
         	return null;											// When querying X, it returns the foreign keys of XY to
 
         key.pkTable = null;
+        try {
         if (catalog != null)
         	key.pkTable = catalog.getTable(key.pktable_name);
         else
-        	key.pkTable = schema.getTable(key.pktable_name);    
+        	key.pkTable = schema.getTable(key.pktable_name);
+        } catch (ObjectNotFoundException e) {
+        	throw new ObjectNotFoundException("Table " + key.pktable_name + " is referenced by table " + 
+        			key.fktable_name + " but not found in the database. Possibly it was filtered out?");
+        }
         key.addForeignKeyColumn(key.fkcolumn_name, key.pkcolumn_name);
         return key;
     }
