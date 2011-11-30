@@ -24,6 +24,7 @@ package org.databene.jdbacl.swing;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import org.databene.commons.ConnectFailedException;
+import org.databene.commons.FileUtil;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.OrderedMap;
@@ -58,6 +60,10 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JdbaclGUI.class);
 	
+	private static final String DATABENE_DIRECTORY_NAME = SystemInfo.getUserHome() + File.separator + "databene";
+	private static final String GUI_PROPERTIES_FILE_NAME = 
+		DATABENE_DIRECTORY_NAME + File.separator + "JdbaclGUI.properties";
+
 	private EnvironmentSelector environmentSelector;
 	private DatabasePane databasePane;
 
@@ -152,9 +158,10 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 
 	private void saveState() {
 		try {
+			FileUtil.ensureDirectoryExists(new File(DATABENE_DIRECTORY_NAME));
 			Map<String, String> props = new OrderedMap<String, String>();
 			props.put("exclusionPattern", exclusionField.getText());
-			IOUtil.writeProperties(props, "state.properties");
+			IOUtil.writeProperties(props, GUI_PROPERTIES_FILE_NAME);
 		} catch (IOException e) {
 			// writing the file failed but isn't tragic
 		}
@@ -162,7 +169,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 
 	private void restoreState() {
 		try {
-			Map<String, String> props = IOUtil.readProperties("state.properties");
+			Map<String, String> props = IOUtil.readProperties(GUI_PROPERTIES_FILE_NAME);
 			exclusionField.setText(props.get("exclusionPattern"));
 		} catch (Exception e) {
 			// no file defined yet, use default settings
