@@ -6,13 +6,12 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
 
     <properties>
-    	<webdecs_version>0.6.4</webdecs_version>
-    	<gui_version>0.2.12</gui_version>
-    	<script_version>0.7.3</script_version>
-    	<commons_version>0.5.12</commons_version>
+    	<webdecs_version>0.6.5</webdecs_version>
+    	<script_version>0.7.4</script_version>
+    	<commons_version>0.5.13</commons_version>
     	<contiperf_version>2.0.0</contiperf_version>
     </properties>
 
@@ -69,11 +68,6 @@
             <groupId>org.databene</groupId>
             <artifactId>databene-commons</artifactId>
             <version>${commons_version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.databene</groupId>
-            <artifactId>databene-gui</artifactId>
-            <version>${gui_version}</version>
         </dependency>
         <dependency>
             <groupId>org.databene</groupId>
