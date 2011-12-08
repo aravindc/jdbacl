@@ -31,7 +31,7 @@ import javax.swing.tree.TreeModel;
 
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ImportFailedException;
-import org.databene.gui.swing.SwingTreeModelAdapter;
+import org.databene.commons.ui.swing.SwingTreeModelAdapter;
 import org.databene.jdbacl.DatabaseTreeModel;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBObject;

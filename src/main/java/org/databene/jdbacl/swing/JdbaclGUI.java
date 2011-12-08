@@ -44,8 +44,8 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.OrderedMap;
 import org.databene.commons.SystemInfo;
-import org.databene.gui.os.ApplicationUtil;
-import org.databene.gui.os.JavaApplication;
+import org.databene.commons.ui.ApplicationUtil;
+import org.databene.commons.ui.JavaApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
