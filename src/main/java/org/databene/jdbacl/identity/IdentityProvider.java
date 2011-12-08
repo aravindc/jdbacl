@@ -45,7 +45,7 @@ public class IdentityProvider {
 		return result;
 	}
 
-	public void registerIdentity(IdentityModel identity, String tableName) { // TODO v0.7 support IdentityModel.affectedVersions
+	public void registerIdentity(IdentityModel identity, String tableName) {
 		identities.put(tableName, identity);
 	}
 	
