@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -69,11 +69,12 @@ public class OracleDialect extends DatabaseDialect {
     private static final String TIMESTAMP_MESSAGE = "to_timestamp(''{0}'', ''yyyy-mm-dd HH24:mi:ss.FF'')";
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
     private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");
-
+    
 	Pattern randomNamePattern = Pattern.compile("SYS_C\\d{8}");
 
 	public OracleDialect() {
 	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN);
+	    parseReservedWords("org/databene/jdbacl/dialect/oracle-reserved_words.txt");
     }
 
 	@Override

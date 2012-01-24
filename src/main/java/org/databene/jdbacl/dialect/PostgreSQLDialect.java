@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -50,6 +50,7 @@ public class PostgreSQLDialect extends DatabaseDialect {
 
     public PostgreSQLDialect() {
 	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN);
+	    parseReservedWords("org/databene/jdbacl/dialect/oracle-reserved_words.txt");
     }
 
     @Override

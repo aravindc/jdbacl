@@ -41,6 +41,7 @@ public class SqlServerDialect extends DatabaseDialect {
 
 	public SqlServerDialect() {
 	    super("sql_server", false, false, DATE_PATTERN, TIME_PATTERN);
+	    parseReservedWords("org/databene/jdbacl/dialect/sql_server-reserved_words.txt");
     }
 
 	@Override

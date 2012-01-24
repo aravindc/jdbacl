@@ -50,7 +50,8 @@ public class H2Dialect extends DatabaseDialect {
 	Pattern randomIndexNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+|PRIMARY_KEY_\\w+");
 
     public H2Dialect() {
-	    super("h2", false, true, DATE_PATTERN, TIME_PATTERN);
+	    super("h2", true, true, DATE_PATTERN, TIME_PATTERN);
+	    parseReservedWords("org/databene/jdbacl/dialect/h2-reserved_words.txt");
     }
 
 	@Override

@@ -54,7 +54,8 @@ public class HSQLDialect extends DatabaseDialect {
 	Pattern randomIndexNamePattern = Pattern.compile("SYS_IDX_\\w+");
 
 	public HSQLDialect() {
-	    super("hsql", false, true, DATE_PATTERN, TIME_PATTERN);
+	    super("hsql", true, true, DATE_PATTERN, TIME_PATTERN);
+	    parseReservedWords("org/databene/jdbacl/dialect/hsql-reserved_words.txt");
     }
 
 	@Override

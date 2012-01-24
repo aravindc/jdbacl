@@ -26,6 +26,7 @@
 
 package org.databene.jdbacl;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,9 +36,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.databene.commons.ArrayUtil;
+import org.databene.commons.ConfigurationError;
+import org.databene.commons.IOUtil;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.converter.TimestampFormatter;
@@ -68,6 +73,7 @@ public abstract class DatabaseDialect {
     protected final boolean sequenceSupported;
 	private   final DateFormat dateFormat;
 	private   final DateFormat timeFormat;
+	private   Set<String> reservedWords;
     
     public DatabaseDialect(String system, boolean quoteTableNames, boolean sequenceSupported, 
     		String datePattern, String timePattern) {
@@ -76,12 +82,31 @@ public abstract class DatabaseDialect {
         this.sequenceSupported = sequenceSupported;
         this.dateFormat = new SimpleDateFormat(datePattern);
         this.timeFormat = new SimpleDateFormat(timePattern);
+        this.reservedWords = new HashSet<String>();
     }
 
     public String getSystem() {
     	return system;
     }
+    
+	public boolean isReservedWord(String word) {
+		return (word != null && reservedWords.contains(word.toUpperCase()));
+	}
 
+	public String[] getReservedWords() {
+		return reservedWords.toArray(new String[reservedWords.size()]);
+	}
+	
+	protected void parseReservedWords(String resourceName) {
+		try {
+			for (String word : IOUtil.readTextLines(resourceName, false))
+				reservedWords.add(word.trim());
+		} catch (IOException e) {
+			throw new ConfigurationError("Error reading file " + resourceName, e);
+		}
+	}
+
+	
     public abstract boolean isDefaultCatalog(String catalog, String user);
     
     public abstract boolean isDefaultSchema(String schema, String user);
@@ -237,8 +262,6 @@ public abstract class DatabaseDialect {
 		return "'" + new TimestampFormatter(DEFAULT_TIMESTAMP_PATTERN).format(timestamp) + "'";
 	}
 	
-	
-
 	// private helpers -------------------------------------------------------------------------------------------------
 	
     private StringBuilder appendQualifiedTableName(DBTable table, StringBuilder builder) {
