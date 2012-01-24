@@ -61,6 +61,8 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	    this.dialect = dialect;
 	    this.logger = LoggerFactory.getLogger(getClass());
     }
+	
+	// common tests for all databases ----------------------------------------------------------------------------------
 
 	@Test
 	public void testSequenceSetupConsistency() {
@@ -71,6 +73,15 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 			assertSequenceNotSupported();
 	}
 
+	@Test
+	public void testReservedWords() {
+		assertTrue(dialect.isReservedWord("TABLE"));
+		assertFalse(dialect.isReservedWord(""));
+		assertFalse(dialect.isReservedWord(null));
+	}
+	
+	// helpers ---------------------------------------------------------------------------------------------------------
+	
 	private void assertSequenceSupported() {
 	    String sequence = "DUMMY_SEQ";
 	    dialect.renderFetchSequenceValue(sequence);
