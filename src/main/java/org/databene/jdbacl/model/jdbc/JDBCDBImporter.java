@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -37,6 +37,7 @@ import org.databene.commons.ProgrammerError;
 import org.databene.commons.StringUtil;
 import org.databene.commons.Level;
 import org.databene.commons.collection.OrderedNameMap;
+import org.databene.commons.time.ElapsedTimeFormatter;
 import org.databene.commons.version.VersionNumber;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
@@ -260,7 +261,7 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             if (importingPackages)
             	importPackages();
             long duration = System.currentTimeMillis() - startTime;
-            LOGGER.info("Imported" + (lazy ? " core" : "") + " database metadata within " + duration + " ms.");
+            LOGGER.info("Imported" + (lazy ? " core" : "") + " database metadata in " + ElapsedTimeFormatter.format(duration));
             return database;
         } catch (SQLException e) {
             throw new ImportFailedException(e);
@@ -353,6 +354,8 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
             }
             String tableType = tableSet.getString(4); // Typical types are "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"
             String tableRemarks = tableSet.getString(5);
+            if (dialect.isReservedWord(tableName))
+            	LOGGER.warn("Table name is a reserved word: {}", tableName);
             if (LOGGER.isDebugEnabled())
                 LOGGER.debug("importing table: " + tCatalogName + ", " + tSchemaName + ", " + tableName + ", " + tableType + ", " + tableRemarks);
 
@@ -575,7 +578,11 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
         	DBUtil.close(pkset);
         }
     }
-
+    
+    
+    
+    // index processing ------------------------------------------------------------------------------------------------
+    
     private void importIndexes() {
         for (DBCatalog catalog : database.getCatalogs())
        		importIndexes(catalog, metaData);
@@ -584,173 +591,122 @@ public final class JDBCDBImporter implements DBMetaDataImporter {
 	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) {
 	    for (DBSchema schema : catalog.getSchemas()) {
 	        LOGGER.debug("Importing indexes for schema '" + schema.getName() + "'");
-	        OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<DBIndexInfo>();
-	        ResultSet indexSet = null;
 	        try {
-		        indexSet = metaData.getIndexInfo(catalog.getName(), schema.getName(), null, !importingIndexes, false);
-		        //DBUtil.print(indexSet);
-		        while (indexSet.next()) {
-		            String indexName = null;
-		            try {
-		            	String tableName = indexSet.getString(3);
-		    	    	if (!tableSupported(tableName))
-		    	    		continue;
-		                boolean unique = !indexSet.getBoolean(4);
-		                String indexCatalogName = indexSet.getString(5);
-		                indexName = indexSet.getString(6);
-		                short indexType = indexSet.getShort(7);
-		                // not used: 
-		                // tableIndexStatistic - this identifies table statistics that are returned in conjuction with a table's index descriptions
-		                // tableIndexClustered - this is a clustered index
-		                // tableIndexHashed - this is a hashed index
-		                // tableIndexOther - this is some other style of index
-		                //
-		                short ordinalPosition = indexSet.getShort(8);
-		                if (ordinalPosition == 0)
-		                    continue;
-		                String columnName = indexSet.getString(9);
-		                String ascOrDesc = indexSet.getString(10);
-		                Boolean ascending = (ascOrDesc != null ? ascOrDesc.charAt(0) == 'A' : null);
-		                int cardinality = indexSet.getInt(11);
-		                int pages = indexSet.getInt(12);
-		                String filterCondition = indexSet.getString(13);
-		                if (LOGGER.isDebugEnabled())
-		                    LOGGER.debug("found " + (unique ? "unique index " : "index ") + indexName + ", " 
-		                            + indexCatalogName + ", " + indexType + ", " 
-		                            + ordinalPosition + ", " + columnName + ", " + ascOrDesc + ", " 
-		                            + cardinality + ", " + pages + ", " + filterCondition);
-		                DBIndexInfo index = indexes.get(indexName);
-		                if (index == null) {
-		                    index = new DBIndexInfo(indexName, tableName, indexType, indexCatalogName, unique,
-		                        ordinalPosition, columnName,
-		                        ascending, cardinality, pages, filterCondition);
-		                    indexes.put(indexName, index);
-		                } else {
-		                    index.addColumn(ordinalPosition, columnName);
-		                }
-		            } catch (Exception e) {
-		            	LOGGER.error("Error parsing indexes: ", e);
-		            }
-		        }
+		        importAllIndexesAtOnce(catalog, schema, metaData);
 	        } catch (SQLException e) {
-        		// possibly we try to query a catalog to which we do not have access rights
-        		errorHandler.handleError("Error parsing index data of schema " + schema.getName(), e);
-			} finally {
-	        	DBUtil.close(indexSet);
-	        }
-	        for (DBIndexInfo indexInfo : indexes.values()) {
-                DBIndex index = null;
-	            try {
-	            	DBTable table = schema.getTable(indexInfo.tableName);
-                    boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
-	                if (indexInfo.unique) {
-	                	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
-	                	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
-	                	DBUniqueConstraint constraint;
-	                	if (isPK) {
-	                		constraint = pk;
-	                	} else {
-	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
-		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
-	                	}
-						index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
-		                ((DefaultDBTable) table).addIndex(index);
-	                } else {
-	                    index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
-		                ((DefaultDBTable) table).addIndex(index);
-	                }
-	            } catch (ObjectNotFoundException e) {
-	                LOGGER.error("Error parsing index: " + index, e);
-	            }
+	        	if (e.getMessage().contains("ORA-00903")) {
+	        		// Oracle may fail if a table name is a reserved word
+	        		LOGGER.info("Bulk import of Oracle infos caused an error, " +
+	        				"falling back to (slow) table-wise import.");
+	        		importIndexesTablewise(catalog, metaData);
+	        	} else {
+	        		// possibly we try to query a catalog to which we do not have access rights
+	        		errorHandler.handleError("Error parsing index data of schema " + schema.getName(), e);
+	        	}
 	        }
 	    }
     }
 
-	/*
-	private void importIndexes(DBCatalog catalog, DatabaseMetaData metaData) {
+	public void importAllIndexesAtOnce(DBCatalog catalog, DBSchema schema, DatabaseMetaData metaData)
+			throws SQLException {
+		ResultSet indexSet = null;
+		try {
+			indexSet = metaData.getIndexInfo(catalog.getName(), schema.getName(), null, !importingIndexes, false);
+			parseIndexSet(indexSet, schema, null);
+	    } finally {
+        	DBUtil.close(indexSet);
+		}
+	}
+
+	private void importIndexesTablewise(DBCatalog catalog, DatabaseMetaData metaData) {
 	    for (DBTable table : catalog.getTables()) {
 	    	if (!tableSupported(table.getName()))
 	    		continue;
 	        LOGGER.debug("Importing indexes for table '" + table.getName() + "'");
-	        OrderedNameMap<DBIndexInfo> tableIndexes = new OrderedNameMap<DBIndexInfo>();
 	        ResultSet indexSet = null;
 	        try {
 		        indexSet = metaData.getIndexInfo(catalog.getName(), table.getSchema().getName(), table.getName(), !importingIndexes, false);
-		        //DBUtil.print(indexSet);
-		        while (indexSet.next()) {
-		            String indexName = null;
-		            try {
-		                boolean unique = !indexSet.getBoolean(4);
-		                String indexCatalogName = indexSet.getString(5);
-		                indexName = indexSet.getString(6);
-		                short indexType = indexSet.getShort(7);
-		                // not used: 
-		                // tableIndexStatistic - this identifies table statistics that are returned in conjuction with a table's index descriptions
-		                // tableIndexClustered - this is a clustered index
-		                // tableIndexHashed - this is a hashed index
-		                // tableIndexOther - this is some other style of index
-		                //
-		                short ordinalPosition = indexSet.getShort(8);
-		                if (ordinalPosition == 0)
-		                    continue;
-		                String columnName = indexSet.getString(9);
-		                String ascOrDesc = indexSet.getString(10);
-		                Boolean ascending = (ascOrDesc != null ? ascOrDesc.charAt(0) == 'A' : null);
-		                int cardinality = indexSet.getInt(11);
-		                int pages = indexSet.getInt(12);
-		                String filterCondition = indexSet.getString(13);
-		                if (LOGGER.isDebugEnabled())
-		                    LOGGER.debug("found " + (unique ? "unique index " : "index ") + indexName + ", " 
-		                            + indexCatalogName + ", " + indexType + ", " 
-		                            + ordinalPosition + ", " + columnName + ", " + ascOrDesc + ", " 
-		                            + cardinality + ", " + pages + ", " + filterCondition);
-		                DBIndexInfo index = tableIndexes.get(indexName);
-		                if (index == null) {
-		                    index = new DBIndexInfo(indexName, indexType, indexCatalogName, unique,
-		                        ordinalPosition, columnName,
-		                        ascending, cardinality, pages, filterCondition);
-		                    tableIndexes.put(indexName, index);
-		                } else {
-		                    index.addColumn(ordinalPosition, columnName);
-		                }
-		            } catch (Exception e) {
-		            	LOGGER.error("Error parsing indexes: ", e);
-		            }
-		        }
+		        parseIndexSet(indexSet, table.getSchema(), (DefaultDBTable) table);
 	        } catch (SQLException e) {
         		// possibly we try to query a catalog to which we do not have access rights
         		errorHandler.handleError("Error parsing index data of table " + table.getName(), e);
 			} finally {
 	        	DBUtil.close(indexSet);
 	        }
-	        for (DBIndexInfo indexInfo : tableIndexes.values()) {
-                DBIndex index = null;
-	            try {
-                    boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
-	                if (indexInfo.unique) {
-	                	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
-	                	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
-	                	DBUniqueConstraint constraint;
-	                	if (isPK) {
-	                		constraint = pk;
-	                	} else {
-	                		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
-		                    ((DefaultDBTable) table).addUniqueConstraint(constraint);
-	                	}
-						index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
-		                ((DefaultDBTable) table).addIndex(index);
-	                } else {
-	                    index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
-		                ((DefaultDBTable) table).addIndex(index);
-	                }
-	            } catch (ObjectNotFoundException e) {
-	                LOGGER.error("Error parsing index: " + index, e);
-	            }
-	        }
 	    }
     }
-    */
     
+	public void parseIndexSet(ResultSet indexSet, DBSchema schema, DefaultDBTable queriedTable) throws SQLException {
+		OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<DBIndexInfo>();
+		while (indexSet.next()) {
+		    String indexName = null;
+		    try {
+		    	String tableName = indexSet.getString(3);
+		    	if (!tableSupported(tableName) || (queriedTable != null && !queriedTable.getName().equalsIgnoreCase(tableName)))
+		    		continue; // table name is filtered out or a super string of the specified table name
+		        boolean unique = !indexSet.getBoolean(4);
+		        String indexCatalogName = indexSet.getString(5);
+		        indexName = indexSet.getString(6);
+		        short indexType = indexSet.getShort(7);
+		        // not used: 
+		        // tableIndexStatistic - this identifies table statistics that are returned in conjunction with a table's index descriptions
+		        // tableIndexClustered - this is a clustered index
+		        // tableIndexHashed - this is a hashed index
+		        // tableIndexOther - this is some other style of index
+		        //
+		        short ordinalPosition = indexSet.getShort(8);
+		        if (ordinalPosition == 0)
+		            continue; // then indexType (7) is tableIndexStatistic 
+		        String columnName = indexSet.getString(9);
+		        String ascOrDesc = indexSet.getString(10);
+		        Boolean ascending = (ascOrDesc != null ? ascOrDesc.charAt(0) == 'A' : null);
+		        int cardinality = indexSet.getInt(11);
+		        int pages = indexSet.getInt(12);
+		        String filterCondition = indexSet.getString(13);
+		        if (LOGGER.isDebugEnabled())
+		            LOGGER.debug("found " + (unique ? "unique index " : "index ") + indexName + ", " 
+		                    + indexCatalogName + ", " + indexType + ", " 
+		                    + ordinalPosition + ", " + columnName + ", " + ascOrDesc + ", " 
+		                    + cardinality + ", " + pages + ", " + filterCondition);
+		        DBIndexInfo index = indexes.get(indexName);
+		        if (index == null) {
+		            index = new DBIndexInfo(indexName, tableName, indexType, indexCatalogName, unique,
+		                ordinalPosition, columnName, ascending, cardinality, pages, filterCondition);
+		            indexes.put(indexName, index);
+		        } else {
+		            index.addColumn(ordinalPosition, columnName);
+		        }
+		    } catch (Exception e) {
+            	errorHandler.handleError("Error importing index " + indexName);
+		    }
+		}
+		for (DBIndexInfo indexInfo : indexes.values()) {
+            try {
+            	DBIndex index = null;
+            	DefaultDBTable indexedTable = (queriedTable != null ? queriedTable : (DefaultDBTable) schema.getTable(indexInfo.tableName));
+                boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
+                if (indexInfo.unique) {
+                	DBPrimaryKeyConstraint pk = indexedTable.getPrimaryKeyConstraint();
+                	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
+                	DBUniqueConstraint constraint;
+                	if (isPK) {
+                		constraint = pk;
+                	} else {
+                		constraint = new DBUniqueConstraint(indexedTable, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
+                		indexedTable.addUniqueConstraint(constraint);
+                	}
+					index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
+					indexedTable.addIndex(index);
+                } else {
+                    index = new DBNonUniqueIndex(indexInfo.name, deterministicName, indexedTable, indexInfo.columnNames);
+                    indexedTable.addIndex(index);
+                }
+            } catch (Exception e) {
+            	errorHandler.handleError("Error importing index " + indexInfo.name);
+            }
+		}
+	}
+
 
     private void importImportedKeys() {
         LOGGER.info("Importing imported keys");
