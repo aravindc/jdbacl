@@ -1,0 +1,18 @@
+Release Notes jdbacl 0.7.2
+--------------------------
+
+
+Enhancements
+------------
+- Recognition of reserved words
+
+
+Changes
+-------
+- 
+
+
+Bug fixes
+---------
+- matching same environment names with different capitalization
+- Fail-over for bug in Oracle JDBC driver occurring on index import
