@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -76,8 +76,9 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	
 	public static File getCacheFile(String environment) {
 		String SEP = File.separator;
-		String cacheDirectory = SystemInfo.getUserHome() + SEP + "databene" + SEP + "cache";
-		return new File(cacheDirectory, environment + CACHE_FILE_SUFFIX);
+		String cacheDirName = SystemInfo.getUserHome() + SEP + "databene" + SEP + "cache";
+		String cacheFileName = environment + CACHE_FILE_SUFFIX;
+		return FileUtil.getFileIgnoreCase(new File(cacheDirName, cacheFileName), false);
 	}
 	
 	// non-public helpers ----------------------------------------------------------------------------------------------
