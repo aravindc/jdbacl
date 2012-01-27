@@ -25,7 +25,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import org.databene.commons.iterator.ConvertingIterator;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 
 /**
  * Provides a {@link ResultSet}'s rows as {@link Object} arrays.<br/><br/>
@@ -33,13 +33,13 @@ import org.databene.commons.iterator.TableRowIterator;
  * @since 0.6.4
  * @author Volker Bergmann
  */
-public class ArrayResultSetIterator extends ConvertingIterator<ResultSet, Object[]> implements TableRowIterator {
+public class ArrayResultSetIterator extends ConvertingIterator<ResultSet, Object[]> implements TabularIterator {
 	
 	public ArrayResultSetIterator(Connection connection, String query) {
 	    super(new QueryIterator(query, connection, 500), new ResultSetConverter<Object[]>(Object[].class, false));
     }
 
-	public String[] getColumnLabels() {
+	public String[] getColumnNames() {
 		return ((QueryIterator) source).getColumnLabels();
 	}
 	

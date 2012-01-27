@@ -23,7 +23,7 @@ package org.databene.jdbacl.identity;
 
 import java.sql.Connection;
 
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
@@ -51,7 +51,7 @@ public class NkPkQueryIdentity extends IdentityModel {
 	}
 
 	@Override
-	public TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+	public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 		return query(nkPkQuery, connection);
     }
 

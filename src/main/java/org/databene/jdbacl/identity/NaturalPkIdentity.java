@@ -25,7 +25,7 @@ import java.sql.Connection;
 
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.ConfigurationError;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
@@ -41,7 +41,7 @@ public class NaturalPkIdentity extends IdentityModel {
 	}
 
 	@Override
-	public TableRowIterator createNkPkIterator(
+	public TabularIterator createNkPkIterator(
 			Connection connection, String dbId, KeyMapper mapper, Database database) {
 		String[] pkColumnNames = database.getTable(tableName).getPKColumnNames();
 		if (ArrayUtil.isEmpty(pkColumnNames))

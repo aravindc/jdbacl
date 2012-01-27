@@ -28,7 +28,7 @@ package org.databene.jdbacl.model;
 
 import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.depend.Dependent;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -81,6 +81,6 @@ public interface DBTable extends ContainerComponent, CompositeDBObject<DBTableCo
     DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
     DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException;
     HeavyweightIterator<Object> queryPKs(Connection connection);
-	TableRowIterator query(String query, Connection connection);
+	TabularIterator query(String query, Connection connection);
     
 }

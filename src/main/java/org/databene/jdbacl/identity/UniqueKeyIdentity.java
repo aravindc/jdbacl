@@ -29,7 +29,7 @@ import org.databene.commons.ArrayUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.converter.ThreadSafeConverter;
 import org.databene.commons.iterator.ConvertingIterator;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
@@ -52,7 +52,7 @@ public class UniqueKeyIdentity extends IdentityModel {
 	}
 	
 	@Override
-	public TableRowIterator createNkPkIterator(
+	public TabularIterator createNkPkIterator(
 			Connection connection, String dbId, KeyMapper mapper, Database database) {
 		if (ArrayUtil.isEmpty(columnNames))
 			throw new ConfigurationError("No unique key columns defined");
@@ -66,7 +66,7 @@ public class UniqueKeyIdentity extends IdentityModel {
 			
 		builder.append(" from ").append(tableName);
 		String query = builder.toString();
-		TableRowIterator rawIterator = query(query, connection);
+		TabularIterator rawIterator = query(query, connection);
 		ColumnToNkConverter converter = new ColumnToNkConverter(dbId, mapper);
 		return new UniqueKeyNkPkIterator(rawIterator, converter, pkColumnNames);
 	}
@@ -76,16 +76,16 @@ public class UniqueKeyIdentity extends IdentityModel {
 		return "Identity definition by unique key: " + ArrayFormat.format(columnNames);
 	}
 
-	public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TableRowIterator {
+	public class UniqueKeyNkPkIterator extends ConvertingIterator<Object[], Object[]> implements TabularIterator {
 		
 		String[] pkColumnNames;
 
-		public UniqueKeyNkPkIterator(TableRowIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
+		public UniqueKeyNkPkIterator(TabularIterator rawIterator, ColumnToNkConverter converter, String[] pkColumnNames) {
 			super(rawIterator, converter);
 			this.pkColumnNames = columnNames;
 		}
 
-		public String[] getColumnLabels() {
+		public String[] getColumnNames() {
 			String[] labels = new String[1 + pkColumnNames.length];
 			labels[0] = "NK";
 			for (int i = 1; i < labels.length; i++)

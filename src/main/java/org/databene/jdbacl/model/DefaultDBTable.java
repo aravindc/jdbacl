@@ -44,7 +44,7 @@ import org.databene.commons.bean.HashCodeBuilder;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.commons.depend.Dependent;
 import org.databene.commons.iterator.ConvertingIterator;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -325,7 +325,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     	return new ConvertingIterator<ResultSet, Object>(rawIterator, converter);
 	}
 
-	public TableRowIterator query(String query, Connection connection) {
+	public TabularIterator query(String query, Connection connection) {
 		Assert.notEmpty(query, "query");
 		return new ArrayResultSetIterator(connection, query);
 	}

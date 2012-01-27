@@ -30,7 +30,7 @@ import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.IOUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.commons.iterator.ConvertingIterator;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.ArrayResultSetIterator;
 import org.databene.jdbacl.QueryIterator;
 import org.databene.jdbacl.ResultSetConverter;
@@ -72,20 +72,20 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 
 	// implementation --------------------------------------------------------------------------------------------------
 	
-    public TableRowIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+    public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 		return new RecursiveIterator(connection, dbId, mapper, database);
     }
     
     // helper class for recursive iteration ----------------------------------------------------------------------------
 
-    public class RecursiveIterator implements TableRowIterator {
+    public class RecursiveIterator implements TabularIterator {
     	
     	Connection connection;
     	String dbId;
     	KeyMapper mapper;
     	HeavyweightIterator<Object> ownerPkIterator;
     	String ownerNK;
-    	TableRowIterator subNkPkIterator;
+    	TabularIterator subNkPkIterator;
 
 	    public RecursiveIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 	        this.connection = connection;
@@ -121,8 +121,8 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 	    	return result;
 	    }
 
-		public String[] getColumnLabels() {
-			return subNkPkIterator.getColumnLabels();
+		public String[] getColumnNames() {
+			return subNkPkIterator.getColumnNames();
 		}
 
 	    public void remove() {

@@ -30,7 +30,7 @@ import java.util.Set;
 import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.NullSafeComparator;
 import org.databene.commons.bean.HashCodeBuilder;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
@@ -118,7 +118,7 @@ public class LazyTable implements DBTable {
 		return getRealTable().queryPKs(connection);
 	}
 
-	public TableRowIterator query(String query, Connection connection) {
+	public TabularIterator query(String query, Connection connection) {
 		return getRealTable().query(query, connection);
 	}
 

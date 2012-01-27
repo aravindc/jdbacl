@@ -31,7 +31,7 @@ import org.databene.commons.ErrorHandler;
 import org.databene.commons.Level;
 import org.databene.commons.Named;
 import org.databene.commons.bean.HashCodeBuilder;
-import org.databene.commons.iterator.TableRowIterator;
+import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.ArrayResultSetIterator;
 import org.databene.jdbacl.model.DBRow;
 import org.databene.jdbacl.model.Database;
@@ -76,7 +76,7 @@ public abstract class IdentityModel implements Named {
 
 	// functional interface --------------------------------------------------------------------------------------------
 
-	public abstract TableRowIterator createNkPkIterator(
+	public abstract TabularIterator createNkPkIterator(
 			Connection connection, String dbId, KeyMapper mapper, Database database);
 
 	public String extractNK(Object[] nkPkTuple) {
@@ -99,7 +99,7 @@ public abstract class IdentityModel implements Named {
 	
 	// non-public helpers ----------------------------------------------------------------------------------------------
 
-	protected TableRowIterator query(String query, Connection connection) {
+	protected TabularIterator query(String query, Connection connection) {
 		Assert.notEmpty(query, "query");
 		return new ArrayResultSetIterator(connection, query);
 	}
