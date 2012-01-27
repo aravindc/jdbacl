@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -32,6 +32,7 @@ import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
+import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.LogCategories;
@@ -43,6 +44,7 @@ import org.databene.commons.converter.AnyConverter;
 import org.databene.commons.converter.ToStringConverter;
 import org.databene.commons.debug.Debug;
 import org.databene.commons.depend.DependencyModel;
+import org.databene.commons.iterator.ConvertingIterator;
 import org.databene.jdbacl.model.DBConstraint;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
@@ -541,6 +543,12 @@ public class DBUtil {
     		if (resultSet != null)
     			closeResultSetAndStatement(resultSet);
     	}
+    }
+
+    public static HeavyweightIterator<Object[]> iterateQueryResults(String query, Connection connection) throws SQLException {
+    	ResultSet resultSet = connection.createStatement().executeQuery(query);
+    	ResultSetConverter<Object[]> converter = new ResultSetConverter<Object[]>(Object[].class);
+		return new ConvertingIterator<ResultSet, Object[]>(new ResultSetIterator(resultSet), converter);
     }
 
     public static ResultSet executeQuery(String query, Connection connection) throws SQLException {
