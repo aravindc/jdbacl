@@ -49,6 +49,11 @@ public class DBRow implements Serializable {
     	return table;
     }
 	
+	public DBRow withTable(DBTable table) {
+		this.table = table;
+		return this;
+	}
+	
 	public Map<String, Object> getCells() {
 		return cells;
 	}

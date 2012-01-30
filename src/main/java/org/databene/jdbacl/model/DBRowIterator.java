@@ -64,6 +64,11 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 	    this.resultSetIterator = new ResultSetIterator(resultSet, sql);
 	    this.closed = false;
     }
+	
+	public DBRowIterator withTable(DBTable table) {
+		this.table = table;
+		return this;
+	}
 
 	public boolean hasNext() {
 		if (closed)
