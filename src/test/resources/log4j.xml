@@ -50,6 +50,10 @@
        <priority value="INFO"/>
     </category>
 
+    <category name="org.databene.jdbacl.model">
+       <priority value="INFO"/> <!-- set this to DEBUG for debugging database meta data import -->
+    </category>
+
 
 
    <!-- ======================= -->
@@ -57,7 +61,7 @@
    <!-- ======================= -->
 
     <root>
-        <priority value="WARN"/>
+        <priority value="INFO"/>
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
