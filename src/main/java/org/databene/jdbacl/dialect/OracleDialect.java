@@ -146,6 +146,7 @@ public class OracleDialect extends DatabaseDialect {
 					sequence.setCache(resultSet.getLong(7));
 					sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
 					builder.add(sequence);
+					LOGGER.debug("Imported sequence {}", sequence.getName());
 				}
 				return builder.toArray();
 			} finally {
@@ -180,6 +181,7 @@ public class OracleDialect extends DatabaseDialect {
 						LOGGER.error("Error parsing check constraint ", e);
 					}
 				}
+				LOGGER.debug("Imported check for table {}: {}", tableName, condition);
 			}
 		}
 		return builder.toArray();
@@ -300,10 +302,14 @@ public class OracleDialect extends DatabaseDialect {
 	public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
 		
 		// query packages
+		/* TODO this version does not work on each oracle instance
 		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
 				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
 		if (schema != null)
 			query += " AND OWNER = '" + schema.getName().toUpperCase() + "'";
+		*/
+		String query = "SELECT USER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
+			" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
 		List<Object[]> pkgInfos = DBUtil.query(query, connection);
 		OrderedMap<String, DBPackage> packages = new OrderedMap<String, DBPackage>();
 		for (int i = 0; i < pkgInfos.size(); i++) {
