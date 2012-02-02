@@ -73,6 +73,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     private OrderedNameMap<DBIndex> indexes;
     private Set<DBTable> referrers;
 	private List<DBCheckConstraint> checkConstraints;
+	private TableType type;
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -81,14 +82,15 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
     }
 
     public DefaultDBTable(String name) {
-        this(name, null);
+        this(name, TableType.TABLE, null, null);
     }
 
-    public DefaultDBTable(String name, DBSchema schema) {
+    public DefaultDBTable(String name, TableType type, String doc, DBSchema schema) {
         super(name, "table", schema);
+        this.type = type;
         if (schema != null)
         	schema.addTable(this);
-        this.doc = null;
+        this.doc = doc;
         this.columns = OrderedNameMap.createCaseInsensitiveMap();
         this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
         this.foreignKeyConstraints = new OrderedSet<DBForeignKeyConstraint>();
@@ -109,6 +111,10 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
 
 	public DBCatalog getCatalog() {
 		return getSchema().getCatalog();
+	}
+
+	public TableType getType() {
+		return type;
 	}
 
     // schema operations -----------------------------------------------------------------------------------------------

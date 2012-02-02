@@ -47,6 +47,7 @@ public interface DBTable extends ContainerComponent, CompositeDBObject<DBTableCo
     String getDoc();
     DBCatalog getCatalog();
     DBSchema getSchema();
+    TableType getType();
 
     List<DBColumn> getColumns();
     DBColumn[] getColumns(String[] columnNames);
@@ -80,7 +81,7 @@ public interface DBTable extends ContainerComponent, CompositeDBObject<DBTableCo
 	DBRowIterator allRows(Connection connection) throws SQLException;
     DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
     DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException;
-    HeavyweightIterator<Object> queryPKs(Connection connection);
+    HeavyweightIterator<Object> queryPKs(Connection connection); // TODO rename to queryPKValues()
 	TabularIterator query(String query, Connection connection);
     
 }
