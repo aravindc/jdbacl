@@ -27,6 +27,7 @@ import org.databene.commons.tree.TreeLogger;
 import org.databene.commons.ui.ConsoleInfoPrinter;
 import org.databene.commons.version.VersionInfo;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.jdbc.JDBCMetaDataUtil;
 
 /**
  * Retrieves meta data from a database and prints it to the console in a tree structure.<br/><br/>
@@ -48,7 +49,7 @@ public class Main {
 		}
 		if (environment == null)
 			printErrorAndHelpAndExit("No environment specified", -1);
-		Database database = DBUtil.getMetaData(environment, true, true, true, true, null, false, true);
+		Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, ".*", null, false, true);
 		new TreeLogger().log(new DatabaseTreeModel(database));
 	}
 
