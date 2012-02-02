@@ -50,6 +50,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.LazyDatabase;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import static org.databene.commons.xml.SimpleXMLWriter.*;
@@ -98,17 +99,19 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	private void exportDatabase(Database database, SimpleXMLWriter writer)
 			throws SAXException {
-		AttributesImpl attribs = createAttributes("name", database.getName());
+		AttributesImpl attribs = createAttributes("environment", database.getName());
 		addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
 		addAttribute("databaseProductVersion", database.getDatabaseProductVersion().toString(), attribs);
 		addAttribute("importDate", sdf.format(database.getImportDate()), attribs);
 		addAttribute("user", database.getUser(), attribs);
 		addAttribute("tableInclusionPattern", database.getTableInclusionPattern(), attribs);
 		addAttribute("tableExclusionPattern", database.getTableExclusionPattern(), attribs);
-		addAttribute("importedChecks", String.valueOf(database.isImportedChecks()), attribs);
-		addAttribute("importedUKs", String.valueOf(database.isImportedUKs()), attribs);
-		addAttribute("importedIndexes", String.valueOf(database.isImportedIndexes()), attribs);
-		addAttribute("importedSequences", String.valueOf(database.isImportedSequences()), attribs);
+		if (database instanceof LazyDatabase) {
+			LazyDatabase ldb = (LazyDatabase) database;
+			addAttribute("sequencesImported", String.valueOf(ldb.isSequencesImported()), attribs);
+			addAttribute("triggersImported", String.valueOf(ldb.isTriggersImported()), attribs);
+			addAttribute("sequencesImported", String.valueOf(ldb.isSequencesImported()), attribs);
+		}
 		writer.startElement("database", attribs);
 		for (DBCatalog catalog : database.getCatalogs())
 			exportCatalog(catalog, writer);
