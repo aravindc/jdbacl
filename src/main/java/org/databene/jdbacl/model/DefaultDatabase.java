@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -40,28 +40,31 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 	
 	private static final long serialVersionUID = -1873203097942961523L;
 	
+	private String environment;
+	
 	private String productName;
 	private VersionNumber productVersion;
 	private Date importDate;
 	private String user;
 	private String tableInclusionPattern;
 	private String tableExclusionPattern;
-	private boolean importedChecks;
-	private boolean importedUKs;
-	private boolean importedIndexes;
-	private boolean importedSequences;
 	
 	private OrderedNameMap<DBCatalog> catalogs;
-	
+
     // constructors ----------------------------------------------------------------------------------------------------
 
-    public DefaultDatabase(String name, String productName, VersionNumber productVersion) {
-        super(name, "database");
+    public DefaultDatabase(String environment, String productName, VersionNumber productVersion) {
+        super(environment, "database");
+        this.environment = environment;
         this.productName = productName;
         this.productVersion = productVersion;
         this.catalogs = OrderedNameMap.createCaseInsensitiveMap();
     }
     
+	public String getEnvironment() {
+		return environment;
+	}
+
     public String getDatabaseProductName() {
     	return productName;
     }
@@ -101,39 +104,7 @@ public class DefaultDatabase extends AbstractCompositeDBObject<DBCatalog> implem
 	public void setTableExclusionPattern(String tableExclusionPattern) {
 		this.tableExclusionPattern = tableExclusionPattern;
 	}
-
-	public boolean isImportedChecks() {
-		return importedChecks;
-	}
-
-	public void setImportedChecks(boolean importedChecks) {
-		this.importedChecks = importedChecks;
-	}
-
-	public boolean isImportedUKs() {
-		return importedUKs;
-	}
-
-	public void setImportedUKs(boolean importedUKs) {
-		this.importedUKs = importedUKs;
-	}
-
-	public boolean isImportedIndexes() {
-		return importedIndexes;
-	}
-
-	public void setImportedIndexes(boolean importedIndexes) {
-		this.importedIndexes = importedIndexes;
-	}
-
-	public boolean isImportedSequences() {
-		return importedSequences;
-	}
-
-	public void setImportedSequences(boolean importedSequences) {
-		this.importedSequences = importedSequences;
-	}
-
+	
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
 	public List<DBCatalog> getComponents() {
