@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -339,7 +339,7 @@ public abstract class DatabaseDialect {
 		return builder.toString();
 	}
 	
-    /* TODO implement queries for indexes, views, functions and procedures
+    /* TODO v0.8.x implement queries for indexes, views, functions and procedures
     public List<DBView> queryViews(Connection connection) throws SQLException {
 		return new ArrayList<DBView>();
 		// ORA: select VIEW_NAME, OWNER from SYS.ALL_VIEWS order by OWNER, VIEW_NAME
