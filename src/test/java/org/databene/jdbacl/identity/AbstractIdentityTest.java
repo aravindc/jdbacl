@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -38,7 +38,7 @@ import org.databene.jdbacl.identity.IdentityProvider;
 import org.databene.jdbacl.identity.NkPkQueryIdentity;
 import org.databene.jdbacl.identity.SubNkPkQueryIdentity;
 import org.databene.jdbacl.model.Database;
-import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
+import org.databene.jdbacl.model.jdbc.JDBCMetaDataUtil;
 
 /**
  * Parent class for {@link IdentityModel} tests.<br/><br/>
@@ -108,9 +108,8 @@ public abstract class AbstractIdentityTest {
 		return identityProvider;
 	}
 
-	protected Database importDatabase(Connection target)
-			throws ConnectFailedException, ImportFailedException {
-		return new JDBCDBImporter(target, "sa", "PUBLIC").importDatabase();
+	protected Database importDatabase(Connection target) throws ConnectFailedException, ImportFailedException {
+		return JDBCMetaDataUtil.getMetaData(target, "sa", "PUBLIC");
 	}
 	
 	protected Connection connectDB(String dbName, int port) throws ConnectFailedException {
