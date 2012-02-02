@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -46,6 +46,7 @@ import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBTableComponent;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.DefaultDBTable;
+import org.databene.jdbacl.model.TableType;
 
 /**
  * Table representation that supports lazy loading of its column and constraint info.<br/><br/>
@@ -58,22 +59,59 @@ public class LazyTable implements DBTable {
 	private static final long serialVersionUID = 188548842580766795L;
 	
 	private String name;
+	private TableType type;
 	private String doc;
-	private JDBCDBImporter importer;
+	private LazyJDBCDBImporter importer;
 	private DBSchema schema;
 	
-	private DefaultDBTable realTable;
+	DefaultDBTable realTable;
 	
-	public LazyTable(JDBCDBImporter importer, DBSchema schema, String tableName, String doc) {
+	boolean columnsImported;
+	boolean pkImported;
+	boolean fksImported;
+    boolean indexesImported;
+    boolean referrersImported;
+	boolean checksImported;
+	
+	public LazyTable(LazyJDBCDBImporter importer, String tableName, TableType type, String doc, DBSchema schema) {
 	    this.importer = importer;
 	    this.schema = schema;
 	    this.name = tableName;
+	    this.type = type;
 	    this.doc = doc;
+	    this.realTable = null;
+	    
+		this.columnsImported = false;
+		this.pkImported = false;
+		this.fksImported = false;
+		this.referrersImported = false;
+		this.checksImported = false;
+	    this.indexesImported = false;
         if (schema != null)
         	schema.addTable(this);
     }
 	
-	
+	public LazyTable(DefaultDBTable realTable, DBSchema schema, LazyJDBCDBImporter importer) {
+	    this.importer = importer;
+	    this.schema = schema;
+	    this.realTable = realTable;
+	    this.name = realTable.getName();
+	    this.type = realTable.getType();
+	    this.doc = realTable.getDoc();
+	    
+		this.columnsImported = false;
+		this.pkImported = false;
+		this.fksImported = false;
+		this.referrersImported = false;
+		this.checksImported = false;
+	    this.indexesImported = false;
+        if (schema != null)
+        	schema.addTable(this);
+	}
+
+	public TableType getType() {
+		return type;
+	}
 	
 	// implementation of the meta data part of the 'DBTable' interface -------------------------------------------------
 	
@@ -94,28 +132,27 @@ public class LazyTable implements DBTable {
 	}
 	
 	public void setPrimaryKey(DBPrimaryKeyConstraint pk) {
-		getRealTable().setPrimaryKey(pk);
+		getRealTableWithPK().setPrimaryKey(pk);
 	}
 
 	public void addUniqueConstraint(DBUniqueConstraint uk) {
-		getRealTable().addUniqueConstraint(uk);
+		getRealTableWithPK().addUniqueConstraint(uk);
 	}
 
 	public void addForeignKey(DBForeignKeyConstraint fk) {
-		getRealTable().addForeignKey(fk);
+		getRealTableWithFKs().addForeignKey(fk);
 	}
 
 	public void addIndex(DBIndex index) {
-		getRealTable().addIndex(index);
+		getRealTableWithIndexes().addIndex(index);
 	}
 
-	public DBRowIterator queryRows(String whereClause, Connection connection)
-			throws SQLException {
-		return getRealTable().queryRows(whereClause, connection);
+	public DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException {
+        return getRealTableWithColumns().queryRows(whereClause, connection).withTable(this);
 	}
 
 	public HeavyweightIterator<Object> queryPKs(Connection connection) {
-		return getRealTable().queryPKs(connection);
+		return getRealTableWithPK().queryPKs(connection);
 	}
 
 	public TabularIterator query(String query, Connection connection) {
@@ -123,7 +160,7 @@ public class LazyTable implements DBTable {
 	}
 
 	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
-		return getRealTable().queryByPK(pk, connection);
+		return getRealTableWithPK().queryByPK(pk, connection).withTable(this);
 	}
 
 	public DBCatalog getCatalog() {
@@ -143,55 +180,59 @@ public class LazyTable implements DBTable {
     }
 
 	public String[] getColumnNames() {
-		return getRealTable().getColumnNames();
+		return getRealTableWithColumns().getColumnNames();
 	}
 
 	public DBColumn getColumn(String columnName) {
-	    return getRealTable().getColumn(columnName);
+	    return getRealTableWithColumns().getColumn(columnName);
     }
 
 	public List<DBColumn> getColumns() {
-	    return getRealTable().getColumns();
+	    return getRealTableWithColumns().getColumns();
     }
 
 	public void addColumn(DBColumn column) {
-		getRealTable().addColumn(column);
+		getRealTableWithColumns().addColumn(column);
 	}
 
 	public DBColumn[] getColumns(String[] columnNames) {
-	    return getRealTable().getColumns(columnNames);
+	    return getRealTableWithColumns().getColumns(columnNames);
     }
 
 	public Set<DBForeignKeyConstraint> getForeignKeyConstraints() {
-	    return getRealTable().getForeignKeyConstraints();
+	    return getRealTableWithFKs().getForeignKeyConstraints();
     }
 
 	public DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames) {
-	    return getRealTable().getForeignKeyConstraint(columnNames);
+	    return getRealTableWithFKs().getForeignKeyConstraint(columnNames);
+	}
+
+	public void setChecksImported(boolean checksImported) {
+		this.checksImported = checksImported;
 	}
 
 	public List<DBCheckConstraint> getCheckConstraints() {
-		return getRealTable().getCheckConstraints();
+		return getRealTableWithChecks().getCheckConstraints();
 	}
 
 	public void addCheckConstraint(DBCheckConstraint checkConstraint) {
-		getRealTable().addCheckConstraint(checkConstraint);
+		getRealTableWithChecks().addCheckConstraint(checkConstraint);
 	}
 
 	public DBIndex getIndex(String indexName) {
-	    return getRealTable().getIndex(indexName);
+	    return getRealTableWithIndexes().getIndex(indexName);
     }
 
 	public List<DBIndex> getIndexes() {
-	    return getRealTable().getIndexes();
+	    return getRealTableWithIndexes().getIndexes();
     }
 
 	public String[] getPKColumnNames() {
-	    return getRealTable().getPKColumnNames();
+	    return getRealTableWithPK().getPKColumnNames();
     }
 
 	public DBPrimaryKeyConstraint getPrimaryKeyConstraint() {
-	    return getRealTable().getPrimaryKeyConstraint();
+	    return getRealTableWithPK().getPrimaryKeyConstraint();
     }
 
 	public long getRowCount(Connection connection) {
@@ -199,32 +240,32 @@ public class LazyTable implements DBTable {
     }
 
 	public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
-	    return getRealTable().getUniqueConstraints(includePK);
+	    return getRealTableWithIndexes().getUniqueConstraints(includePK);
     }
 
 	public DBUniqueConstraint getUniqueConstraint(String name) {
-	    return getRealTable().getUniqueConstraint(name);
+	    return getRealTableWithIndexes().getUniqueConstraint(name);
     }
 
 	public Collection<DBTable> getReferrers() {
-	    return getRealTable().getReferrers();
+	    return getRealTableWithReferrers().getReferrers();
     }
 	
 	public void addReferrer(DBTable table) {
-	    getRealTable().addReferrer(table);
+		getRealTableWithReferrers().addReferrer(table);
 	}
 
 	public DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection)
             throws SQLException {
-	    return getRealTable().queryRowsByCellValues(columnNames, values, connection);
+	    return getRealTableWithColumns().queryRowsByCellValues(columnNames, values, connection).withTable(this);
     }
 
 	public DBRow queryByPK(Object[] idParts, Connection connection) throws SQLException {
-	    return getRealTable().queryByPK(idParts, connection);
+	    return getRealTableWithPK().queryByPK(idParts, connection).withTable(this);
     }
 
 	public DBRowIterator allRows(Connection connection) throws SQLException {
-	    return getRealTable().allRows(connection);
+	    return getRealTableWithColumns().allRows(connection).withTable(this);
     }
 	
 
@@ -251,9 +292,69 @@ public class LazyTable implements DBTable {
 		
 	// access to the wrapped object ------------------------------------------------------------------------------------
 
-	public DefaultDBTable getRealTable() {
-		if (realTable == null)
-			realTable = importer.importTable(getCatalog(), schema, name, doc);
+	private DefaultDBTable getRealTable() {
+		if (realTable == null) {
+			realTable = new DefaultDBTable(name, type, doc, null);
+			realTable.setSchema(schema);
+		}
+	    return realTable;
+    }
+
+	public DefaultDBTable getRealTableWithColumns() {
+		getRealTable();
+		if (!columnsImported) {
+			importer.importColumnsForTable(realTable);
+			columnsImported = true;
+		}
+	    return realTable;
+    }
+
+	public DefaultDBTable getRealTableWithPK() {
+		getRealTableWithColumns();
+		if (!pkImported) {
+			importer.importPrimaryKeyOfTable(this);
+			pkImported = true;
+		}
+	    return realTable;
+    }
+
+	public DefaultDBTable getRealTableWithFKs() {
+		getRealTableWithColumns();
+		if (!fksImported) {
+			importer.importImportedKeys(this);
+			fksImported = true;
+		}
+	    return realTable;
+    }
+
+	public DefaultDBTable getRealTableWithReferrers() {
+		getRealTableWithColumns();
+		if (!referrersImported) {
+			importer.importRefererTables(realTable);
+			referrersImported = true;
+		}
+	    return realTable;
+    }
+
+	public DefaultDBTable getRealTableWithIndexes() {
+		getRealTableWithColumns();
+		if (!indexesImported) {
+			importer.importIndexesOfTable(realTable, false);
+			indexesImported = true;
+		}
+	    return realTable;
+    }
+
+	public DefaultDBTable getRealTableWithChecks() {
+		getRealTableWithColumns();
+		if (!checksImported) {
+			synchronized (realTable.getCatalog()) {
+				if (!checksImported) {
+					importer.importAllChecks();
+					checksImported = true;
+				}
+			}
+		}
 	    return realTable;
     }
 
