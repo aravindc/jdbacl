@@ -8,3 +8,5 @@ create table T1 (
 );
 create index T1_NICKNAME on T1 (NICKNAME);
 insert into T1 values (1, 'ns', 'name', 'nick');
+
+create sequence SEQ1;
