@@ -61,7 +61,8 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
         this.refereeColumnNames = refereeColumnNames;
         this.updateRule = FKChangeRule.NO_ACTION;
         this.deleteRule = FKChangeRule.NO_ACTION;
-        owner.addForeignKey(this);
+        if (owner != null)
+        	owner.addForeignKey(this);
     }
 
     public String[] getForeignKeyColumnNames() {
