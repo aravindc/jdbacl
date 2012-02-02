@@ -50,7 +50,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
-import org.databene.jdbacl.model.LazyDatabase;
+import org.databene.jdbacl.model.jdbc.LazyDatabase;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import static org.databene.commons.xml.SimpleXMLWriter.*;
