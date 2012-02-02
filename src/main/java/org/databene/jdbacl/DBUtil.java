@@ -34,7 +34,6 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
 import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.IOUtil;
-import org.databene.commons.ImportFailedException;
 import org.databene.commons.LogCategories;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.ReaderLineIterator;
@@ -46,14 +45,10 @@ import org.databene.commons.debug.Debug;
 import org.databene.commons.depend.DependencyModel;
 import org.databene.commons.iterator.ConvertingIterator;
 import org.databene.jdbacl.model.DBConstraint;
-import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
-import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.TableHolder;
-import org.databene.jdbacl.model.cache.CachingDBImporter;
-import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 import org.databene.jdbacl.proxy.LoggingPreparedStatementHandler;
 import org.databene.jdbacl.proxy.LoggingResultSetHandler;
 import org.databene.jdbacl.proxy.LoggingStatementHandler;
@@ -660,38 +655,5 @@ public class DBUtil {
 		return false;
 	}
 
-
-	public static Database getMetaData(String environment, 
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-			String tableExclusionPattern, boolean lazy, boolean cached) 
-				throws ConnectFailedException, ImportFailedException {
-		DBMetaDataImporter importer = configureImporter(new JDBCDBImporter(environment), 
-				importUKs, importIndexes, importSequences, importChecks, tableExclusionPattern, lazy);
-		if (cached)
-			importer = new CachingDBImporter(importer, environment);
-		return importer.importDatabase();
-	}
-
-	public static Database getMetaData(Connection connection, String user, String schemaName,
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-			String tableExclusionPattern, boolean lazy) 
-				throws ConnectFailedException, ImportFailedException {
-		JDBCDBImporter importer = new JDBCDBImporter(connection, user, schemaName);
-		configureImporter(importer, 
-				importUKs, importIndexes, importSequences, importChecks, tableExclusionPattern, lazy);
-		return importer.importDatabase();
-	}
-
-	private static JDBCDBImporter configureImporter(JDBCDBImporter importer, 
-			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
-			String tableExclusionPattern, boolean lazy) {
-		importer.setExcludeTables(tableExclusionPattern);
-		importer.setLazy(lazy);
-		importer.setImportingUKs(importUKs);
-		importer.setImportingIndexes(importIndexes);
-		importer.setImportingSequences(importSequences);
-		importer.setImportingChecks(importChecks);
-		return importer;
-	}
 
 }
