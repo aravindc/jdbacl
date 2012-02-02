@@ -27,64 +27,30 @@
 package org.databene.jdbacl.model.jdbc;
 
 import java.sql.Connection;
-import java.util.List;
 
-import org.databene.commons.ErrorHandler;
-import org.databene.jdbacl.DBUtil;
-import org.databene.jdbacl.dialect.HSQLUtil;
-import org.databene.jdbacl.model.DBIndex;
-import org.databene.jdbacl.model.DBNonUniqueIndex;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBTable;
-import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
 
 import org.junit.Test;
 import static junit.framework.Assert.*;
 
 /**
- * Tests the {@link JDBCDBImporter}.<br/><br/>
+ * Tests the {@link EagerJDBCDBImporter}.<br/><br/>
  * Created at 03.05.2008 08:59:20
  * @since 0.5.3
  * @author Volker Bergmann
  */
-public class JDBCDBImporterTest {
+public class EagerJDBCDBImporterTest extends AbstractJDBCDBImporterTest {
 	
 	@Test
 	public void testImportDatabase_HSQL() throws Exception {
-		// prepare database
-		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
-		DBUtil.runScript("org/databene/jdbacl/model/jdbc/create_tables.hsql.sql", "ISO-8859-1", connection, true, new ErrorHandler(getClass()));
-		// run importer
-		JDBCDBImporter importer = new JDBCDBImporter(connection, "sa", "public");
+		Connection connection = setupDatabase();
+		EagerJDBCDBImporter importer = new EagerJDBCDBImporter(connection, "sa", "public");
 		Database db = importer.importDatabase();
-		// check schema
-		DBSchema schema = db.getCatalog(null).getSchema("public");
-		assertNotNull(schema);
-		// check tables
-		assertEquals(1, schema.getTables().size());
-		DBTable table = schema.getTable("T1");
-		// check indexes
-		List<DBIndex> indexes = table.getIndexes();
-		assertEquals(3, indexes.size());
-		for (DBIndex index : indexes) {
-			if (index instanceof DBNonUniqueIndex) {
-				// non-unique nickname index
-				assertEquals(1, index.getColumnNames().length);
-				assertTrue("NICKNAME".equalsIgnoreCase(index.getColumnNames()[0]));
-			} else if (index instanceof DBUniqueIndex) {
-				if (index.getColumnNames().length == 1) {
-					// PK index
-					assertTrue("ID".equalsIgnoreCase(index.getColumnNames()[0]));
-				} else {
-					// unique composite index (namespace,name)
-					assertEquals(2, index.getColumnNames().length);
-					assertTrue("NAMESPACE".equalsIgnoreCase(index.getColumnNames()[0]));
-					assertTrue("NAME".equalsIgnoreCase(index.getColumnNames()[1]));
-				}
-			} else
-				fail("Unexpected index type: " + index.getClass() + '(' + index + ')');
-		}
+		DBSchema schema = checkSchema(db);
+		DBTable table = checkTables(schema);
+		checkIndexes(table);
 	}
 
 }
