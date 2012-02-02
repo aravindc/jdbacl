@@ -47,6 +47,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
 		new TreeLogger().log(new DBTreeModel(actual));
 		Database expected = createTestModel();
 		assertTrue(expected.isIdentical(actual));
+		// TODO test lazy loading of missing data
 	}
 	
 }

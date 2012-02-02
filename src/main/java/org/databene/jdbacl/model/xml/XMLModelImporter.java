@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -28,6 +28,7 @@ import java.math.BigInteger;
 
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.Assert;
+import org.databene.commons.ConfigurationError;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
@@ -37,6 +38,7 @@ import org.databene.commons.xml.XMLUtil;
 import org.databene.jdbacl.model.DBPackage;
 import org.databene.jdbacl.model.DBProcedure;
 import org.databene.jdbacl.model.DBTrigger;
+import org.databene.jdbacl.model.DefaultDBSchema;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
@@ -55,6 +57,9 @@ import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.DefaultDBColumn;
 import org.databene.jdbacl.model.DefaultDBTable;
 import org.databene.jdbacl.model.DefaultDatabase;
+import org.databene.jdbacl.model.TableType;
+import org.databene.jdbacl.model.jdbc.LazyDatabase;
+import org.databene.jdbacl.model.jdbc.LazyJDBCDBImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -75,15 +80,14 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	public XMLModelImporter(File file) {
 		this.file = file;
 	}
-
+	
 	public Database importDatabase() throws ImportFailedException {
 		FileInputStream in = null;
 		try {
 			in = new FileInputStream(file);
 			Document doc = XMLUtil.parse(in);
-			Database database = parseDatabase(doc.getDocumentElement());
-			scanReferers(database);
-			return database;
+			// TODO support loading database meta model without an actual backend available
+			return parseDatabase(doc.getDocumentElement());
 		} catch (IOException e) {
 			throw new ImportFailedException(e);
 		} finally {
@@ -98,27 +102,39 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	}
 
 	private Database parseDatabase(Element e) {
-		String name = e.getAttribute("name");
+		String environment = e.getAttribute("environment");
+		if (StringUtil.isEmpty(environment))
+			environment = e.getAttribute("name");
+		if (StringUtil.isEmpty(environment))
+			throw new ConfigurationError("No environment defined in cache file");
 		String product = e.getAttribute("databaseProductName");
 		VersionNumber version = VersionNumber.valueOf(e.getAttribute("databaseProductVersion"));
-		DefaultDatabase db = new DefaultDatabase(name, product, version);
-    	db.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
-    	db.setUser(e.getAttribute("user"));
-    	db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
-    	db.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
-    	db.setImportedChecks(XMLUtil.getBooleanAttribute(e, "importedChecks"));
-    	db.setImportedUKs(XMLUtil.getBooleanAttribute(e, "importedUKs"));
-    	db.setImportedIndexes(XMLUtil.getBooleanAttribute(e, "importedIndexes"));
-    	db.setImportedSequences(XMLUtil.getBooleanAttribute(e, "importedSequences"));
+		DefaultDatabase defaultDB = new DefaultDatabase(environment, product, version);
+		defaultDB.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
+		defaultDB.setUser(e.getAttribute("user"));
+		defaultDB.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
+		defaultDB.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
+		
+		Database db = defaultDB;
+		boolean lazy = (e.getAttribute("sequencesImported") != null);
+		if (lazy) {
+			LazyJDBCDBImporter importer = new LazyJDBCDBImporter(defaultDB);
+			LazyDatabase lazyDB = new LazyDatabase(defaultDB, importer);
+			lazyDB.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported"));
+			lazyDB.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported"));
+			lazyDB.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported"));
+			db = lazyDB;
+		}
 
 		// import catalogs
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("catalog".equals(childName))
-				parseCatalog(child, db);
+				parseCatalog(child, defaultDB);
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <database>: " + childName);
 		}
+		scanReferers(defaultDB);
 		return db;
 	}
 
@@ -137,7 +153,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private DBSchema parseSchema(Element e, DBCatalog catalog) {
 		String name = e.getAttribute("name");
-		DBSchema schema = new DBSchema(name, catalog);
+		DBSchema schema = new DefaultDBSchema(name, catalog);
 		Element[] children = XMLUtil.getChildElements(e);
 		for (Element child : children) {
 			String childName = child.getNodeName();
@@ -164,7 +180,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private DefaultDBTable parseTableName(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
-		return new DefaultDBTable(name, schema);
+		String typeSpec = e.getAttribute("type");
+		TableType type = (StringUtil.isEmpty(typeSpec) ? TableType.TABLE : TableType.valueOf(typeSpec));
+		return new DefaultDBTable(name, type, null, schema);
 	}
 
 	private DefaultDBTable parseTableStructure(Element e, DBSchema schema) {
