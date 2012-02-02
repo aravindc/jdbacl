@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -38,30 +38,29 @@ import org.databene.commons.version.VersionNumber;
  */
 public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, SequenceHolder {
 	
-	public String getDatabaseProductName();
-	public VersionNumber getDatabaseProductVersion();
-	public Date getImportDate();
-	public String getUser();
-	public String getTableInclusionPattern();
-	public String getTableExclusionPattern();
-	public boolean isImportedChecks();
-	public boolean isImportedUKs();
-	public boolean isImportedIndexes();
-	public boolean isImportedSequences();
+	String getEnvironment();
+	String getDatabaseProductName();
+	VersionNumber getDatabaseProductVersion();
+	String getUser();
+	Date getImportDate();
+	String getTableInclusionPattern();
+	String getTableExclusionPattern();
 	
-    public List<DBCatalog> getCatalogs();
-    public DBCatalog getCatalog(String catalogName);
-    public void addCatalog(DBCatalog catalog);
-    public void removeCatalog(DBCatalog catalog);
+    List<DBCatalog> getCatalogs();
+    DBCatalog getCatalog(String catalogName);
+    void addCatalog(DBCatalog catalog);
+    void removeCatalog(DBCatalog catalog);
 
-	public DBSchema getSchema(String schemaName);
+	DBSchema getSchema(String schemaName);
 
-	public List<DBTable> getTables();
-    public DBTable getTable(String name);
-    public DBTable getTable(String name, boolean required);
-	public void removeTable(String tableName);
+	List<DBTable> getTables();
+    DBTable getTable(String name);
+    DBTable getTable(String name, boolean required);
+	void removeTable(String tableName);
 
-	public List<DBSequence> getSequences();
-	public List<DBTrigger> getTriggers();
-	public List<DBPackage> getPackages();
+	List<DBSequence> getSequences();
+	
+	List<DBTrigger> getTriggers();
+	
+	List<DBPackage> getPackages();
 }
