@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -36,8 +36,7 @@ import org.databene.jdbacl.DatabaseTreeModel;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.Database;
-import org.databene.jdbacl.model.cache.CachingDBImporter;
-import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
+import org.databene.jdbacl.model.jdbc.JDBCMetaDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,16 +83,8 @@ public class DatabasePane extends JPanel {
 		}
 		public void run() {
 			try {
-				JDBCDBImporter parser = new JDBCDBImporter(environment);
-				parser.setExcludeTables(exclusionPatternProvider.getValue());
-				parser.setImportingChecks(true);
-				parser.setImportingIndexes(true);
-				parser.setImportingSequences(true);
-				parser.setImportingTriggers(true);
-				parser.setImportingPackages(true);
-				parser.setImportingUKs(true);
-				CachingDBImporter importer = new CachingDBImporter(parser, environment);
-				Database database = importer.importDatabase();
+				Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, 
+						".*", exclusionPatternProvider.getValue(), true, true);
 				DatabasePane.this.importer = importer;
 				final TreeModel model = new SwingTreeModelAdapter<DBObject>(new DatabaseTreeModel(database));
 				SwingUtilities.invokeLater(new Runnable() {
