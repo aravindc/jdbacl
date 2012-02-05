@@ -81,7 +81,7 @@ public interface DBTable extends ContainerComponent, CompositeDBObject<DBTableCo
 	DBRowIterator allRows(Connection connection) throws SQLException;
     DBRowIterator queryRowsByCellValues(String[] columnNames, Object[] values, Connection connection) throws SQLException;
     DBRowIterator queryRows(String whereClause, Connection connection) throws SQLException;
-    HeavyweightIterator<Object> queryPKs(Connection connection); // TODO rename to queryPKValues()
+    HeavyweightIterator<Object> queryPKValues(Connection connection);
 	TabularIterator query(String query, Connection connection);
     
 }

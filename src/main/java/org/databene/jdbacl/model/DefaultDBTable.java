@@ -322,7 +322,7 @@ public class DefaultDBTable extends AbstractCompositeDBObject<DBTableComponent> 
         return new DBRowIterator(this, connection, whereClause);
     }
     
-	public HeavyweightIterator<Object> queryPKs(Connection connection) {
+	public HeavyweightIterator<Object> queryPKValues(Connection connection) {
 		StringBuilder query = new StringBuilder("select ");
 		query.append(ArrayFormat.format(getPKColumnNames()));
 		query.append(" from ").append(name);

@@ -151,8 +151,8 @@ public class LazyTable implements DBTable {
         return getRealTableWithColumns().queryRows(whereClause, connection).withTable(this);
 	}
 
-	public HeavyweightIterator<Object> queryPKs(Connection connection) {
-		return getRealTableWithPK().queryPKs(connection);
+	public HeavyweightIterator<Object> queryPKValues(Connection connection) {
+		return getRealTableWithPK().queryPKValues(connection);
 	}
 
 	public TabularIterator query(String query, Connection connection) {
