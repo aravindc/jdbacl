@@ -76,7 +76,7 @@ public class HSQLDialect extends DatabaseDialect {
         try {
 	        while (resultSet.next()) {
 	        	String name = resultSet.getString("SEQUENCE_NAME");
-	        	DBSequence sequence = new DBSequence(name, null);
+	        	DBSequence sequence = new DBSequence(name, resultSet.getString("SEQUENCE_CATALOG"), resultSet.getString("SEQUENCE_SCHEMA"));
 	        	sequence.setStart(new BigInteger(resultSet.getString("START_WITH")));
 	        	sequence.setIncrement(new BigInteger(resultSet.getString("INCREMENT")));
 	        	sequence.setMinValue(new BigInteger(resultSet.getString("MINIMUM_VALUE")));
