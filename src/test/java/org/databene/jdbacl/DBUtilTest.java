@@ -51,7 +51,7 @@ public class DBUtilTest {
 	public void testRunScript() throws Exception {
 		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
 		ErrorHandler errorHandler = new ErrorHandler(getClass());
-		DBExecutionResult result = DBUtil.runScript(SCRIPT_FILE, Encodings.ISO_8859_1, connection, true, errorHandler);
+		DBExecutionResult result = DBUtil.executeScriptFile(SCRIPT_FILE, Encodings.ISO_8859_1, connection, true, errorHandler);
 		assertTrue(result.changedStructure);
 		Object[][] rows = (Object[][]) DBUtil.queryAndSimplify("select * from T1", connection);
 		assertEquals(1, rows.length);

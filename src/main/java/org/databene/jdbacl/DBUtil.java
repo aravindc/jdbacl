@@ -394,24 +394,24 @@ public class DBUtil {
         }
     }
 
-    public static DBExecutionResult runScript(
+    public static DBExecutionResult executeScriptFile(
     		String scriptUri, String encoding, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) 
     			throws IOException {
-		return runScript(scriptUri, encoding, ';', connection, ignoreComments, errorHandler);
+		return executeScriptFile(scriptUri, encoding, ';', connection, ignoreComments, errorHandler);
     }
 
-    public static DBExecutionResult runScript(
+    public static DBExecutionResult executeScriptFile(
     		String scriptUri, String encoding, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) 
     			throws IOException {
 		BufferedReader reader = IOUtil.getReaderForURI(scriptUri, encoding);
 		return runScript(reader, separator, connection, ignoreComments, errorHandler);
     }
 
-    public static DBExecutionResult runScript(String scriptText, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
-		return runScript(scriptText, ';', connection, ignoreComments, errorHandler);
+    public static DBExecutionResult executeScript(String scriptText, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+		return executeScript(scriptText, ';', connection, ignoreComments, errorHandler);
     }
 
-    public static DBExecutionResult runScript(String scriptText, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
+    public static DBExecutionResult executeScript(String scriptText, char separator, Connection connection, boolean ignoreComments, ErrorHandler errorHandler) {
     	StringReader reader = new StringReader(scriptText);
 		return runScript(reader, separator, connection, ignoreComments, errorHandler);
     }
