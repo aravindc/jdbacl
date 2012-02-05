@@ -34,9 +34,10 @@ import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.model.Database;
 
 /**
- * TODO Document class.<br/><br/>
+ * Lazy implementation of the {@link DBSchema} interface. 
+ * It can be initialized partially and loads missing data on demand.<br/><br/>
  * Created: 02.02.2012 14:19:01
- * @since TODO version
+ * @since 0.8.0
  * @author Volker Bergmann
  */
 public class LazySchema implements DBSchema {

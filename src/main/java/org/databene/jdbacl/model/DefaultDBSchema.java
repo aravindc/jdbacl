@@ -27,9 +27,9 @@ import java.util.List;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * TODO Document class.<br/><br/>
+ * Plain implementation of the {@link DBSchema} interface.<br/><br/>
  * Created: 02.02.2012 14:19:15
- * @since TODO version
+ * @since 0.8.0
  * @author Volker Bergmann
  */
 public class DefaultDBSchema extends AbstractCompositeDBObject<DBObject> implements DBSchema {
