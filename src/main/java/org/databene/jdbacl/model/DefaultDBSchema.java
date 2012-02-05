@@ -53,10 +53,10 @@ public class DefaultDBSchema extends AbstractCompositeDBObject<DBObject> impleme
     	if (catalog != null)
     		catalog.addSchema(this);
 		this.components = new ArrayList<DBObject>();
-		this.tables = OrderedNameMap.createCaseInsensitiveMap();
-		this.sequences = OrderedNameMap.createCaseInsensitiveMap();
-    	this.triggers = OrderedNameMap.createCaseInsensitiveMap();
-    	this.packages = OrderedNameMap.createCaseInsensitiveMap();
+		this.tables = OrderedNameMap.createCaseIgnorantMap();
+		this.sequences = OrderedNameMap.createCaseIgnorantMap();
+    	this.triggers = OrderedNameMap.createCaseIgnorantMap();
+    	this.packages = OrderedNameMap.createCaseIgnorantMap();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
