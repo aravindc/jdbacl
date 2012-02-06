@@ -28,6 +28,7 @@ import static junit.framework.Assert.fail;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.databene.commons.ConnectFailedException;
@@ -42,7 +43,7 @@ import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
 
 /**
- * Abstract parent class for tests that relate to child classes of {@link AbstractJDBCDBImporter}.<br/><br/>
+ * Abstract parent class for tests that relate to child classes of {@link JDBCDBImporter}.<br/><br/>
  * Created: 02.02.2012 14:02:05
  * @since 0.8.0
  * @author Volker Bergmann
@@ -51,8 +52,13 @@ public abstract class AbstractJDBCDBImporterTest {
 
 	protected Connection setupDatabase() throws ConnectFailedException, IOException {
 		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
-		DBUtil.runScript("org/databene/jdbacl/model/jdbc/create_tables.hsql.sql", "ISO-8859-1", connection, true, new ErrorHandler(getClass()));
+		DBUtil.executeScriptFile("org/databene/jdbacl/model/jdbc/create_tables.hsql.sql", "ISO-8859-1", connection, true, new ErrorHandler(getClass()));
 		return connection;
+	}
+
+	protected void dropDatabaseTables(Connection connection) throws SQLException {
+		DBUtil.executeUpdate("drop table t1;", connection);
+		connection.close();
 	}
 
 	protected static DBSchema checkSchema(Database db) {

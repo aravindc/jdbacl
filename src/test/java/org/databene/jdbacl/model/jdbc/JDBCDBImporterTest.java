@@ -23,41 +23,53 @@ package org.databene.jdbacl.model.jdbc;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 
+import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.Database;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the {@link LazyJDBCDBImporter}.<br/><br/>
+ * Tests the {@link JDBCDBImporter}.<br/><br/>
  * Created: 31.01.2012 12:32:56
  * @since 0.8.0
  * @author Volker Bergmann
  */
-public class LazyJDBCDBImporterTest extends AbstractJDBCDBImporterTest {
+public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
+	
+	private Connection connection;
 
+	@Before
+	public void setUp() throws Exception {
+		this.connection = setupDatabase();
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		dropDatabaseTables(connection);
+	}
+	
 	@Test
 	public void testImportDatabase_HSQL() throws Exception {
-		Connection connection = setupDatabase();
-		LazyJDBCDBImporter importer = new LazyJDBCDBImporter(connection, "sa", "public");
-		Database db = importer.importDatabase();
-		assertTrue(db instanceof LazyDatabase);
-		LazyDatabase ldb = (LazyDatabase) db;
-		checkImports(false, false, false, ldb);
+		Database db = new Database("hsqlmem", new JDBCDBImporter(connection, "sa", null));
+		checkImports(false, false, false, db);
 		DBSchema schema = checkSchema(db);
 		DBTable table = checkTables(schema);
 		checkIndexes(table);
-		checkImports(false, false, false, ldb);
+		checkImports(false, false, false, db);
 		checkSequences(schema);
-		checkImports(true, false, false, ldb);
+		checkImports(true, false, false, db);
 		checkTriggers(schema);
-		checkImports(true, true, false, ldb);
+		checkImports(true, true, false, db);
 		checkPackages(schema);
-		checkImports(true, true, true, ldb);
+		checkImports(true, true, true, db);
 	}
 
 	private void checkSequences(DBSchema schema) {
@@ -74,10 +86,10 @@ public class LazyJDBCDBImporterTest extends AbstractJDBCDBImporterTest {
 		assertEquals(0, schema.getPackages().size());
 	}
 
-	public void checkImports(boolean sequences, boolean triggers, boolean packages, LazyDatabase ldb) {
-		assertEquals(sequences, ldb.isSequencesImported());
-		assertEquals(triggers,  ldb.isTriggersImported());
-		assertEquals(packages,  ldb.isPackagesImported());
+	public void checkImports(boolean sequences, boolean triggers, boolean packages, Database db) {
+		assertEquals(sequences, db.isSequencesImported());
+		assertEquals(triggers,  db.isTriggersImported());
+		assertEquals(packages,  db.isPackagesImported());
 	}
 
 }

@@ -41,14 +41,14 @@ public class DBUniqueConstraintTest {
 
 	@Test
     public void testToString() {
-        DBTable table = new DefaultDBTable("tablename");
+        DBTable table = new DBTable("tablename");
         DBUniqueConstraint constraint = new DBUniqueConstraint(table, "constraintname", false, "column1", "column2");
         assertEquals("CONSTRAINT constraintname UNIQUE (column1, column2)", constraint.toString());
     }
     
 	@Test
     public void testEquals() {
-        DBTable table = new DefaultDBTable("tablename");
+        DBTable table = new DBTable("tablename");
     	// simple checks
     	DBUniqueConstraint uc1 = new DBUniqueConstraint(table, "uc1", false, "col1");
     	assertFalse(uc1.equals(null));

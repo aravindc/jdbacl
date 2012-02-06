@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -23,12 +23,16 @@ package org.databene.jdbacl.model.xml;
 
 import static org.junit.Assert.*;
 
-import java.io.File;
+import java.math.BigInteger;
+import java.util.List;
 
 import org.databene.commons.tree.TreeLogger;
 import org.databene.jdbacl.model.AbstractModelTest;
+import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTreeModel;
 import org.databene.jdbacl.model.Database;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -39,15 +43,37 @@ import org.junit.Test;
  */
 public class XMLModelImporterTest extends AbstractModelTest {
 
+	@Before
+	public void setUpTables() throws Exception {
+		createTables();
+	}
+	
+	@After
+	public void tearDownTables() throws Exception {
+		dropTables();
+	}
+	
 	@Test
-	public void test() throws Exception {
-		File file = new File("target/test-classes", TEST_MODEL_FILENAME);
-		XMLModelImporter importer = new XMLModelImporter(file);
+	public void testOffline() throws Exception {
+		XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, false);
 		Database actual = importer.importDatabase();
+		assertTrue(actual instanceof Database);
 		new TreeLogger().log(new DBTreeModel(actual));
-		Database expected = createTestModel();
+		Database expected = createTestModel(false);
 		assertTrue(expected.isIdentical(actual));
-		// TODO test lazy loading of missing data
+	}
+	
+	@Test
+	public void testOnline() throws Exception {
+		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, true);
+		Database db = importer.importDatabase();
+		new TreeLogger().log(new DBTreeModel(db));
+		assertFalse(db.isSequencesImported());
+		List<DBSequence> sequences = db.getSequences();
+		assertEquals(1, sequences.size());
+		assertEquals("SEQ1", sequences.get(0).getName());
+		assertEquals(BigInteger.valueOf(1000), sequences.get(0).getStart());
+		assertTrue(db.isSequencesImported());
 	}
 	
 }

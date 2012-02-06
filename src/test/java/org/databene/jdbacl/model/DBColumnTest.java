@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -24,33 +24,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.databene.jdbacl.model.jdbc;
+package org.databene.jdbacl.model;
 
-import java.sql.Connection;
+import java.sql.Types;
 
-import org.databene.jdbacl.model.DBSchema;
-import org.databene.jdbacl.model.DBTable;
-import org.databene.jdbacl.model.Database;
-
+import org.databene.jdbacl.model.DBColumn;
+import org.databene.jdbacl.model.DBDataType;
 import org.junit.Test;
 import static junit.framework.Assert.*;
 
 /**
- * Tests the {@link EagerJDBCDBImporter}.<br/><br/>
- * Created at 03.05.2008 08:59:20
- * @since 0.5.3
+ * Tests the {@link DBColumn}.<br/><br/>
+ * Created: 06.01.2007 10:41:46
  * @author Volker Bergmann
  */
-public class EagerJDBCDBImporterTest extends AbstractJDBCDBImporterTest {
-	
-	@Test
-	public void testImportDatabase_HSQL() throws Exception {
-		Connection connection = setupDatabase();
-		EagerJDBCDBImporter importer = new EagerJDBCDBImporter(connection, "sa", "public");
-		Database db = importer.importDatabase();
-		DBSchema schema = checkSchema(db);
-		DBTable table = checkTables(schema);
-		checkIndexes(table);
-	}
+public class DBColumnTest {
 
+	@Test
+    public void testToString() {
+        assertEquals("Column formatting failed", "ID : NUMBER(11,2)",
+                new DBColumn("ID", null, DBDataType.getInstance(Types.DECIMAL, "NUMBER"), 11, 2).toString());
+    }
+    
 }
