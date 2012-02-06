@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -50,7 +50,6 @@ import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.Database;
-import org.databene.jdbacl.model.jdbc.LazyDatabase;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 import static org.databene.commons.xml.SimpleXMLWriter.*;
@@ -100,18 +99,17 @@ public class XMLModelExporter implements DBMetaDataExporter {
 	private void exportDatabase(Database database, SimpleXMLWriter writer)
 			throws SAXException {
 		AttributesImpl attribs = createAttributes("environment", database.getName());
-		addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
-		addAttribute("databaseProductVersion", database.getDatabaseProductVersion().toString(), attribs);
+		if (database.getDatabaseProductName() != null)
+			addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
+		if (database.getDatabaseProductVersion() != null)
+			addAttribute("databaseProductVersion", database.getDatabaseProductVersion().toString(), attribs);
 		addAttribute("importDate", sdf.format(database.getImportDate()), attribs);
 		addAttribute("user", database.getUser(), attribs);
 		addAttribute("tableInclusionPattern", database.getTableInclusionPattern(), attribs);
 		addAttribute("tableExclusionPattern", database.getTableExclusionPattern(), attribs);
-		if (database instanceof LazyDatabase) {
-			LazyDatabase ldb = (LazyDatabase) database;
-			addAttribute("sequencesImported", String.valueOf(ldb.isSequencesImported()), attribs);
-			addAttribute("triggersImported", String.valueOf(ldb.isTriggersImported()), attribs);
-			addAttribute("sequencesImported", String.valueOf(ldb.isSequencesImported()), attribs);
-		}
+		addAttribute("sequencesImported", String.valueOf(database.isSequencesImported()), attribs);
+		addAttribute("triggersImported", String.valueOf(database.isTriggersImported()), attribs);
+		addAttribute("packagesImported", String.valueOf(database.isSequencesImported()), attribs);
 		writer.startElement("database", attribs);
 		for (DBCatalog catalog : database.getCatalogs())
 			exportCatalog(catalog, writer);
@@ -126,16 +124,20 @@ public class XMLModelExporter implements DBMetaDataExporter {
 	}
 
 	private void exportSchema(DBSchema schema, SimpleXMLWriter writer) throws SAXException {
+		Database db = schema.getDatabase();
 		AttributesImpl atts = createAttributes("name", schema.getName());
 		writer.startElement("schema", atts);
 		for (DBTable table : schema.getTables())
 			exportTable(table, writer);
-		for (DBSequence sequence : schema.getSequences(true))
-			exportSequence(sequence, writer);
-		for (DBTrigger trigger : schema.getTriggers())
-			exportTrigger(trigger, writer);
-		for (DBPackage pkg : schema.getPackages())
-			exportPackage(pkg, writer);
+		if (db.isSequencesImported())
+			for (DBSequence sequence : schema.getSequences(true))
+				exportSequence(sequence, writer);
+		if (db.isTriggersImported())
+			for (DBTrigger trigger : schema.getTriggers())
+				exportTrigger(trigger, writer);
+		if (db.isPackagesImported())
+			for (DBPackage pkg : schema.getPackages())
+				exportPackage(pkg, writer);
 		writer.endElement("schema");
 	}
 

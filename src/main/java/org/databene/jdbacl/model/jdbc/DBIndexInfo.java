@@ -34,7 +34,7 @@ import org.databene.commons.ArrayUtil;
  * Created: 13.01.2007 23:40:52
  * @author Volker Bergmann
  */
-class DBIndexInfo {
+public class DBIndexInfo {
 	
     public String name;
     public String tableName;

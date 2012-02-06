@@ -47,7 +47,7 @@ public class DBPackage extends AbstractCompositeDBObject<DBProcedure> {
 
 	public DBPackage(String name, DBSchema owner) {
 		super(name, "package", owner);
-		this.procedures = OrderedNameMap.createCaseInsensitiveMap();
+		this.procedures = OrderedNameMap.createCaseIgnorantMap();
 		if (owner != null)
 			owner.addPackage(this);
 	}

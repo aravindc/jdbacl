@@ -40,9 +40,9 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
 	private OrderedNameMap<DBSequence> sequences;
 	
     public TableContainerSupport() {
-    	this.subContainers = OrderedNameMap.createCaseInsensitiveMap();
-		this.tables = OrderedNameMap.createCaseInsensitiveMap();
-		this.sequences = OrderedNameMap.createCaseInsensitiveMap();
+    	this.subContainers = OrderedNameMap.createCaseIgnorantMap();
+		this.tables = OrderedNameMap.createCaseIgnorantMap();
+		this.sequences = OrderedNameMap.createCaseIgnorantMap();
     }
 
     // sub container operations ----------------------------------------------------------------------------------------

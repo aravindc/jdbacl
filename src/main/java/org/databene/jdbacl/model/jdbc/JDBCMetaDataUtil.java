@@ -42,7 +42,7 @@ public class JDBCMetaDataUtil {
 			String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached) 
 				throws ConnectFailedException, ImportFailedException {
 		DBMetaDataImporter importer = getJDBCDBImporter(environment, 
-				importUKs, importIndexes, importSequences, importChecks, tableInclusionPattern, tableExclusionPattern, lazy, cached);
+				importUKs, importIndexes, importSequences, importChecks, tableInclusionPattern, tableExclusionPattern, cached);
 		if (cached)
 			importer = new CachingDBImporter(importer, environment);
 		return importer.importDatabase();
@@ -50,12 +50,9 @@ public class JDBCMetaDataUtil {
 
 	public static DBMetaDataImporter getJDBCDBImporter(String environment, 
 			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
-			String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached) {
-		AbstractJDBCDBImporter dbImporter;
-		if (lazy)
-			dbImporter = new LazyJDBCDBImporter(environment);
-		else
-			dbImporter = new EagerJDBCDBImporter(environment);
+			String tableInclusionPattern, String tableExclusionPattern, boolean cached) {
+		JDBCDBImporter dbImporter;
+		dbImporter = new JDBCDBImporter(environment);
 		dbImporter.setTableInclusionPattern(tableInclusionPattern);
 		dbImporter.setTableExclusionPattern(tableExclusionPattern);
 		DBMetaDataImporter importer = dbImporter;
@@ -66,27 +63,24 @@ public class JDBCMetaDataUtil {
 	
 	public static Database getMetaData(Connection target, String user, String schema) 
 			throws ConnectFailedException, ImportFailedException {
-		return getMetaData(target, user, schema, true, true, true, true, ".*", null, true);
+		return getMetaData(target, user, schema, true, true, true, true, ".*", null);
 	}
 	
 	public static Database getMetaData(Connection connection, String user, String schemaName,
 				boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
-				String tableInclusionPattern, String tableExclusionPattern, boolean lazy) 
+				String tableInclusionPattern, String tableExclusionPattern) 
 			throws ConnectFailedException, ImportFailedException {
 		DBMetaDataImporter importer = getJDBCDBImporter(connection, user, schemaName, 
 				importUKs, importIndexes, importSequences, importChecks, 
-				tableInclusionPattern, tableExclusionPattern, lazy);
+				tableInclusionPattern, tableExclusionPattern);
 		return importer.importDatabase();
 	}
 
 	public static DBMetaDataImporter getJDBCDBImporter(Connection connection, String user, String schemaName,
 			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
-			String tableInclusionPattern, String tableExclusionPattern, boolean lazy) {
-		AbstractJDBCDBImporter importer;
-		if (lazy)
-			importer = new LazyJDBCDBImporter(connection, user, schemaName);
-		else
-			importer = new EagerJDBCDBImporter(connection, user, schemaName);
+			String tableInclusionPattern, String tableExclusionPattern) {
+		JDBCDBImporter importer;
+		importer = new JDBCDBImporter(connection, user, schemaName);
 		importer.setTableInclusionPattern(tableInclusionPattern);
 		importer.setTableExclusionPattern(tableExclusionPattern);
 		return importer;

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -27,29 +27,142 @@
 package org.databene.jdbacl.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.databene.commons.collection.OrderedNameMap;
 
 /**
  * Represents a JDBC database schema.<br/><br/>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */
-public interface DBSchema extends CompositeDBObject<DBObject>, TableHolder, SequenceHolder, Serializable {
-	Database getDatabase();
-	DBCatalog getCatalog();
+public class DBSchema extends AbstractCompositeDBObject<DBObject> implements TableHolder, SequenceHolder, Serializable {
+
+	private static final long serialVersionUID = -8481832064630225273L;
 	
-	List<DBTable> getTables();
-	List<DBTable> getTables(boolean recursive);
-    DBTable getTable(String tableName);
-	void addTable(DBTable table);
-	void removeTable(DBTable table);
+	private List<DBObject> components;
+	private OrderedNameMap<DBTable> tables;
+	private OrderedNameMap<DBSequence> sequences;
+    private OrderedNameMap<DBTrigger> triggers;
+    private OrderedNameMap<DBPackage> packages;
+    
+    // constructors ----------------------------------------------------------------------------------------------------
+
+    public DBSchema(String name) {
+        this(name, null);
+    }
+
+    public DBSchema(String name, DBCatalog catalog) {
+    	super(name, "schema");
+    	if (catalog != null)
+    		catalog.addSchema(this);
+		this.components = new ArrayList<DBObject>();
+		this.tables = OrderedNameMap.createCaseIgnorantMap();
+		this.sequences = OrderedNameMap.createCaseIgnorantMap();
+    	this.triggers = OrderedNameMap.createCaseIgnorantMap();
+    	this.packages = OrderedNameMap.createCaseIgnorantMap();
+    }
+
+    // properties ------------------------------------------------------------------------------------------------------
+
+    public String getName() {
+        return name;
+    }
+
+    public Database getDatabase() {
+        return getCatalog().getDatabase();
+    }
+    
+    // catalog operations ----------------------------------------------------------------------------------------------
+
+    public DBCatalog getCatalog() {
+        return (DBCatalog) owner;
+    }
+
+    public void setCatalog(DBCatalog catalog) {
+        this.owner = catalog;
+    }
+
+    // CompositeDBObject implementation --------------------------------------------------------------------------------
+
+	public List<DBObject> getComponents() {
+		return components;
+	}
 	
-	List<DBSequence> getSequences(boolean recursive);
-	void addSequence(DBSequence dbSequence);
+    // table operations ------------------------------------------------------------------------------------------------
+
+    public List<DBTable> getTables() {
+		return tables.values();
+    }
+
+	public List<DBTable> getTables(boolean recursive) {
+		return getTables();
+	}
 	
-	List<DBTrigger> getTriggers();
-	void addTrigger(DBTrigger dbTrigger);
+    public DBTable getTable(String tableName) {
+        return tables.get(tableName);
+    }
+
+    public void addTable(DBTable table) {
+        tables.put(table.getName(), table);
+        components.add(table);
+    }
+
+    public void removeTable(DBTable table) {
+        tables.remove(table.getName());
+        components.remove(table);
+    }
+    
+    // sequence operations ---------------------------------------------------------------------------------------------
+
+	public List<DBSequence> getSequences(boolean recursive) {
+		getDatabase().haveSequencesImported();
+		return sequences.values();
+	}
 	
-	List<DBPackage> getPackages();
-	void addPackage(DBPackage dbPackage);
+    public void addSequence(DBSequence sequence) {
+		getDatabase().haveSequencesImported();
+    	receiveSequence(sequence);
+    }
+    
+	public void receiveSequence(DBSequence sequence) {
+		this.sequences.put(sequence.getName(), sequence);
+    	components.add(sequence);
+	}
+
+	// trigger operations ----------------------------------------------------------------------------------------------
+
+	public List<DBTrigger> getTriggers() {
+		getDatabase().haveTriggersImported();
+		return triggers.values();
+	}
+	
+	public void addTrigger(DBTrigger trigger) {
+		getDatabase().haveTriggersImported();
+		receiveTrigger(trigger);
+	}
+	
+	public void receiveTrigger(DBTrigger trigger) {
+		this.triggers.put(trigger.getName(), trigger);
+		components.add(trigger);
+	}
+
+	// package operations ----------------------------------------------------------------------------------------------
+
+	public List<DBPackage> getPackages() {
+		getDatabase().havePackagesImported();
+		return packages.values();
+	}
+	
+	public void addPackage(DBPackage pkg) {
+		getDatabase().havePackagesImported();
+		receivePackage(pkg);
+	}
+
+	public void receivePackage(DBPackage pkg) {
+		packages.put(pkg.getName(), pkg);
+		components.add(pkg);
+	}
+
 }

@@ -40,8 +40,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBDataType;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
-import org.databene.jdbacl.model.DefaultDBColumn;
-import org.databene.jdbacl.model.DefaultDBTable;
+import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.sql.parser.SQLLexer;
 import org.databene.jdbacl.sql.parser.SQLParser;
 import org.databene.jdbacl.sql.parser.TextHolder;
@@ -385,18 +384,18 @@ public class SQLParserUtil {
 
 	private static DBTable convertCreateTable(CommonTree node, DatabaseDialect dialect) {
 		String tableName = convertString(childAt(0, node));
-		DefaultDBTable table = new DefaultDBTable(tableName);
+		DBTable table = new DBTable(tableName);
 		convertTableDetails(childAt(1, node), table, dialect);
 		// TODO v1.0 parse ora_configs
 	    return table;
     }
 
-	private static void convertTableDetails(CommonTree node, DefaultDBTable table, DatabaseDialect dialect) {
+	private static void convertTableDetails(CommonTree node, DBTable table, DatabaseDialect dialect) {
 		for (CommonTree subNode : getChildNodes(node))
 			convertTableDetail(subNode, table, dialect);
     }
 
-	private static void convertTableDetail(CommonTree node, DefaultDBTable table, DatabaseDialect dialect) {
+	private static void convertTableDetail(CommonTree node, DBTable table, DatabaseDialect dialect) {
 		switch (node.getType()) {
 			case SQLLexer.COLUMN_SPEC: convertColumnSpec(node, table); break;
 			case SQLLexer.PRIMARY: convertInlinePK(node, table, dialect); break;
@@ -407,7 +406,7 @@ public class SQLParserUtil {
 		}
     }
 
-	private static void convertInlinePK(CommonTree node, DefaultDBTable table, DatabaseDialect dialect) {
+	private static void convertInlinePK(CommonTree node, DBTable table, DatabaseDialect dialect) {
 	    String constraintName = convertString(childAt(0, node));
 	    String[] pkColumnNames = convertNameList(childAt(1, node));
 	    DBPrimaryKeyConstraint pk = new DBPrimaryKeyConstraint(
@@ -422,7 +421,7 @@ public class SQLParserUtil {
 		return result;
     }
 
-	private static void convertColumnSpec(CommonTree node, DefaultDBTable table) {
+	private static void convertColumnSpec(CommonTree node, DBTable table) {
 		String columnName = convertString(childAt(0, node));
 		String columnTypeName;
 		Integer size = null;
@@ -442,7 +441,7 @@ public class SQLParserUtil {
 				}
 			}
 		}
-		DefaultDBColumn column = new DefaultDBColumn(columnName, table, DBDataType.getInstance(columnTypeName), size, fractionDigits);
+		DBColumn column = new DBColumn(columnName, table, DBDataType.getInstance(columnTypeName), size, fractionDigits);
 		table.addColumn(column);
 	    for (int i = detailOffset; i < node.getChildCount(); i++)
 	    	convertColumnDetail(childAt(i, node), column);
@@ -452,7 +451,7 @@ public class SQLParserUtil {
 	    return Integer.parseInt(node.getText());
     }
 
-	private static void convertColumnDetail(CommonTree node, DefaultDBColumn column) {
+	private static void convertColumnDetail(CommonTree node, DBColumn column) {
 		switch (node.getType()) {
 			case SQLLexer.NOT : column.setNullable(false); break;
 			case SQLLexer.DEFAULT : column.setNullable(false); break;

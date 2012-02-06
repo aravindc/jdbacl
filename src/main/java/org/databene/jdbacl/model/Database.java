@@ -26,41 +26,295 @@
 
 package org.databene.jdbacl.model;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.databene.commons.Assert;
+import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.StringUtil;
+import org.databene.commons.collection.OrderedNameMap;
 import org.databene.commons.version.VersionNumber;
+import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 
 /**
  * Represents a database.<br/><br/>
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */
-public interface Database extends CompositeDBObject<DBCatalog>, TableHolder, SequenceHolder {
+public class Database extends AbstractCompositeDBObject<DBCatalog> implements TableHolder, SequenceHolder {
 	
-	String getEnvironment();
-	String getDatabaseProductName();
-	VersionNumber getDatabaseProductVersion();
-	String getUser();
-	Date getImportDate();
-	String getTableInclusionPattern();
-	String getTableExclusionPattern();
-	
-    List<DBCatalog> getCatalogs();
-    DBCatalog getCatalog(String catalogName);
-    void addCatalog(DBCatalog catalog);
-    void removeCatalog(DBCatalog catalog);
+	private static final long serialVersionUID = -1975619615948817919L;
 
-	DBSchema getSchema(String schemaName);
-
-	List<DBTable> getTables();
-    DBTable getTable(String name);
-    DBTable getTable(String name, boolean required);
-	void removeTable(String tableName);
-
-	List<DBSequence> getSequences();
+	private String environment;
 	
-	List<DBTrigger> getTriggers();
+	private String productName;
+	private VersionNumber productVersion;
+	private Date importDate;
+	private String user;
+	private String tableInclusionPattern;
+	private String tableExclusionPattern;
 	
-	List<DBPackage> getPackages();
+	private OrderedNameMap<DBCatalog> catalogs;
+	
+	private JDBCDBImporter importer;
+	private boolean sequencesImported;
+	private boolean triggersImported;
+	private boolean packagesImported;
+	
+
+
+    // constructors ----------------------------------------------------------------------------------------------------
+
+	public Database(String environment) {
+		this(environment, new JDBCDBImporter(environment));
+	}
+	
+	public Database(String environment, String productName, String productVersion) {
+		this(environment, null);
+		this.productName = productName;
+		this.productVersion = VersionNumber.valueOf(productVersion);
+	}
+	
+    public Database(String environment, JDBCDBImporter importer) {
+        super(environment, "database");
+        try {
+			this.environment = environment;
+			this.catalogs = OrderedNameMap.createCaseIgnorantMap();
+			this.sequencesImported = false;
+			this.triggersImported = false;
+			this.packagesImported = false;
+			this.importer = importer;
+			if (importer != null) {
+				this.productName = importer.getDatabaseProductName();
+				this.productVersion = importer.getDatabaseProductVersion();
+				importer.importCatalogs(this);
+				importer.importSchemas(this);
+				importer.importAllTables(this);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Database import failed for environment " + environment, e);
+		}
+    }
+    
+	public String getEnvironment() {
+		return environment;
+	}
+
+    public String getDatabaseProductName() {
+    	return productName;
+    }
+    
+    public VersionNumber getDatabaseProductVersion() {
+    	return productVersion;
+    }
+    
+	public Date getImportDate() {
+		return importDate;
+	}
+
+	public void setImportDate(Date importDate) {
+		this.importDate = importDate;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getTableInclusionPattern() {
+		return tableInclusionPattern;
+	}
+
+	public void setTableInclusionPattern(String tableInclusionPattern) {
+		this.tableInclusionPattern = tableInclusionPattern;
+	}
+
+	public String getTableExclusionPattern() {
+		return tableExclusionPattern;
+	}
+
+	public void setTableExclusionPattern(String tableExclusionPattern) {
+		this.tableExclusionPattern = tableExclusionPattern;
+	}
+	
+    // CompositeDBObject implementation --------------------------------------------------------------------------------
+
+	public List<DBCatalog> getComponents() {
+		return catalogs.values();
+	}
+	
+    // catalog operations ----------------------------------------------------------------------------------------------
+
+    public List<DBCatalog> getCatalogs() {
+        return getComponents();
+    }
+
+    public DBCatalog getCatalog(String catalogName) {
+        return catalogs.get(catalogName);
+    }
+
+    public void addCatalog(DBCatalog catalog) {
+        catalog.setDatabase(this);
+        catalogs.put(catalog.getName(), catalog);
+    }
+
+    public void removeCatalog(DBCatalog catalog) {
+        catalogs.remove(catalog.getName());
+        catalog.setOwner(null);
+    }
+
+    // schema operations -----------------------------------------------------------------------------------------------
+
+	public DBSchema getSchema(String schemaName) {
+        for (DBCatalog catalog : getCatalogs()) {
+            DBSchema schema = catalog.getSchema(schemaName);
+            if (schema != null)
+            	return schema;
+        }
+        throw new ObjectNotFoundException("Table '" + name + "'");
+	}
+
+    // table operations ------------------------------------------------------------------------------------------------
+
+	public List<DBTable> getTables() {
+		return getTables(true);
+	}
+
+	public List<DBTable> getTables(boolean recursive) {
+		if (!recursive)
+			return new ArrayList<DBTable>();
+    	List<DBTable> tables = new ArrayList<DBTable>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBTable table : catalog.getTables())
+            	tables.add(table);
+        return tables;
+    }
+
+	public DBTable getTable(String name) {
+		return getTable(name, true);
+	}
+
+    public DBTable getTable(String name, boolean required) {
+        for (DBCatalog catalog : getCatalogs())
+            for (DBTable table : catalog.getTables())
+            	if (StringUtil.equalsIgnoreCase(table.getName(), name))
+            		return table;
+        if (required)
+        	throw new ObjectNotFoundException("Table '" + name + "'");
+        else
+        	return null;
+    }
+    
+	public void removeTable(String tableName) {
+		DBTable table = getTable(tableName, true);
+		table.getSchema().removeTable(table);
+    }
+	
+	
+	
+	// sequences -------------------------------------------------------------------------------------------------------
+
+	public List<DBSequence> getSequences() {
+		haveSequencesImported();
+		return getSequences(true);
+	}
+
+	public List<DBSequence> getSequences(boolean recursive) {
+		haveSequencesImported();
+		if (!recursive)
+			return new ArrayList<DBSequence>();
+    	List<DBSequence> sequences = new ArrayList<DBSequence>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBSequence table : catalog.getSequences())
+            	sequences.add(table);
+        return sequences;
+	}
+	
+	public synchronized void haveSequencesImported() {
+		if (!sequencesImported) {
+			if (importer != null)
+				importer.importSequences(this);
+			this.sequencesImported = true;
+		}
+	}
+	
+	public boolean isSequencesImported() {
+		return sequencesImported;
+	}
+	
+	public void setSequencesImported(boolean sequencesImported) {
+		this.sequencesImported = sequencesImported;
+	}
+
+	
+	
+	// triggers --------------------------------------------------------------------------------------------------------
+	
+	public List<DBTrigger> getTriggers() {
+		haveTriggersImported();
+    	List<DBTrigger> triggers = new ArrayList<DBTrigger>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBSchema schema : catalog.getSchemas())
+            	triggers.addAll(schema.getTriggers());
+        return triggers;
+	}
+
+	public synchronized void haveTriggersImported() {
+		if (!triggersImported) {
+			try {
+				if (importer != null)
+					importer.importTriggers(this);
+				triggersImported = true;
+			} catch (SQLException e) {
+				throw new RuntimeException("Import of database triggers ailed: " + getName(), e);
+			}
+		}
+	}
+	
+	public boolean isTriggersImported() {
+		return triggersImported;
+	}
+	
+	public void setTriggersImported(boolean triggersImported) {
+		this.triggersImported = triggersImported;
+	}
+	
+	
+	
+	// packages --------------------------------------------------------------------------------------------------------
+	
+	public List<DBPackage> getPackages() {
+		havePackagesImported();
+    	List<DBPackage> packages = new ArrayList<DBPackage>();
+        for (DBCatalog catalog : getCatalogs())
+            for (DBSchema schema : catalog.getSchemas())
+            	packages.addAll(schema.getPackages());
+        return packages;
+	}
+
+	public synchronized void havePackagesImported() {
+		if (!packagesImported) {
+			try {
+				if (importer != null)
+					importer.importPackages(this);
+				packagesImported = true;
+			} catch (SQLException e) {
+				throw new RuntimeException("Import of database packages failed: " + getName(), e);
+			}
+		}
+	}
+	
+	public boolean isPackagesImported() {
+		return packagesImported;
+	}
+	
+	public void setPackagesImported(boolean packagesImported) {
+		this.packagesImported = packagesImported;
+	}
+	
 }

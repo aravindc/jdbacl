@@ -28,7 +28,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -44,7 +43,6 @@ import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.ProgrammerError;
 import org.databene.commons.StringUtil;
 import org.databene.commons.collection.OrderedNameMap;
-import org.databene.commons.time.ElapsedTimeFormatter;
 import org.databene.commons.version.VersionNumber;
 import org.databene.contiperf.StopWatch;
 import org.databene.jdbacl.DBUtil;
@@ -56,18 +54,13 @@ import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBDataType;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
-import org.databene.jdbacl.model.DBIndex;
 import org.databene.jdbacl.model.DBMetaDataImporter;
-import org.databene.jdbacl.model.DBNonUniqueIndex;
-import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
+import org.databene.jdbacl.model.DBPackage;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
-import org.databene.jdbacl.model.DBUniqueConstraint;
-import org.databene.jdbacl.model.DBUniqueIndex;
+import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.model.Database;
-import org.databene.jdbacl.model.DefaultDBSchema;
-import org.databene.jdbacl.model.DefaultDatabase;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.TableType;
 import org.slf4j.Logger;
@@ -79,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.8.0
  * @author Volker Bergmann
  */
-public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
+public class JDBCDBImporter implements DBMetaDataImporter {
 
     private static final String TEMPORARY_ENVIRONMENT = "___temp";
 
@@ -98,23 +91,24 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
     Connection _connection;
     DatabaseDialect dialect;
     String databaseProductName;
+	private VersionNumber databaseProductVersion;
 
     Escalator escalator = new LoggerEscalator();
     ErrorHandler errorHandler;
     TableNameFilter tableNameFilter;
 
 	DatabaseMetaData metaData;
-	DefaultDatabase database;
 
-    public AbstractJDBCDBImporter(String environment) {
+    public JDBCDBImporter(String environment) {
     	this._connection = null;
     	this.environment = environment;
         this.tableInclusionPattern = ".*";
         this.tableExclusionPattern = null;
         this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
+        init();
     }
 
-    public AbstractJDBCDBImporter(String url, String driver, String user, String password, String catalog, String schema) {
+    public JDBCDBImporter(String url, String driver, String user, String password, String catalog, String schema) {
     	this._connection = null;
     	this.environment = TEMPORARY_ENVIRONMENT;
         this.url = url;
@@ -125,24 +119,27 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
         this.schemaName = schema;
         this.tableInclusionPattern = ".*";
         this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
+        init();
     }
 
-    public AbstractJDBCDBImporter(Connection connection, String user, String schemaName) {
-    	this.environment = TEMPORARY_ENVIRONMENT;
-    	this._connection = connection;
-        this.user = user;
-        this.schemaName = schemaName;
-        this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
+    public JDBCDBImporter(Connection connection, String user, String schemaName) {
+		this.environment = TEMPORARY_ENVIRONMENT;
+		this._connection = connection;
+		this.user = user;
+		this.schemaName = schemaName;
+		this.errorHandler = new ErrorHandler(getClass().getName(), Level.error);
+		init();
     }
 
     // properties ------------------------------------------------------------------------------------------------------
     
-	/**
-     * @return the productName
-     */
     public String getDatabaseProductName() {
         return databaseProductName;
     }
+    
+	public VersionNumber getDatabaseProductVersion() {
+		return databaseProductVersion;
+	}
     
     public void setFaultTolerant(boolean faultTolerant) {
     	this.errorHandler = new ErrorHandler(getClass().getName(), (faultTolerant ? Level.warn : Level.error));
@@ -186,40 +183,50 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	
 	// database import -------------------------------------------------------------------------------------------------
 	
-	protected void init() throws SQLException, ConnectFailedException {
-		if (!TEMPORARY_ENVIRONMENT.equals(environment)) {
-	    	JDBCConnectData cd = DBUtil.getConnectData(environment);
-	    	if (this.url == null)
-	    		this.url = cd.url;
-	    	if (this.driver == null)
-	    		this.driver = cd.driver;
-	    	if (this.user == null)
-	    		this.user = cd.user;
-	    	if (this.password == null)
-	    		this.password = cd.password;
-	    	if (this.catalogName == null)
-	    		this.catalogName = cd.catalog;
-	    	if (this.schemaName == null)
-	    		this.schemaName = cd.schema;
-		}
-		tableNameFilter = new TableNameFilter(tableInclusionPattern, tableExclusionPattern);
-		StopWatch watch = new StopWatch("getMetaData");
-		metaData = getConnection().getMetaData();
-		watch.stop();
-		databaseProductName = metaData.getDatabaseProductName();
-		VersionNumber productVersion = VersionNumber.valueOf(metaData.getDatabaseMajorVersion() + "." + 
-				metaData.getDatabaseMinorVersion());
-		logger.debug("Product: {} {}", databaseProductName, productVersion);
-		dialect = DatabaseDialectManager.getDialectForProduct(databaseProductName, productVersion);
-		if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
-			DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
-		database = new DefaultDatabase(databaseProductName, databaseProductName, productVersion);
-		database.setImportDate(new Date());
-		database.setUser(user);
-		database.setTableInclusionPattern(tableInclusionPattern);
-		database.setTableExclusionPattern(tableExclusionPattern);
+	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
+		return new Database(environment, this);
 	}
-
+	
+	protected void init() {
+		try {
+			if (!TEMPORARY_ENVIRONMENT.equals(environment)) {
+				JDBCConnectData cd = DBUtil.getConnectData(environment);
+				if (this.url == null)
+					this.url = cd.url;
+				if (this.driver == null)
+					this.driver = cd.driver;
+				if (this.user == null)
+					this.user = cd.user;
+				if (this.password == null)
+					this.password = cd.password;
+				if (this.catalogName == null)
+					this.catalogName = cd.catalog;
+				if (this.schemaName == null)
+					this.schemaName = cd.schema;
+			}
+			tableNameFilter = new TableNameFilter(tableInclusionPattern, tableExclusionPattern);
+			StopWatch watch = new StopWatch("getMetaData");
+			metaData = getConnection().getMetaData();
+			watch.stop();
+			databaseProductName = metaData.getDatabaseProductName();
+			databaseProductVersion = VersionNumber.valueOf(metaData.getDatabaseMajorVersion() + "." + 
+					metaData.getDatabaseMinorVersion());
+			logger.debug("Product: {} {}", databaseProductName, databaseProductVersion);
+			dialect = DatabaseDialectManager.getDialectForProduct(databaseProductName, databaseProductVersion);
+			if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
+				DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
+			/* TODO
+			database = new DefaultDatabase(databaseProductName, databaseProductName, productVersion);
+			database.setImportDate(new Date());
+			database.setUser(user);
+			database.setTableInclusionPattern(tableInclusionPattern);
+			database.setTableExclusionPattern(tableExclusionPattern);
+			*/
+		} catch (Exception e) {
+			throw new RuntimeException("Error initializing " + getClass(), e);
+		}
+	}
+/*
 	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
 		logger.info("Importing database metadata.");
 		StopWatch watch = new StopWatch("importDatabase");
@@ -236,7 +243,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
     }
 
 	protected abstract void importDBObjects() throws SQLException, ConnectFailedException;
-
+*/
 	public void close() {
         DBUtil.close(_connection);
 	}
@@ -245,7 +252,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	
 	// catalog import --------------------------------------------------------------------------------------------------
 
-	public void importCatalogs() throws SQLException, ConnectFailedException {
+	public void importCatalogs(Database database) throws SQLException, ConnectFailedException {
         logger.debug("Importing catalogs");
         StopWatch watch = new StopWatch("importCatalogs");
         ResultSet catalogSet = metaData.getCatalogs();
@@ -273,7 +280,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	
 	// schema import ---------------------------------------------------------------------------------------------------
 	
-    public void importSchemas() throws SQLException {
+    public void importSchemas(Database database) throws SQLException {
         logger.debug("Importing schemas");
         StopWatch watch = new StopWatch("importSchemas");
         int schemaCount = 0;
@@ -292,7 +299,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	        	DBCatalog catalogOfSchema = database.getCatalog(catalogNameOfSchema);
 	        	if (catalogOfSchema == null)
 	        		throw new ObjectNotFoundException("Catalog not found: " + catalogOfSchema);
-	        	schemaFound(schemaName, catalogOfSchema);
+	        	new DBSchema(schemaName, catalogOfSchema);
 	            schemaCount++;
             } else
                 logger.debug("ignoring schema {}", schemaName);
@@ -302,19 +309,17 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
         	DBCatalog catalogToUse = database.getCatalog(catalogName);
         	if (catalogToUse == null)
         		catalogToUse = database.getCatalogs().get(0);
-       		catalogToUse.addSchema(new DefaultDBSchema(null));
+       		catalogToUse.addSchema(new DBSchema(null));
         }
         schemaSet.close();
         watch.stop();
     }
     
-    protected abstract void schemaFound(String schemaName, DBCatalog catalog);
-    
     
     
     // table import ----------------------------------------------------------------------------------------------------
 
-	protected void importAllTableNames() throws SQLException {
+	public void importAllTables(Database database) throws SQLException {
         logger.info("Importing tables");
         if (tableExclusionPattern != null)
         	logger.debug("excluding tables: {}", tableExclusionPattern);
@@ -355,17 +360,16 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
             	// postgres returns no catalog info, so we need to search for the schema in the whole database
             	schema = database.getSchema(tSchemaName);
             }
-			if (schema != null)
-				tableFound(tableName, tableType, tableRemarks, schema);
-			else
+			if (schema != null) {
+				DBTable table = new DBTable(tableName, tableType, tableRemarks, schema, this);
+				table.setDoc(tableRemarks);
+			} else
 				logger.warn("No schema specified. Ignoring table {}", tableName);
         }
         tableSet.close();
         watch.stop();
     }
 
-	protected abstract void tableFound(String tableName, TableType tableType, String remarks, DBSchema schema);
-	
 	private TableType tableType(String tableTypeSpec, String tableName) {
 		// Typical types are "TABLE", "VIEW", "SYSTEM TABLE", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"
 		if (StringUtil.isEmpty(tableTypeSpec))
@@ -382,8 +386,12 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	
 	// column import ---------------------------------------------------------------------------------------------------
 
+    public void importColumnsOfTable(DBTable table, ColumnReceiver receiver) {
+		importColumns(table.getCatalog(), table.getSchema().getName(), table.getName(), tableNameFilter, receiver, errorHandler);
+    }
+
     protected void importColumns(DBCatalog catalog, String schemaName, String tablePattern, 
-    		Filter<String> tableFilter, ErrorHandler errorHandler) {
+    		Filter<String> tableFilter, ColumnReceiver receiver, ErrorHandler errorHandler) {
         StopWatch watch = new StopWatch("importColumns");
         String catalogName = catalog.getName();
         String schemaPattern = (schemaName != null ? schemaName : (catalog.getSchemas().size() == 1 ? catalog.getSchemas().get(0).getName() : null));
@@ -443,7 +451,8 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
                         defaultValue = removeBrackets(defaultValue); // some driver adds brackets to number defaults
                     defaultValue = defaultValue.trim(); // oracle thin driver produces "1 "
                 }
-	            columnFound(columnName, dataType, columnSize, fractionDigits, nullable, defaultValue, comment, table);
+	            receiver.receiveColumn(columnName, dataType, columnSize, fractionDigits, nullable, defaultValue, 
+	            		comment, table);
 	            // not used: importVersionColumnInfo(catalogName, table, metaData);
 	        }
     	} catch (SQLException e) {
@@ -457,11 +466,6 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
         watch.stop();
     }
 
-    protected abstract void columnFound(String columnName, DBDataType dataType,
-			Integer columnSize, Integer fractionDigits, boolean nullable,
-			String defaultValue, String comment, DBTable table);
-
-    
 /*
     private void importVersionColumnInfo(DBCatalog catalogName, DBTable table, DatabaseMetaData metaData) throws SQLException {
         ResultSet versionColumnSet = metaData.getVersionColumns(catalogName.getName(), null, table.getName());
@@ -485,7 +489,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
     
     // primary key import ----------------------------------------------------------------------------------------------
     
-    public void importPrimaryKeyOfTable(DBTable table) {
+    public void importPrimaryKeyOfTable(DBTable table, PKReceiver receiver) {
         logger.debug("Importing primary keys for table {}", table);
         StopWatch watch = new StopWatch("importPrimaryKeyOfTable");
         ResultSet pkset = null;
@@ -507,7 +511,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	        }
 	        if (pkComponents.size() > 0) {
 		        String[] columnNames = pkComponents.values().toArray(new String[pkComponents.size()]);
-		        pkFound(pkName, columnNames, table);
+		        receiver.receivePK(pkName, dialect.isDeterministicPKName(pkName), columnNames, table);
 	        }
         } catch (SQLException e) {
         	errorHandler.handleError("Error importing primary key of table " + table.getName());
@@ -517,22 +521,20 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
         watch.stop();
     }
 
-	protected abstract void pkFound(String pkName, String[] columnNames, DBTable table);
-    
     
     
     // index import ----------------------------------------------------------------------------------------------------
     
-	protected ResultSet importIndexesOfTable(DBTable table, boolean uniquesOnly) {
+	public ResultSet importIndexesOfTable(DBTable table, boolean uniquesOnly, IndexReceiver receiver) {
         StopWatch watch = new StopWatch("importIndexesOfTable");
-		if (table.getType() == TableType.TABLE)
+		if (table.getTableType() == TableType.TABLE)
 			logger.debug("Importing indexes of table '{}'", table.getName());
 		else
-			logger.debug("Skipping indexes of table '{}' with type '{}'", table.getName(), table.getType());
+			logger.debug("Skipping indexes of table '{}' with type '{}'", table.getName(), table.getTableType());
 		ResultSet indexSet = null;
 		try {
 		    indexSet = metaData.getIndexInfo(table.getCatalog().getName(), table.getSchema().getName(), table.getName(), uniquesOnly, true);
-		    parseIndexSet(indexSet, table.getSchema(), table);
+		    parseIndexSet(indexSet, table.getSchema(), table, receiver);
 		} catch (SQLException e) {
 			// possibly we try to query a catalog to which we do not have access rights
 			errorHandler.handleError("Error parsing index data of table " + table.getName(), e);
@@ -543,7 +545,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 		return indexSet;
 	}
     
-	public void parseIndexSet(ResultSet indexSet, DBSchema schema, DBTable queriedTable) throws SQLException {
+	public void parseIndexSet(ResultSet indexSet, DBSchema schema, DBTable queriedTable, IndexReceiver receiver) throws SQLException {
         StopWatch watch = new StopWatch("parseIndexSet");
 		OrderedNameMap<DBIndexInfo> indexes = new OrderedNameMap<DBIndexInfo>();
 		while (indexSet.next()) {
@@ -591,40 +593,16 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 		for (DBIndexInfo indexInfo : indexes.values()) {
 			DBTable table = (queriedTable != null ? queriedTable : schema.getTable(indexInfo.tableName));
 		    boolean deterministicName = dialect.isDeterministicIndexName(indexInfo.name);
-			indexFound(indexInfo, deterministicName, table, schema);
+		    receiver.receiveIndex(indexInfo, deterministicName, table, schema);
 		}
 		watch.stop();
 	}
 
-	protected void indexFound(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema) {
-		try {
-			DBIndex index = null;
-		    if (indexInfo.unique) {
-		    	DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
-		    	boolean isPK = (pk != null && StringUtil.equalsIgnoreCase(indexInfo.columnNames, pk.getColumnNames()));
-		    	DBUniqueConstraint constraint;
-		    	if (isPK) {
-		    		constraint = pk;
-		    	} else {
-		    		constraint = new DBUniqueConstraint(table, indexInfo.name, dialect.isDeterministicUKName(indexInfo.name), indexInfo.columnNames);
-		    		table.addUniqueConstraint(constraint);
-		    	}
-				index = new DBUniqueIndex(indexInfo.name, deterministicName, constraint);
-				table.addIndex(index);
-		    } else {
-		        index = new DBNonUniqueIndex(indexInfo.name, deterministicName, table, indexInfo.columnNames);
-		        table.addIndex(index);
-		    }
-		} catch (Exception e) {
-			errorHandler.handleError("Error importing index " + indexInfo.name);
-		}
-	}
-	
 	
 	
 	// foreign key import ----------------------------------------------------------------------------------------------
 	
-    public void importImportedKeys(DBTable table) {
+    public void importImportedKeys(DBTable table, FKReceiver receiver) {
         logger.debug("Importing imported keys for table {}", table.getName());
         StopWatch watch = new StopWatch("importImportedKeys");
         DBCatalog catalog = table.getCatalog();
@@ -668,7 +646,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	            		key.fk_name, dialect.isDeterministicFKName(key.fk_name), null, columnNames, key.getPkTable(), refereeColumnNames);
 	            foreignKeyConstraint.setUpdateRule(parseRule(key.update_rule));
 	            foreignKeyConstraint.setDeleteRule(parseRule(key.delete_rule));
-	            fkFound(foreignKeyConstraint, table);
+	            receiver.receiveFK(foreignKeyConstraint, table);
             	logger.debug("Imported foreign key {}", foreignKeyConstraint);
 	        }
         } catch (SQLException e) {
@@ -678,8 +656,6 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
         }
         watch.stop();
      }
-
-	protected abstract void fkFound(DBForeignKeyConstraint fk, DBTable table);
 
 	private FKChangeRule parseRule(short rule) {
 		switch (rule) {
@@ -696,7 +672,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
     
     // check import ----------------------------------------------------------------------------------------------------
 
-    protected final void importAllChecks() {
+    public final void importAllChecks(Database database) {
         logger.info("Importing checks");
         StopWatch watch = new StopWatch("importAllChecks");
         try {
@@ -710,7 +686,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 			                if (!tableSupported(newCheck.getTableName()))
 			                	continue;
 			        		DBTable table = schema.getTable(newCheck.getTableName());
-			                checkFound(newCheck, table);
+			        		table.receiveCheckConstraint(newCheck);
 						}
 			            count++;
 			        }
@@ -721,13 +697,11 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 		watch.stop();
     }
 
-	protected abstract void checkFound(DBCheckConstraint check, DBTable table);
-    
     
     
 	// referrer table import -------------------------------------------------------------------------------------------
 
-	public void importRefererTables(DBTable table) {
+	public void importRefererTables(DBTable table, ReferrerReceiver receiver) {
         StopWatch watch = new StopWatch("importRefererTables");
         logger.debug("Importing exported keys for table {}", table);
         DBCatalog catalog = table.getCatalog();
@@ -744,7 +718,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	            String fktable_name = resultSet.getString(7);
 	            if (tableSupported(fktable_name)) {
 	        		logger.debug("Importing referrer: {}", fktable_name);
-	            	referrerFound(fktable_name, table);
+	            	receiver.receiveReferrer(fktable_name, table);
 	            }
 	        }
         } catch (SQLException e) {
@@ -755,13 +729,11 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
         watch.stop();
 	}
 
-	protected abstract void referrerFound(String fktable_name, DBTable table);
-	
 	
 	
 	// sequence import -------------------------------------------------------------------------------------------------
 	
-	public void importSequences() {
+	public void importSequences(Database database) {
         StopWatch watch = new StopWatch("importSequences");
 		try {
 			if (dialect.isSequenceSupported()) {
@@ -770,10 +742,9 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 					DBCatalog catalog = database.getCatalog(sequence.getCatalogName());
 					if (catalog != null) {
 						DBSchema schema = catalog.getSchema(sequence.getSchemaName());
-						if (schema != null)
-							sequenceFound(sequence, schema);
-						else
-							sequenceFound(sequence, catalog.getSchema(this.schemaName));
+						if (schema == null)
+							schema = catalog.getSchema(this.schemaName);
+						schema.receiveSequence(sequence);
 					}
 				}
 			}
@@ -783,13 +754,11 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 		watch.stop();
 	}
 
-	protected abstract void sequenceFound(DBSequence sequence, DBSchema schema);
-	
 	
 	
 	// trigger import --------------------------------------------------------------------------------------------------
 
-	public void importTriggers() throws SQLException {
+	public void importTriggers(Database database) throws SQLException {
 		for (DBCatalog catalog : database.getCatalogs())
 			for (DBSchema schema : catalog.getSchemas())
 				importTriggersForSchema(schema);
@@ -797,7 +766,9 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 
 	private void importTriggersForSchema(DBSchema schema) throws SQLException {
         StopWatch watch = new StopWatch("importTriggersForSchema");
-		dialect.queryTriggers(schema, _connection);
+		List<DBTrigger> triggers = dialect.queryTriggers(schema, _connection);
+		for (DBTrigger trigger : triggers)
+			schema.receiveTrigger(trigger);
 		watch.stop();
 	}
 	
@@ -805,7 +776,7 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	
 	// package import --------------------------------------------------------------------------------------------------
 	
-	public void importPackages() throws SQLException {
+	public void importPackages(Database database) throws SQLException {
 		for (DBCatalog catalog : database.getCatalogs())
 			for (DBSchema schema : catalog.getSchemas())
 				importPackagesOfSchema(schema);
@@ -813,7 +784,9 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 
 	private void importPackagesOfSchema(DBSchema schema) throws SQLException {
         StopWatch watch = new StopWatch("importPackagesOfSchema");
-		dialect.queryPackages(schema, _connection);
+		List<DBPackage> packages = dialect.queryPackages(schema, _connection);
+		for (DBPackage pkg : packages)
+			schema.receivePackage(pkg);
 		watch.stop();
 	}
 	
@@ -842,4 +815,25 @@ public abstract class AbstractJDBCDBImporter implements DBMetaDataImporter {
 	    return getClass().getSimpleName();
 	}
 	
+	public static interface ColumnReceiver {
+		void receiveColumn(String columnName, DBDataType dataType, Integer columnSize, Integer fractionDigits, 
+				boolean nullable, String defaultValue, String comment, DBTable table);
+	}
+	
+	public static interface PKReceiver {
+		void receivePK(String pkName, boolean deterministicName, String[] columnNames, DBTable table);
+	}
+	
+	public static interface FKReceiver {
+		void receiveFK(DBForeignKeyConstraint fk, DBTable table);
+	}
+	
+	public interface ReferrerReceiver {
+		void receiveReferrer(String fktable_name, DBTable table);
+	}
+
+	public static interface IndexReceiver {
+		void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema);
+	}
+
 }

@@ -22,8 +22,8 @@
 package org.databene.jdbacl.model.xml;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 
 import org.databene.commons.ArrayUtil;
@@ -33,12 +33,10 @@ import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SyntaxError;
-import org.databene.commons.version.VersionNumber;
 import org.databene.commons.xml.XMLUtil;
 import org.databene.jdbacl.model.DBPackage;
 import org.databene.jdbacl.model.DBProcedure;
 import org.databene.jdbacl.model.DBTrigger;
-import org.databene.jdbacl.model.DefaultDBSchema;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.DBCatalog;
 import org.databene.jdbacl.model.DBCheckConstraint;
@@ -54,12 +52,7 @@ import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
-import org.databene.jdbacl.model.DefaultDBColumn;
-import org.databene.jdbacl.model.DefaultDBTable;
-import org.databene.jdbacl.model.DefaultDatabase;
 import org.databene.jdbacl.model.TableType;
-import org.databene.jdbacl.model.jdbc.LazyDatabase;
-import org.databene.jdbacl.model.jdbc.LazyJDBCDBImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -75,18 +68,23 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLModelImporter.class);
 
-	private File file;
+	private String uri;
+	private boolean online;
 	
-	public XMLModelImporter(File file) {
-		this.file = file;
+	public XMLModelImporter(File file, boolean online) {
+		this(file.getAbsolutePath(), online);
 	}
 	
+	public XMLModelImporter(String uri, boolean online) {
+		this.uri = uri;
+		this.online = online;
+	}
+
 	public Database importDatabase() throws ImportFailedException {
-		FileInputStream in = null;
+		InputStream in = null;
 		try {
-			in = new FileInputStream(file);
+			in = IOUtil.getInputStreamForURI(uri);
 			Document doc = XMLUtil.parse(in);
-			// TODO support loading database meta model without an actual backend available
 			return parseDatabase(doc.getDocumentElement());
 		} catch (IOException e) {
 			throw new ImportFailedException(e);
@@ -107,34 +105,24 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			environment = e.getAttribute("name");
 		if (StringUtil.isEmpty(environment))
 			throw new ConfigurationError("No environment defined in cache file");
-		String product = e.getAttribute("databaseProductName");
-		VersionNumber version = VersionNumber.valueOf(e.getAttribute("databaseProductVersion"));
-		DefaultDatabase defaultDB = new DefaultDatabase(environment, product, version);
-		defaultDB.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
-		defaultDB.setUser(e.getAttribute("user"));
-		defaultDB.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
-		defaultDB.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
+		Database db = (online ? new Database(environment) : new Database(environment, null, null));
+		db.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
+		db.setUser(e.getAttribute("user"));
+		db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
+		db.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
 		
-		Database db = defaultDB;
-		boolean lazy = (e.getAttribute("sequencesImported") != null);
-		if (lazy) {
-			LazyJDBCDBImporter importer = new LazyJDBCDBImporter(defaultDB);
-			LazyDatabase lazyDB = new LazyDatabase(defaultDB, importer);
-			lazyDB.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported"));
-			lazyDB.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported"));
-			lazyDB.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported"));
-			db = lazyDB;
-		}
-
 		// import catalogs
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("catalog".equals(childName))
-				parseCatalog(child, defaultDB);
+				parseCatalog(child, db);
 			else
 				throw new UnsupportedOperationException("Not an allowed element within <database>: " + childName);
 		}
-		scanReferers(defaultDB);
+		scanReferers(db);
+		db.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported"));
+		db.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported"));
+		db.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported"));
 		return db;
 	}
 
@@ -153,7 +141,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private DBSchema parseSchema(Element e, DBCatalog catalog) {
 		String name = e.getAttribute("name");
-		DBSchema schema = new DefaultDBSchema(name, catalog);
+		DBSchema schema = new DBSchema(name, catalog);
 		Element[] children = XMLUtil.getChildElements(e);
 		for (Element child : children) {
 			String childName = child.getNodeName();
@@ -178,16 +166,16 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return schema;
 	}
 
-	private DefaultDBTable parseTableName(Element e, DBSchema schema) {
+	private DBTable parseTableName(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
 		String typeSpec = e.getAttribute("type");
 		TableType type = (StringUtil.isEmpty(typeSpec) ? TableType.TABLE : TableType.valueOf(typeSpec));
-		return new DefaultDBTable(name, type, null, schema);
+		return new DBTable(name, type, schema);
 	}
 
-	private DefaultDBTable parseTableStructure(Element e, DBSchema schema) {
+	private DBTable parseTableStructure(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
-		DefaultDBTable table = (DefaultDBTable) schema.getTable(name);
+		DBTable table = (DBTable) schema.getTable(name);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("column".equals(childName))
@@ -208,11 +196,11 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return table;
 	}
 
-	private DBColumn parseColumn(Element e, DefaultDBTable table) {
+	private DBColumn parseColumn(Element e, DBTable table) {
 		String name = e.getAttribute("name");
 		String typeAndSizeSpec = e.getAttribute("type");
 		int jdbcType = Integer.parseInt(e.getAttribute("jdbcType"));
-		DefaultDBColumn column = new DefaultDBColumn(name, table, jdbcType, typeAndSizeSpec);
+		DBColumn column = new DBColumn(name, table, jdbcType, typeAndSizeSpec);
 		String defaultValue = e.getAttribute("default");
 		if (!StringUtil.isEmpty(defaultValue))
 			column.setDefaultValue(defaultValue);
@@ -222,21 +210,21 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return column;
 	}
 
-	private DBPrimaryKeyConstraint parsePK(Element e, DefaultDBTable table) {
+	private DBPrimaryKeyConstraint parsePK(Element e, DBTable table) {
 		boolean autoNamed = false;
 		if (e.getAttribute("autoNamed") != null)
 			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
 		return new DBPrimaryKeyConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
 	}
 
-	private DBUniqueConstraint parseUK(Element e, DefaultDBTable table) {
+	private DBUniqueConstraint parseUK(Element e, DBTable table) {
 		boolean autoNamed = false;
 		if (e.getAttribute("autoNamed") != null)
 			autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
 		return new DBUniqueConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
 	}
 
-	private DBForeignKeyConstraint parseFK(Element e, DefaultDBTable owner, DBSchema schema) {
+	private DBForeignKeyConstraint parseFK(Element e, DBTable owner, DBSchema schema) {
 		String name = e.getAttribute("name");
 		String refereeTableName = e.getAttribute("refereeTable");
 		DBTable refereeTable = schema.getTable(refereeTableName);
@@ -269,7 +257,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return fk;
 	}
 
-	private DBCheckConstraint parseCheck(Element e, DefaultDBTable table) {
+	private DBCheckConstraint parseCheck(Element e, DBTable table) {
 		try {
 			boolean autoNamed = false;
 			if (e.getAttribute("autoNamed") != null)
@@ -282,7 +270,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		
 	}
 
-	private DBIndex parseIndex(Element e, DefaultDBTable table) {
+	private DBIndex parseIndex(Element e, DBTable table) {
 		String name = e.getAttribute("name");
 		String uniqueSpec = e.getAttribute("unique");
 		boolean unique = (uniqueSpec != null && "true".equals(uniqueSpec));
