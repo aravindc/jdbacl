@@ -23,11 +23,9 @@ package org.databene.jdbacl.model.jdbc;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 
-import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
