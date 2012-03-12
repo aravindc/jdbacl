@@ -315,7 +315,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
 
 	private void haveIndexesImported() {
-		if (this.indexes == null) {
+		if (!areIndexesImported()) {
 			haveColumnsImported();
 			this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
 			this.indexes = OrderedNameMap.createCaseIgnorantMap();
@@ -324,6 +324,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 				importer.importIndexesOfTable(this, false, receiver);
 		}
     }
+
+	public boolean areIndexesImported() {
+		return (this.indexes != null);
+	}
 
 	class IdxReceiver implements JDBCDBImporter.IndexReceiver {
 		public void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema) {
@@ -375,7 +379,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
 
 	private void haveFKsImported() {
-		if (foreignKeyConstraints == null) {
+		if (!areFKsImported()) {
 	    	havePKImported();
 	    	haveIndexesImported();
 			haveColumnsImported();
@@ -384,6 +388,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 				importer.importImportedKeys(this, new FKRec());
 		}
     }
+
+	public boolean areFKsImported() {
+		return (foreignKeyConstraints != null);
+	}
 	
 	class FKRec implements JDBCDBImporter.FKReceiver {
 
@@ -408,10 +416,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	}
 
 	private void haveChecksImported() {
-		if (checkConstraints == null) {
+		if (!areChecksImported()) {
 			haveColumnsImported();
 			synchronized (getCatalog()) {
-				if (checkConstraints == null) {
+				if (!areChecksImported()) {
 					checkConstraints = new ArrayList<DBCheckConstraint>();
 					if (importer != null)
 						importer.importAllChecks(getSchema().getDatabase());
@@ -419,6 +427,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 			}
 		}
     }
+
+	public boolean areChecksImported() {
+		return (checkConstraints != null);
+	}
 
 	public void receiveCheckConstraint(DBCheckConstraint check) {
 		this.checkConstraints.add(check);
@@ -439,13 +451,17 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
     
 	private void haveReferrersImported() {
-		if (referrers == null) {
+		if (!areReferrersImported()) {
 			haveFKsImported();
 			referrers = new OrderedSet<DBTable>();
 			if (importer != null)
 				importer.importRefererTables(this, new RefReceiver());
 		}
     }
+
+	public boolean areReferrersImported() {
+		return (referrers != null);
+	}
 
 	class RefReceiver implements JDBCDBImporter.ReferrerReceiver {
 		public void receiveReferrer(String fktable_name, DBTable table) {
