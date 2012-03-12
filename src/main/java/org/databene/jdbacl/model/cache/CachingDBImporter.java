@@ -105,7 +105,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 			new XMLModelExporter(file).export(database);
 			LOGGER.debug("Database meta data export completed");
 		} catch (Exception e) {
-			LOGGER.error("Error writing database meta data file " + file + ": " + e.getMessage());
+			LOGGER.error("Error writing database meta data file " + ": " + e.getMessage(), e);
 		}
 		return database;
 	}

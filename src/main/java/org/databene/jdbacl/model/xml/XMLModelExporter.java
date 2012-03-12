@@ -103,7 +103,8 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			addAttribute("databaseProductName", database.getDatabaseProductName(), attribs);
 		if (database.getDatabaseProductVersion() != null)
 			addAttribute("databaseProductVersion", database.getDatabaseProductVersion().toString(), attribs);
-		addAttribute("importDate", sdf.format(database.getImportDate()), attribs);
+		if (database.getImportDate() != null)
+			addAttribute("importDate", sdf.format(database.getImportDate()), attribs);
 		addAttribute("user", database.getUser(), attribs);
 		addAttribute("tableInclusionPattern", database.getTableInclusionPattern(), attribs);
 		addAttribute("tableExclusionPattern", database.getTableExclusionPattern(), attribs);
@@ -151,8 +152,8 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			exportPK(pk, writer);
 		exportFks(table.getForeignKeyConstraints(), writer);
 		exportUKs(table.getUniqueConstraints(false), writer);
-		exportChecks(table.getCheckConstraints(), writer);
 		exportIndexes(table.getIndexes(), writer);
+		exportChecks(table.getCheckConstraints(), writer);
 		writer.endElement("table");
 	}
 
@@ -203,8 +204,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private void exportFks(Set<DBForeignKeyConstraint> fks, SimpleXMLWriter writer) 
-			throws SAXException {
+	private void exportFks(Set<DBForeignKeyConstraint> fks, SimpleXMLWriter writer) throws SAXException {
 		for (DBForeignKeyConstraint fk : fks) {
 			AttributesImpl atts = createAttributes("name", fk.getName());
 			String[] columnNames = fk.getColumnNames();

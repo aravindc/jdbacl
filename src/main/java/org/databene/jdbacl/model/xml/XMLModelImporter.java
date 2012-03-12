@@ -105,7 +105,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			environment = e.getAttribute("name");
 		if (StringUtil.isEmpty(environment))
 			throw new ConfigurationError("No environment defined in cache file");
-		Database db = (online ? new Database(environment) : new Database(environment, null, null));
+		Database db = (online ? new Database(environment) : new Database(environment, null, null, null));
 		db.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
 		db.setUser(e.getAttribute("user"));
 		db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));

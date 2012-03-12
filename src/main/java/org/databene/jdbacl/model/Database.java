@@ -70,10 +70,11 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 		this(environment, new JDBCDBImporter(environment));
 	}
 	
-	public Database(String environment, String productName, String productVersion) {
+	public Database(String environment, String productName, String productVersion, Date importDate) {
 		this(environment, null);
 		this.productName = productName;
 		this.productVersion = VersionNumber.valueOf(productVersion);
+		this.importDate = importDate;
 	}
 	
     public Database(String environment, JDBCDBImporter importer) {
@@ -88,6 +89,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			if (importer != null) {
 				this.productName = importer.getDatabaseProductName();
 				this.productVersion = importer.getDatabaseProductVersion();
+				this.importDate = new Date();
 				importer.importCatalogs(this);
 				importer.importSchemas(this);
 				importer.importAllTables(this);

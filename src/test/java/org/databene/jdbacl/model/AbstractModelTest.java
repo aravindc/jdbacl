@@ -23,6 +23,7 @@ package org.databene.jdbacl.model;
 
 import java.sql.Connection;
 import java.sql.Types;
+import java.util.Date;
 
 import org.databene.commons.Encodings;
 import org.databene.commons.TimeUtil;
@@ -46,7 +47,7 @@ public abstract class AbstractModelTest {
 	
 	@SuppressWarnings("unused")
 	protected static Database createTestModel(boolean online) {
-		Database db = (online ? new Database(ENVIRONMENT) : new Database(ENVIRONMENT, "hsql", "1.5.8"));
+		Database db = (online ? new Database(ENVIRONMENT) : new Database(ENVIRONMENT, "hsql", "1.5.8", new Date()));
     	db.setImportDate(TimeUtil.date(2011, 9, 21, 16, 50, 38, 0));
     	db.setUser("Alice");
     	db.setTableInclusionPattern("MY_.*");
