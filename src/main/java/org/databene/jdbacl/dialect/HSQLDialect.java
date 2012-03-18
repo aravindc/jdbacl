@@ -134,4 +134,9 @@ public class HSQLDialect extends DatabaseDialect {
 		return false;
 	}
 	
+	@Override
+	public String trim(String expression) {
+		return "LTRIM(RTRIM(" + expression + "))";
+	}
+	
 }

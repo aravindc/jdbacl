@@ -41,9 +41,4 @@ public class HSQL2Dialect extends HSQLDialect {
 		return (not ? "NOT " : "") + "REGEXP_MATCHES(" + expression + ", '" + regex + "')";
 	}
 	
-	@Override
-	public String trim(String expression) {
-		return "ltrim(rtrim(" + expression + "))";
-	}
-	
 }
