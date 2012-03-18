@@ -215,35 +215,11 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 			dialect = DatabaseDialectManager.getDialectForProduct(databaseProductName, databaseProductVersion);
 			if (isOracle()) // fix for Oracle varchar column size, see http://kr.forums.oracle.com/forums/thread.jspa?threadID=554236
 				DBUtil.executeUpdate("ALTER SESSION SET NLS_LENGTH_SEMANTICS=CHAR", getConnection());
-			/* TODO
-			database = new DefaultDatabase(databaseProductName, databaseProductName, productVersion);
-			database.setImportDate(new Date());
-			database.setUser(user);
-			database.setTableInclusionPattern(tableInclusionPattern);
-			database.setTableExclusionPattern(tableExclusionPattern);
-			*/
 		} catch (Exception e) {
 			throw new RuntimeException("Error initializing " + getClass(), e);
 		}
 	}
-/*
-	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
-		logger.info("Importing database metadata.");
-		StopWatch watch = new StopWatch("importDatabase");
-        try {
-            init();
-			importDBObjects();
-            return database;
-        } catch (SQLException e) {
-            throw new ImportFailedException(e);
-        } finally {
-			long duration = watch.stop();
-            logger.info("Imported database metadata in " + ElapsedTimeFormatter.format(duration));
-        }
-    }
 
-	protected abstract void importDBObjects() throws SQLException, ConnectFailedException;
-*/
 	public void close() {
         DBUtil.close(_connection);
 	}
@@ -677,6 +653,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         StopWatch watch = new StopWatch("importAllChecks");
         try {
 			int count = 0;
+			database.setChecksImported(true);
 			if (dialect instanceof OracleDialect) {
 			    for (DBCatalog catalog : database.getCatalogs())
 			        for (DBSchema schema : catalog.getSchemas()) {
