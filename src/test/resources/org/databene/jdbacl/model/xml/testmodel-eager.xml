@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<database environment="hsqlmem" databaseProductName="hsql" databaseProductVersion="1.5.8" importDate="2011-10-21 16:50:38" user="Alice" tableInclusionPattern="MY_.*" tableExclusionPattern=".*_JN">
-  <catalog name="cat1">
-    <schema name="schema1">
+<database environment="hsqlmem" databaseProductName="hsql" databaseProductVersion="1.5.8" importDate="2011-10-21 16:50:38" user="Alice" tableInclusionPattern="MY_.*" tableExclusionPattern=".*_JN" sequencesImported="false" triggersImported="false" packagesImported="false">
+  <catalog>
+    <schema name="public">
       <table name="table1">
         <column name="id1" jdbcType="4" type="INT"/>
         <column name="name1" jdbcType="4" type="INT"/>

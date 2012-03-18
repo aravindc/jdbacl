@@ -40,11 +40,21 @@ import org.junit.Test;
 public class XMLModelExporterTest extends AbstractModelTest {
 
 	@Test
-	public void test() throws Exception {
+	public void testLazy() throws Exception {
 		Database db = createTestModel(false);
 		File file = new File("target", getClass().getSimpleName() + ".xml");
 		new XMLModelExporter(file).export(db);
 		String[] expectedLines = IOUtil.readTextLines(LAZY_TEST_MODEL_FILENAME, false);
+		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
+		assertTrue(Arrays.equals(expectedLines, actualLines));
+	}
+
+	@Test
+	public void testEager() throws Exception {
+		Database db = createTestModel(false);
+		File file = new File("target", getClass().getSimpleName() + ".xml");
+		new XMLModelExporter(file, false).export(db);
+		String[] expectedLines = IOUtil.readTextLines(EAGER_TEST_MODEL_FILENAME, false);
 		String[] actualLines = IOUtil.readTextLines(file.getCanonicalPath(), false);
 		assertTrue(Arrays.equals(expectedLines, actualLines));
 	}
