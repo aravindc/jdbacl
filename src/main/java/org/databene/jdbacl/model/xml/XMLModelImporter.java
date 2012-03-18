@@ -120,9 +120,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 				throw new UnsupportedOperationException("Not an allowed element within <database>: " + childName);
 		}
 		scanReferers(db);
-		db.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported"));
-		db.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported"));
-		db.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported"));
+		db.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported", true));
+		db.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported", true));
+		db.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported", true));
 		return db;
 	}
 
@@ -143,6 +143,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String name = e.getAttribute("name");
 		DBSchema schema = new DBSchema(name, catalog);
 		Element[] children = XMLUtil.getChildElements(e);
+		
+		// First parse elements without details in order to have all referenced tables available after
 		for (Element child : children) {
 			String childName = child.getNodeName();
 			if ("table".equals(childName))
@@ -150,6 +152,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			else if (!"sequence".equals(childName) && !"trigger".equals(childName) && !"package".equals(childName))
 				throw new UnsupportedOperationException("Not an allowed element within <schema>: " + childName);
 		}
+		
+		// finally parse the details of each db object and resolve references
 		for (Element child : children) {
 			String childName = child.getNodeName();
 			if ("table".equals(childName))
@@ -170,12 +174,20 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		String name = e.getAttribute("name");
 		String typeSpec = e.getAttribute("type");
 		TableType type = (StringUtil.isEmpty(typeSpec) ? TableType.TABLE : TableType.valueOf(typeSpec));
-		return new DBTable(name, type, schema);
+		return new DBTable(name, type, null, schema, schema.getDatabase().getImporter());
 	}
 
 	private DBTable parseTableStructure(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
 		DBTable table = (DBTable) schema.getTable(name);
+		boolean pkImported = XMLUtil.getBooleanAttributeWithDefault(e, "pkImported", true);
+		table.setPKImported(pkImported);
+		boolean fksImported = XMLUtil.getBooleanAttributeWithDefault(e, "fksImported", true);
+		table.setFKsImported(fksImported);
+		boolean indexesImported = XMLUtil.getBooleanAttributeWithDefault(e, "indexesImported", true);
+		table.setIndexesImported(indexesImported);
+		boolean checksImported = XMLUtil.getBooleanAttributeWithDefault(e, "checksImported", true);
+		table.setChecksImported(checksImported);
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
 			if ("column".equals(childName))
@@ -191,7 +203,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			else if ("index".equals(childName))
 				parseIndex(child, table);
 			else
-				throw new UnsupportedOperationException("Not an allowed element within <table>: " + childName);
+				throw new SyntaxError("Not an allowed element within <table>", XMLUtil.format(child));
 		}
 		return table;
 	}

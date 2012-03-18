@@ -61,6 +61,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	private boolean sequencesImported;
 	private boolean triggersImported;
 	private boolean packagesImported;
+	private boolean checksImported;
 	
 
 
@@ -85,6 +86,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			this.sequencesImported = false;
 			this.triggersImported = false;
 			this.packagesImported = false;
+			this.checksImported = false;
 			this.importer = importer;
 			if (importer != null) {
 				this.productName = importer.getDatabaseProductName();
@@ -141,6 +143,10 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 
 	public void setTableExclusionPattern(String tableExclusionPattern) {
 		this.tableExclusionPattern = tableExclusionPattern;
+	}
+	
+	public JDBCDBImporter getImporter() {
+		return importer;
 	}
 	
     // CompositeDBObject implementation --------------------------------------------------------------------------------
@@ -316,6 +322,20 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	
 	public void setPackagesImported(boolean packagesImported) {
 		this.packagesImported = packagesImported;
+	}
+
+	public boolean areChecksImported() {
+		return this.checksImported;
+	}
+	
+	public void setChecksImported(boolean checksImported) {
+		this.checksImported = checksImported;
+	}
+	
+	public synchronized void haveChecksImported() {
+		if (!areChecksImported())
+			if (importer != null)
+				importer.importAllChecks(this);
 	}
 	
 }

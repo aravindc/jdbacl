@@ -63,18 +63,25 @@ import static org.databene.commons.xml.SimpleXMLWriter.*;
 public class XMLModelExporter implements DBMetaDataExporter {
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private String encoding;
+	
 	private File file;
+	private String encoding;
+	private boolean lazy;
 	
 	// constructors ----------------------------------------------------------------------------------------------------
 	
 	public XMLModelExporter(File file) {
-		this(file, Encodings.UTF_8);
+		this(file, true);
 	}
 
-	public XMLModelExporter(File file, String encoding) {
+	public XMLModelExporter(File file, boolean lazy) {
+		this(file, Encodings.UTF_8, lazy);
+	}
+
+	public XMLModelExporter(File file, String encoding, boolean lazy) {
 		this.file = file;
 		this.encoding = encoding;
+		this.lazy = lazy;
 	}
 	
 	// interface -------------------------------------------------------------------------------------------------------
@@ -144,16 +151,21 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	private void exportTable(DBTable table, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", table.getName());
+		if (lazy && !table.isPKImported())
+			addAttribute("pkImported", "false", atts);
+		if (lazy && !table.areFKsImported())
+			addAttribute("fksImported", "false", atts);
+		if (lazy && !table.areIndexesImported())
+			addAttribute("indexesImported", "false", atts);
+		if (lazy && !table.areChecksImported())
+			addAttribute("checksImported", "false", atts);
 		writer.startElement("table", atts);
 		for (DBColumn column : table.getColumns())
 			exportColumn(column, writer);
-		DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
-		if (pk != null)
-			exportPK(pk, writer);
-		exportFks(table.getForeignKeyConstraints(), writer);
-		exportUKs(table.getUniqueConstraints(false), writer);
-		exportIndexes(table.getIndexes(), writer);
-		exportChecks(table.getCheckConstraints(), writer);
+		exportPK(table, writer);
+		exportFKs(table, writer);
+		exportUKsAndIndexes(table, writer);
+		exportChecks(table, writer);
 		writer.endElement("table");
 	}
 
@@ -167,6 +179,17 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("column");
 	}
 
+	private void exportPK(DBTable table, SimpleXMLWriter writer)
+			throws SAXException {
+		if (!lazy)
+			table.havePKImported();
+		if (table.isPKImported()) {
+			DBPrimaryKeyConstraint pk = table.getPrimaryKeyConstraint();
+			if (pk != null)
+				exportPK(pk, writer);
+		}
+	}
+
 	private void exportPK(DBPrimaryKeyConstraint pk, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl pkAtts = createAttributes("name", pk.getName());
 		String[] pkColumnNames = pk.getColumnNames();
@@ -176,6 +199,18 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		if (pkColumnNames.length > 1)
 			writeColumnGroup(pkColumnNames, writer);
 		writer.endElement("pk");
+	}
+
+	public void exportFKs(DBTable table, SimpleXMLWriter writer) throws SAXException {
+		if (!lazy || table.areFKsImported())
+			exportFks(table.getForeignKeyConstraints(), writer);
+	}
+
+	public void exportUKsAndIndexes(DBTable table, SimpleXMLWriter writer) throws SAXException {
+		if (!lazy || table.areIndexesImported()) {
+			exportUKs(table.getUniqueConstraints(false), writer);
+			exportIndexes(table.getIndexes(), writer);
+		}
 	}
 
 	private void exportUKs(Set<DBUniqueConstraint> uks, SimpleXMLWriter writer) 
@@ -192,6 +227,11 @@ public class XMLModelExporter implements DBMetaDataExporter {
 				writeColumnGroup(columnNames, writer);
 			writer.endElement("uk");
 		}
+	}
+
+	public void exportChecks(DBTable table, SimpleXMLWriter writer) throws SAXException {
+		if (!lazy || table.areChecksImported())
+			exportChecks(table.getCheckConstraints(), writer);
 	}
 
 	private void exportChecks(List<DBCheckConstraint> checks, SimpleXMLWriter writer) 
