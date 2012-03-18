@@ -355,7 +355,7 @@ public class SQLUtil {
 		StringBuilder builder = new StringBuilder();
 		if (!StringUtil.isEmpty(type) && !"inner".equalsIgnoreCase(type))
 			builder.append(type).append(" join ");
-		builder.append(refereeTable).append(" as ").append(refereeAlias).append(" on "); 
+		builder.append(refereeTable).append(" ").append(refereeAlias).append(" on "); 
 		for (int i = 0; i < refererColumns.length; i++) {
 			if (i > 0)
 				builder.append(" and ");
