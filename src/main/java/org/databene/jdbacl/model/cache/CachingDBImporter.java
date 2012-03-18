@@ -29,6 +29,7 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.commons.FileUtil;
 import org.databene.commons.ImportFailedException;
 import org.databene.commons.Period;
+import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.Database;
@@ -49,8 +50,10 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(CachingDBImporter.class);
 	
+	public static final String TIME_TO_LIVE_SYSPROP = "jdbacl.cache.timetolive";
+	public static final long DEFAULT_TIME_TO_LIVE = Period.HOUR.getMillis() * 12;
+	
 	private static final String CACHE_FILE_SUFFIX = ".meta.xml";
-	private static final long TIME_TO_LIVE = Period.HOUR.getMillis() * 12;
 	
 	protected DBMetaDataImporter realImporter;
 	protected String environment;
@@ -63,10 +66,25 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
 		File file = getCacheFile();
 		long now = System.currentTimeMillis();
-		if (file.exists() && now - file.lastModified() < TIME_TO_LIVE)
+		long timeToLive = getTimeToLive();
+		if (file.exists() && (timeToLive < 0 || now - file.lastModified() < timeToLive))
 			return readCachedData(file);
 		else
 			return importFreshData(file);
+	}
+
+	private long getTimeToLive() {
+		String sysProp = System.getProperty(TIME_TO_LIVE_SYSPROP);
+		if (!StringUtil.isEmpty(sysProp)) {
+			long scale = 1;
+			if (sysProp.endsWith("d")) {
+				scale = Period.DAY.getMillis();
+				sysProp = sysProp.substring(0, sysProp.length() - 1);
+			}
+			return Long.parseLong(sysProp) * scale;
+		}
+		else
+			return DEFAULT_TIME_TO_LIVE;
 	}
 
 	public void close() throws IOException {
