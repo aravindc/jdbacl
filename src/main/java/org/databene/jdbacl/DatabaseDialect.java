@@ -323,6 +323,10 @@ public abstract class DatabaseDialect {
 	public String regexQuery(String expression, boolean not, String regex) {
 		throw new UnsupportedOperationException(system + " does not support regular expressions");
 	}
+	
+	public String trim(String expression) {
+		throw new UnsupportedOperationException(system + " does not support trimming");
+	}
 
 	public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
 		StringBuilder builder = new StringBuilder();

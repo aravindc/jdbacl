@@ -40,5 +40,10 @@ public class HSQL2Dialect extends HSQLDialect {
 	public String regexQuery(String expression, boolean not, String regex) {
 		return (not ? "NOT " : "") + "REGEXP_MATCHES(" + expression + ", '" + regex + "')";
 	}
-
+	
+	@Override
+	public String trim(String expression) {
+		return "ltrim(rtrim(" + expression + "))";
+	}
+	
 }
