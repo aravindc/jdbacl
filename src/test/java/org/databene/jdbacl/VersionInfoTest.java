@@ -53,7 +53,7 @@ public class VersionInfoTest {
 	public void testCommonsDependency() {
 		VersionInfo version = getVersionInfo();
 		Map<String, String> dependencies = version.getDependencies();
-		assertEquals(1, dependencies.size());
+		assertEquals(4, dependencies.size());
 		String commonsVersion = dependencies.get("commons");
 		checkVersionNumber(commonsVersion);
 		System.out.println("using commons " + commonsVersion);
