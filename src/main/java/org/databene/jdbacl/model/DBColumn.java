@@ -123,6 +123,7 @@ public class DBColumn extends AbstractDBTableComponent {
     }
 
     public boolean isUnique() {
+    	getTable().getUniqueConstraints(true); // make sure lazy data is fetched before
     	for (DBUniqueConstraint constraint : ukConstraints)
     		if (constraint.getColumnNames().length == 1)
     			return true;
