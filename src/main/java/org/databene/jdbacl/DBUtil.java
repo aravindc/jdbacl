@@ -32,6 +32,7 @@ import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ErrorHandler;
+import org.databene.commons.FileUtil;
 import org.databene.commons.HeavyweightIterator;
 import org.databene.commons.IOUtil;
 import org.databene.commons.LogCategories;
@@ -107,9 +108,11 @@ public class DBUtil {
     public static JDBCConnectData getConnectData(String environment) {
 		try {
 			String filename = environment + ".env.properties";
-			File file = new File(filename);
-			if (!file.exists())
-				file = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
+			File file = FileUtil.getFileIgnoreCase(new File(filename), false);
+			if (!file.exists()) {
+				File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
+				file = FileUtil.getFileIgnoreCase(defaultUserHomeFile, false);
+			}
 			String path;
 			if (file.exists()) {
 				path = file.getAbsolutePath();
@@ -373,8 +376,12 @@ public class DBUtil {
         }
     }
     
-    public static long queryLong(String query, Connection connection) {
+    public static Long queryLong(String query, Connection connection) {
     	return AnyConverter.convert(queryScalar(query, connection), Long.class);
+    }
+
+    public static Integer queryInt(String query, Connection connection) {
+    	return AnyConverter.convert(queryScalar(query, connection), Integer.class);
     }
 
     public static Object queryScalar(String query, Connection connection) {
