@@ -117,7 +117,7 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 			DBSequence[] sequences = dialect.querySequences(connection);
 			String[] sequenceNames = NameUtil.getNames(sequences);
 			assertTrue(StringUtil.containsIgnoreCase(sequenceName, sequenceNames));
-			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection));
+			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection).longValue());
 		} finally {
 			DBUtil.executeUpdate(dialect.renderDropSequence(sequenceName), connection);
 			DBUtil.close(connection);

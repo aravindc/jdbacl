@@ -70,7 +70,7 @@ public class Derby10_6DialectTest extends DatabaseDialectTest<Derby10_6Dialect> 
 			DBSequence[] sequences = dialect.querySequences(connection);
 			String[] sequenceNames = NameUtil.getNames(sequences);
 			assertTrue(StringUtil.containsIgnoreCase(sequenceName, sequenceNames));
-			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection));
+			assertEquals(23L, DBUtil.queryLong(dialect.renderFetchSequenceValue(sequenceName), connection).longValue());
 			dialect.setNextSequenceValue(sequenceName, 123, connection);
 			String seqValQuery = dialect.renderFetchSequenceValue(sequenceName);
 			assertEquals(123L, DBUtil.queryScalar(seqValQuery, connection));
