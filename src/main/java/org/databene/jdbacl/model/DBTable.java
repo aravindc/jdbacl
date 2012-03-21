@@ -434,14 +434,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	public void addCheckConstraint(DBCheckConstraint checkConstraint) {
 		haveChecksImported();
 		checkConstraint.setTable(this);
-		this.checkConstraints.add(checkConstraint);
+		receiveCheckConstraint(checkConstraint);
 	}
 
 	private void haveChecksImported() {
-		if (!areChecksImported()) {
-			haveColumnsImported();
+		if (!areChecksImported())
 			getCatalog().getDatabase().haveChecksImported();
-		}
     }
 
 	public boolean areChecksImported() {
