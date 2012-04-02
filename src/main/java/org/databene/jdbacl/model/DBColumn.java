@@ -130,6 +130,13 @@ public class DBColumn extends AbstractDBTableComponent {
     	return false;
     }
     
+    public boolean isPKComponent() {
+    	for (String candidate : getTable().getPKColumnNames())
+    		if (name.equals(candidate))
+    			return true;
+    	return false;
+    }
+    
     public List<DBUniqueConstraint> getUkConstraints() {
         return ukConstraints;
     }
