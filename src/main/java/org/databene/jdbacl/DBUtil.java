@@ -115,7 +115,7 @@ public class DBUtil {
 			}
 			String path;
 			if (file.exists()) {
-				path = file.getAbsolutePath();
+				path = file.getCanonicalPath();
 			} else if (IOUtil.isURIAvailable(filename)) {
 				path = filename;
 			} else {
@@ -662,5 +662,8 @@ public class DBUtil {
 		return false;
 	}
 
+	public static void insert(String table, Connection connection, Object... values) throws SQLException {
+		DBUtil.executeUpdate(SQLUtil.insert(table, values), connection);
+	}
 
 }
