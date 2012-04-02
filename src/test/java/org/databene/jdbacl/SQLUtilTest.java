@@ -26,6 +26,11 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 
 import org.databene.commons.ArrayFormat;
+import org.databene.jdbacl.model.DBColumn;
+import org.databene.jdbacl.model.DBDataType;
+import org.databene.jdbacl.model.DBForeignKeyConstraint;
+import org.databene.jdbacl.model.DBTable;
+import org.databene.jdbacl.model.ForeignKeyPath;
 import org.junit.Test;
 
 /**
@@ -166,6 +171,40 @@ public class SQLUtilTest {
 	@Test
 	public void testRenderColumnListWithTableName() {
 		assertEquals("t.x, t.y", SQLUtil.renderColumnListWithTableName("t", "x", "y"));
+	}
+	
+	@Test
+	public void testJoinFK() {
+		DBTable a = new DBTable("a");
+		new DBColumn("id", a, DBDataType.getInstance("INT"));
+		
+		DBTable b = new DBTable("b");
+		new DBColumn("id", b, DBDataType.getInstance("INT"));
+		new DBColumn("a_id", b, DBDataType.getInstance("INT"));
+		DBForeignKeyConstraint ba = new DBForeignKeyConstraint("ba_fk", true, b, "a_id", a, "id");
+		
+		String sql = SQLUtil.joinFK(ba, "inner", "_start", "_end");
+		assertEquals("join a _end on _start.a_id = _end.id", sql);
+	}
+	
+	@Test
+	public void testJoinFKRoute() {
+		DBTable a = new DBTable("a");
+		new DBColumn("id", a, DBDataType.getInstance("INT"));
+		
+		DBTable b = new DBTable("b");
+		new DBColumn("id", b, DBDataType.getInstance("INT"));
+		new DBColumn("a_id", b, DBDataType.getInstance("INT"));
+		DBForeignKeyConstraint ba = new DBForeignKeyConstraint("ba_fk", true, b, "a_id", a, "id");
+		
+		DBTable c = new DBTable("c");
+		new DBColumn("id", c, DBDataType.getInstance("INT"));
+		new DBColumn("b_id", c, DBDataType.getInstance("INT"));
+		DBForeignKeyConstraint cb = new DBForeignKeyConstraint("cb_fk", true, c, "b_id", b, "id");
+		
+		ForeignKeyPath route = new ForeignKeyPath(cb, ba);
+		String sql = SQLUtil.joinFKPath(route, "inner", "_start", "_end", "_tmp");
+		assertEquals("join b _tmp_1 on _start.b_id = _tmp_1.id join a _end on _tmp_1.a_id = _end.id", sql);
 	}
 	
 	// helpers ---------------------------------------------------------------------------------------------------------

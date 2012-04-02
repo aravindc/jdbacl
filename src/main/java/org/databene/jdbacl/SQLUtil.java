@@ -41,6 +41,7 @@ import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
+import org.databene.jdbacl.model.ForeignKeyPath;
 
 /**
  * Provides utility methods for creating SQL queries and commands.<br/><br/>
@@ -340,6 +341,44 @@ public class SQLUtil {
 		return appendConstraintName(constraint, builder, nameSpec);
 	}
 	
+	public static String insert(String table, Object... values) {
+		StringBuilder builder = new StringBuilder("insert into ").append(table).append(" values (");
+		for (int i = 0; i < values.length; i++) {
+			if (i > 0)
+				builder.append(", ");
+			builder.append(SQLUtil.renderValue(values[i]));
+		}
+		return builder.append(")").toString();
+	}
+	
+	public static String joinFKPath(ForeignKeyPath route, String join_Type, 
+			String startAlias, String endAlias, String intermediateAliasBase) {
+		StringBuilder builder = new StringBuilder();
+		List<DBForeignKeyConstraint> edges = route.getEdges();
+		// render intermediate joins
+		String currentReferrer = startAlias;
+		for (int i = 0; i < edges.size() - 1; i++) {
+			String refereeAlias = intermediateAliasBase + "_" + (i + 1);
+			DBForeignKeyConstraint fk = edges.get(i);
+			if (i > 0)
+				builder.append(' ');
+			builder.append(joinFK(fk, join_Type, currentReferrer, refereeAlias));
+			currentReferrer = refereeAlias;
+		}
+		// render final join with endAlias
+		if (edges.size() > 1)
+			builder.append(' ');
+		DBForeignKeyConstraint fk = CollectionUtil.lastElement(edges);
+		builder.append(joinFK(fk, join_Type, currentReferrer, endAlias));
+		// done, return result as string
+		return builder.toString();
+	}
+	
+	public static String joinFK(DBForeignKeyConstraint fk, String joinType, String refererAlias, String refereeAlias) {
+		return join(joinType, refererAlias, fk.getColumnNames(), 
+				fk.getRefereeTable().getName(), refereeAlias, fk.getRefereeColumnNames());
+	}
+
 	public static String leftJoin(String alias1, String[] columns1, 
 			String table2, String alias2, String[] columns2) {
 		return join("left", alias1, columns1, table2, alias2, columns2);
@@ -354,7 +393,8 @@ public class SQLUtil {
 			String refereeTable, String refereeAlias, String[] refereeColumns) {
 		StringBuilder builder = new StringBuilder();
 		if (!StringUtil.isEmpty(type) && !"inner".equalsIgnoreCase(type))
-			builder.append(type).append(" join ");
+			builder.append(type).append(' ');
+		builder.append("join ");
 		builder.append(refereeTable).append(" ").append(refereeAlias).append(" on "); 
 		for (int i = 0; i < refererColumns.length; i++) {
 			if (i > 0)
@@ -477,6 +517,21 @@ public class SQLUtil {
 			if (i > 0)
 				builder.append(", ");
 			builder.append(table).append('.').append(columns[i]);
+		}
+		return builder.toString();
+	}
+
+	public static String equals(String tableAlias1, String[] colNames1, String tableAlias2, String[] colNames2) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < colNames1.length; i++) {
+			if (i > 0)
+				builder.append(" AND ");
+			if (tableAlias1 != null)
+				builder.append(tableAlias1).append('.');
+			builder.append(colNames1[i]).append(" = ");
+			if (tableAlias2 != null)
+				builder.append(tableAlias2).append('.');
+			builder.append(colNames2[i]);
 		}
 		return builder.toString();
 	}
