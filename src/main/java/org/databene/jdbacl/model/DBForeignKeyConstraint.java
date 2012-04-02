@@ -52,6 +52,12 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
     private FKChangeRule updateRule;
     private FKChangeRule deleteRule;
     
+    public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String fkColumnName, 
+    		DBTable refereeTable, String refereeColumnName) {
+        this(name, nameDeterministic, owner, new String[] { fkColumnName }, 
+        		refereeTable, new String[] { refereeColumnName });
+    }
+
     public DBForeignKeyConstraint(String name, boolean nameDeterministic, DBTable owner, String[] fkColumnNames, 
     		DBTable refereeTable, String[] refereeColumnNames) {
         super(name, nameDeterministic, "foreign key constraint", owner);
