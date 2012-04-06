@@ -68,17 +68,17 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
     // constructors ----------------------------------------------------------------------------------------------------
 
 	public Database(String environment) {
-		this(environment, new JDBCDBImporter(environment));
+		this(environment, new JDBCDBImporter(environment), true);
 	}
 	
 	public Database(String environment, String productName, String productVersion, Date importDate) {
-		this(environment, null);
+		this(environment, null, false);
 		this.productName = productName;
 		this.productVersion = VersionNumber.valueOf(productVersion);
 		this.importDate = importDate;
 	}
 	
-    public Database(String environment, JDBCDBImporter importer) {
+    public Database(String environment, JDBCDBImporter importer, boolean prepopulate) {
         super(environment, "database");
         try {
 			this.environment = environment;
@@ -92,14 +92,18 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 				this.productName = importer.getDatabaseProductName();
 				this.productVersion = importer.getDatabaseProductVersion();
 				this.importDate = new Date();
-				importer.importCatalogs(this);
-				importer.importSchemas(this);
-				importer.importAllTables(this);
+				if (prepopulate) {
+					importer.importCatalogs(this);
+					importer.importSchemas(this);
+					importer.importAllTables(this);
+				}
 			}
 		} catch (Exception e) {
 			throw new RuntimeException("Database import failed for environment " + environment, e);
 		}
     }
+    
+    // properties ------------------------------------------------------------------------------------------------------
     
 	public String getEnvironment() {
 		return environment;
@@ -278,7 +282,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 					importer.importTriggers(this);
 				triggersImported = true;
 			} catch (SQLException e) {
-				throw new RuntimeException("Import of database triggers ailed: " + getName(), e);
+				throw new RuntimeException("Import of database triggers failed: " + getName(), e);
 			}
 		}
 	}
@@ -324,7 +328,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 		this.packagesImported = packagesImported;
 	}
 
-	public boolean areChecksImported() {
+	public boolean isChecksImported() {
 		return this.checksImported;
 	}
 	
@@ -333,7 +337,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	}
 	
 	public synchronized void haveChecksImported() {
-		if (!areChecksImported())
+		if (!isChecksImported())
 			if (importer != null)
 				importer.importAllChecks(this);
 	}

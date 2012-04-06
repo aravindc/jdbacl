@@ -184,7 +184,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	// database import -------------------------------------------------------------------------------------------------
 	
 	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
-		return new Database(environment, this);
+		return new Database(environment, this, true);
 	}
 	
 	protected void init() {
@@ -664,6 +664,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 			                	continue;
 			        		DBTable table = schema.getTable(newCheck.getTableName());
 			        		table.receiveCheckConstraint(newCheck);
+			        		newCheck.setTable(table);
 						}
 			            count++;
 			        }

@@ -443,7 +443,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
 
 	public boolean areChecksImported() {
-		return (getCatalog().getDatabase().areChecksImported());
+		return (getCatalog().getDatabase().isChecksImported());
 	}
 	
 	public void setChecksImported(boolean checksImported) {

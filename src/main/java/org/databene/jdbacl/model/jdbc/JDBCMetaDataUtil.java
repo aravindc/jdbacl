@@ -43,8 +43,6 @@ public class JDBCMetaDataUtil {
 				throws ConnectFailedException, ImportFailedException {
 		DBMetaDataImporter importer = getJDBCDBImporter(environment, 
 				importUKs, importIndexes, importSequences, importChecks, tableInclusionPattern, tableExclusionPattern, cached);
-		if (cached)
-			importer = new CachingDBImporter(importer, environment);
 		return importer.importDatabase();
 	}
 
@@ -57,7 +55,7 @@ public class JDBCMetaDataUtil {
 		dbImporter.setTableExclusionPattern(tableExclusionPattern);
 		DBMetaDataImporter importer = dbImporter;
 		if (cached)
-			importer = new CachingDBImporter(importer, environment);
+			importer = new CachingDBImporter((JDBCDBImporter) importer, environment);
 		return importer;
 	}
 	
@@ -76,7 +74,7 @@ public class JDBCMetaDataUtil {
 		return importer.importDatabase();
 	}
 
-	public static DBMetaDataImporter getJDBCDBImporter(Connection connection, String user, String schemaName,
+	public static JDBCDBImporter getJDBCDBImporter(Connection connection, String user, String schemaName,
 			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks, 
 			String tableInclusionPattern, String tableExclusionPattern) {
 		JDBCDBImporter importer;

@@ -115,6 +115,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		addAttribute("user", database.getUser(), attribs);
 		addAttribute("tableInclusionPattern", database.getTableInclusionPattern(), attribs);
 		addAttribute("tableExclusionPattern", database.getTableExclusionPattern(), attribs);
+		addAttribute("checksImported", String.valueOf(database.isChecksImported()), attribs);
 		addAttribute("sequencesImported", String.valueOf(database.isSequencesImported()), attribs);
 		addAttribute("triggersImported", String.valueOf(database.isTriggersImported()), attribs);
 		addAttribute("packagesImported", String.valueOf(database.isSequencesImported()), attribs);

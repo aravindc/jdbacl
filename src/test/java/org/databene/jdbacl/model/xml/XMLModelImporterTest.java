@@ -31,6 +31,7 @@ import org.databene.jdbacl.model.AbstractModelTest;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTreeModel;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
 	
 	@Test
 	public void testOffline() throws Exception {
-		XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, false);
+		XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, null);
 		Database actual = importer.importDatabase();
 		assertTrue(actual instanceof Database);
 		new TreeLogger().log(new DBTreeModel(actual));
@@ -65,7 +66,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
 	
 	@Test
 	public void testOnline() throws Exception {
-		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, true);
+		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter("hsqlmem"));
 		Database db = importer.importDatabase();
 		new TreeLogger().log(new DBTreeModel(db));
 		assertFalse(db.isSequencesImported());

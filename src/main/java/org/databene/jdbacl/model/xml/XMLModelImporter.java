@@ -53,6 +53,7 @@ import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.TableType;
+import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -69,17 +70,17 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(XMLModelImporter.class);
 
 	private String uri;
-	private boolean online;
+	private JDBCDBImporter realImporter;
 	
-	public XMLModelImporter(File file, boolean online) {
-		this(file.getAbsolutePath(), online);
+	public XMLModelImporter(File file, JDBCDBImporter realImporter) {
+		this(file.getAbsolutePath(), realImporter);
 	}
 	
-	public XMLModelImporter(String uri, boolean online) {
+	public XMLModelImporter(String uri, JDBCDBImporter realImporter) {
 		this.uri = uri;
-		this.online = online;
+		this.realImporter = realImporter;
 	}
-
+	
 	public Database importDatabase() throws ImportFailedException {
 		InputStream in = null;
 		try {
@@ -105,8 +106,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			environment = e.getAttribute("name");
 		if (StringUtil.isEmpty(environment))
 			throw new ConfigurationError("No environment defined in cache file");
-		Database db = (online ? new Database(environment) : new Database(environment, null, null, null));
-		db.setImportDate(XMLUtil.getDateAttribute(e, "importDate"));
+		Database db = new Database(environment, realImporter, false);
 		db.setUser(e.getAttribute("user"));
 		db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
 		db.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
