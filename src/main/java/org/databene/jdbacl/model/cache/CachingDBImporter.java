@@ -33,6 +33,7 @@ import org.databene.commons.StringUtil;
 import org.databene.commons.SystemInfo;
 import org.databene.jdbacl.model.DBMetaDataImporter;
 import org.databene.jdbacl.model.Database;
+import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 import org.databene.jdbacl.model.xml.XMLModelExporter;
 import org.databene.jdbacl.model.xml.XMLModelImporter;
 import org.slf4j.Logger;
@@ -55,10 +56,10 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	
 	private static final String CACHE_FILE_SUFFIX = ".meta.xml";
 	
-	protected DBMetaDataImporter realImporter;
+	protected JDBCDBImporter realImporter;
 	protected String environment;
 	
-	public CachingDBImporter(DBMetaDataImporter realImporter, String environment) {
+	public CachingDBImporter(JDBCDBImporter realImporter, String environment) {
 		this.realImporter = realImporter;
 		this.environment = environment;
 	}
@@ -108,7 +109,8 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	protected Database readCachedData(File cacheFile) throws ConnectFailedException, ImportFailedException {
 		LOGGER.info("Reading cached database meta data from file " + cacheFile.getPath());
 		try {
-			return new XMLModelImporter(cacheFile, true).importDatabase();
+			Database database = new XMLModelImporter(cacheFile, realImporter).importDatabase();
+			return database;
 		} catch (Exception e) {
 			LOGGER.info("Error reading cache file, reparsing database", e);
 			return importFreshData(cacheFile);
@@ -117,7 +119,19 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 
 	protected Database importFreshData(File file) throws ConnectFailedException, ImportFailedException {
 		Database database = realImporter.importDatabase();
-		LOGGER.info("Reading and exporting Database meta data to cache file");
+		return writeCacheFile(file, database);
+	}
+	
+	public static void updateCacheFile(Database database) {
+		String environment = database.getEnvironment();
+		if (environment != null) {
+			File cacheFile = getCacheFile(environment);
+			writeCacheFile(cacheFile, database);
+		}
+	}
+	
+	public static Database writeCacheFile(File file, Database database) {
+		LOGGER.info("Exporting Database meta data to cache file");
 		try {
 			FileUtil.ensureDirectoryExists(file.getParentFile());
 			new XMLModelExporter(file).export(database);
