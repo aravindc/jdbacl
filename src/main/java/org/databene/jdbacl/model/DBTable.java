@@ -178,9 +178,15 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
     public void addColumn(DBColumn column) {
 		haveColumnsImported();
-        column.setTable(this);
-        columns.put(column.getName(), column);
+        receiveColumn(column);
     }
+
+	public void receiveColumn(DBColumn column) {
+		if (columns == null)
+			columns = OrderedNameMap.createCaseIgnorantMap();
+		column.setTable(this);
+        columns.put(column.getName(), column);
+	}
 
 	private void haveColumnsImported() {
 		if (columns == null) {
@@ -338,11 +344,13 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	}
 	
 	public void setIndexesImported(boolean indexesImported) {
-		this.uniqueConstraints = (indexesImported ? new OrderedSet<DBUniqueConstraint>() : null);
-		if (indexesImported)
+		if (indexesImported) {
+			this.uniqueConstraints = new OrderedSet<DBUniqueConstraint>();
 			this.indexes = OrderedNameMap.createCaseIgnorantMap();
-		else
+		} else {
+			this.uniqueConstraints = null;
 			this.indexes = null;
+		}
 	}
 
 	class IdxReceiver implements JDBCDBImporter.IndexReceiver {
@@ -447,7 +455,11 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	}
 	
 	public void setChecksImported(boolean checksImported) {
-		this.checkConstraints = (checksImported ? new ArrayList<DBCheckConstraint>() : null);
+		if (checksImported) {
+			if (checkConstraints == null)
+				this.checkConstraints = new ArrayList<DBCheckConstraint>();
+		} else
+			this.checkConstraints = null;
 	}
 	
 	public void receiveCheckConstraint(DBCheckConstraint check) {
@@ -467,8 +479,14 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     
 	public void addReferrer(DBTable referrer) {
     	haveReferrersImported();
-		referrers.add(referrer);
+		receiveReferrer(referrer);
     }
+
+	public void receiveReferrer(DBTable referrer) {
+		if (referrers == null);
+			referrers = new OrderedSet<DBTable>();
+		referrers.add(referrer);
+	}
     
 	private void haveReferrersImported() {
 		if (!areReferrersImported()) {
@@ -481,6 +499,14 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
 	public boolean areReferrersImported() {
 		return (referrers != null);
+	}
+	
+	public void setReferrersImported(boolean referrersImported) {
+		if (referrersImported) {
+			if (referrers == null)
+				referrers = new OrderedSet<DBTable>();
+		} else
+			referrers = null;
 	}
 
 	class RefReceiver implements JDBCDBImporter.ReferrerReceiver {

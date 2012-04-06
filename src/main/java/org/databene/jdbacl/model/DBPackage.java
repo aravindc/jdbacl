@@ -51,7 +51,15 @@ public class DBPackage extends AbstractCompositeDBObject<DBProcedure> {
 		if (owner != null)
 			owner.addPackage(this);
 	}
-
+	
+	public DBSchema getSchema() {
+		return (DBSchema) getOwner();
+	}
+	
+	public void setSchema(DBSchema schema) {
+		setOwner(schema);
+	}
+	
 	public String getSubObjectName() {
 		return subObjectName;
 	}

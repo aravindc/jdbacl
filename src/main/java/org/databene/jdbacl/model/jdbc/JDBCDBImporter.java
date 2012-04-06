@@ -59,7 +59,6 @@ import org.databene.jdbacl.model.DBPackage;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
-import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.FKChangeRule;
 import org.databene.jdbacl.model.TableType;
@@ -723,6 +722,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 						if (schema == null)
 							schema = catalog.getSchema(this.schemaName);
 						schema.receiveSequence(sequence);
+						sequence.setOwner(schema);
 					}
 				}
 			}
@@ -744,9 +744,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 
 	private void importTriggersForSchema(DBSchema schema) throws SQLException {
         StopWatch watch = new StopWatch("importTriggersForSchema");
-		List<DBTrigger> triggers = dialect.queryTriggers(schema, _connection);
-		for (DBTrigger trigger : triggers)
-			schema.receiveTrigger(trigger);
+		dialect.queryTriggers(schema, _connection);
 		watch.stop();
 	}
 	
@@ -763,8 +761,10 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	private void importPackagesOfSchema(DBSchema schema) throws SQLException {
         StopWatch watch = new StopWatch("importPackagesOfSchema");
 		List<DBPackage> packages = dialect.queryPackages(schema, _connection);
-		for (DBPackage pkg : packages)
+		for (DBPackage pkg : packages) {
 			schema.receivePackage(pkg);
+			pkg.setSchema(schema);
+		}
 		watch.stop();
 	}
 	

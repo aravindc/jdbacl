@@ -279,20 +279,21 @@ public class OracleDialect extends DatabaseDialect {
 		List<DBTrigger> triggers = new ArrayList<DBTrigger>();
 		try {
 			while (resultSet.next()) {
-				DBTrigger trigger = new DBTrigger(resultSet.getString(1), null);
+				DBTrigger trigger = new DBTrigger(resultSet.getString(2), null);
+				trigger.setOwner(schema);
 				schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
-				trigger.setTriggerType(resultSet.getString(2));
-				trigger.setTriggeringEvent(resultSet.getString(3));
-				trigger.setTableOwner(resultSet.getString(4));
-				trigger.setBaseObjectType(resultSet.getString(5));
-				trigger.setTableName(resultSet.getString(6));
-				trigger.setColumnName(resultSet.getString(7));
-				trigger.setReferencingNames(resultSet.getString(8));
-				trigger.setWhenClause(resultSet.getString(9));
-				trigger.setStatus(resultSet.getString(10));
-				trigger.setDescription(resultSet.getString(11));
-				trigger.setActionType(resultSet.getString(12));
-				trigger.setTriggerBody(resultSet.getString(13));
+				trigger.setTriggerType(resultSet.getString(3));
+				trigger.setTriggeringEvent(resultSet.getString(4));
+				trigger.setTableOwner(resultSet.getString(5));
+				trigger.setBaseObjectType(resultSet.getString(6));
+				trigger.setTableName(resultSet.getString(7));
+				trigger.setColumnName(resultSet.getString(8));
+				trigger.setReferencingNames(resultSet.getString(9));
+				trigger.setWhenClause(resultSet.getString(10));
+				trigger.setStatus(resultSet.getString(11));
+				trigger.setDescription(resultSet.getString(12));
+				trigger.setActionType(resultSet.getString(13));
+				trigger.setTriggerBody(resultSet.getString(14));
 				triggers.add(trigger);
 				LOGGER.debug("Imported trigger: {}", trigger.getName());
 			}
@@ -323,6 +324,7 @@ public class OracleDialect extends DatabaseDialect {
 				String name = (String) pkgInfo[1];
 				DBPackage pkg = new DBPackage(name, null);
 				schema.receivePackage(pkg);
+				pkg.setSchema(schema);
 				pkg.setSubObjectName((String) pkgInfo[2]);
 				pkg.setObjectId(pkgInfo[3].toString());
 				pkg.setObjectType((String) pkgInfo[4]);

@@ -48,6 +48,8 @@ public class DBSequence extends AbstractDBObject implements ContainerComponent {
 
 	public DBSequence(String name, DBSchema owner) {
 		super(name, "sequence", owner);
+        if (owner != null)
+    		owner.addSequence(this);
 	}
 
 	public DBSequence(String name, String catalogName, String schemaName) {
@@ -61,7 +63,6 @@ public class DBSequence extends AbstractDBObject implements ContainerComponent {
 		super.setOwner(owner);
         if (owner != null) {
     		DBSchema schema = (DBSchema) owner;
-    		schema.addSequence(this);
         	this.catalogName = schema.getCatalog().getName();
         	this.schemaName = schema.getName();
         }

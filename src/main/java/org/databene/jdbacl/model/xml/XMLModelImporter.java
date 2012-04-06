@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.Set;
 
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.Assert;
@@ -94,12 +95,6 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		}
 	}
 
-	private void scanReferers(Database database) {
-		for (DBTable table : database.getTables())
-			for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints())
-				fk.getRefereeTable().addReferrer(table);
-	}
-
 	private Database parseDatabase(Element e) {
 		String environment = e.getAttribute("environment");
 		if (StringUtil.isEmpty(environment))
@@ -111,6 +106,11 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		db.setTableInclusionPattern(e.getAttribute("tableInclusionPattern"));
 		db.setTableExclusionPattern(e.getAttribute("tableExclusionPattern"));
 		
+		db.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported", true));
+		db.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported", true));
+		db.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported", true));
+		db.setChecksImported(XMLUtil.getBooleanAttribute(e, "checksImported", true));
+		
 		// import catalogs
 		for (Element child : XMLUtil.getChildElements(e)) {
 			String childName = child.getNodeName();
@@ -120,9 +120,6 @@ public class XMLModelImporter implements DBMetaDataImporter {
 				throw new UnsupportedOperationException("Not an allowed element within <database>: " + childName);
 		}
 		scanReferers(db);
-		db.setSequencesImported(XMLUtil.getBooleanAttribute(e, "sequencesImported", true));
-		db.setTriggersImported(XMLUtil.getBooleanAttribute(e, "triggersImported", true));
-		db.setPackagesImported(XMLUtil.getBooleanAttribute(e, "packagesImported", true));
 		return db;
 	}
 
@@ -271,10 +268,11 @@ public class XMLModelImporter implements DBMetaDataImporter {
 
 	private DBCheckConstraint parseCheck(Element e, DBTable table) {
 		try {
+			table.getCatalog().getDatabase().setChecksImported(true);
 			boolean autoNamed = false;
 			if (e.getAttribute("autoNamed") != null)
 				autoNamed = Boolean.valueOf(e.getAttribute("autoNamed"));
-			return new DBCheckConstraint(e.getAttribute("name"),autoNamed, table, e.getAttribute("definition"));
+			return new DBCheckConstraint(e.getAttribute("name"), autoNamed, table, e.getAttribute("definition"));
 		} catch (Exception ex) {
 			LOGGER.error("Error parsing check constraint", ex);
 			return null;
@@ -309,6 +307,18 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return columnNames;
 	}
 
+	private void scanReferers(Database database) {
+		for (DBTable table : database.getTables()) {
+			Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
+			for (DBForeignKeyConstraint fk : fks)
+				fk.getRefereeTable().receiveReferrer(table);
+		}
+		for (DBTable table : database.getTables()) {
+			if (!table.areReferrersImported())
+				table.setReferrersImported(true);
+		}
+	}
+
 	private DBSequence parseSequence(Element e, DBSchema schema) {
 		DBSequence sequence = new DBSequence(e.getAttribute("name"), schema);
 		String start = e.getAttribute("start");
@@ -336,7 +346,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	}
 
 	private DBTrigger parseTrigger(Element e, DBSchema schema) {
-		DBTrigger trigger = new DBTrigger(e.getAttribute("name"), schema);
+		DBTrigger trigger = new DBTrigger(e.getAttribute("name"), null);
+		schema.receiveTrigger(trigger);
+		trigger.setOwner(schema);
 		String triggerType = e.getAttribute("triggerType");
 		if (!StringUtil.isEmpty(triggerType))
 			trigger.setTriggerType(triggerType);
@@ -377,7 +389,9 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	}
 
 	private DBPackage parsePackage(Element e, DBSchema schema) {
-		DBPackage pkg = new DBPackage(e.getAttribute("name"), schema);
+		DBPackage pkg = new DBPackage(e.getAttribute("name"), null);
+		pkg.setSchema(schema);
+		schema.receivePackage(pkg);
 		String subObjectName = e.getAttribute("subObjectName");
 		if (!StringUtil.isEmpty(subObjectName))
 			pkg.setSubObjectName(subObjectName);

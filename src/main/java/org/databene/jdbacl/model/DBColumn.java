@@ -76,7 +76,7 @@ public class DBColumn extends AbstractDBTableComponent {
     public DBColumn(String name, DBTable table, DBDataType type, Integer size, Integer fractionDigits) {
     	super(name, "column");
     	if (table != null)
-    		table.addColumn(this);
+    		table.receiveColumn(this);
         this.name = name;
         this.type = type;
         this.size = size;

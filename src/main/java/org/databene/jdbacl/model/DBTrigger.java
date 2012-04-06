@@ -50,17 +50,12 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 
 	public DBTrigger(String name, DBSchema owner) {
 		super(name, "trigger", owner);
-	}
-	
-	@Override
-	public void setOwner(CompositeDBObject<?> owner) {
-		super.setOwner(owner);
         if (owner != null) {
     		DBSchema schema = (DBSchema) owner;
-    		schema.receiveTrigger(this);
+    		schema.addTrigger(this);
         }
 	}
-
+	
 	public String getTriggerType() {
 		return triggerType;
 	}
@@ -157,6 +152,16 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 		this.triggerBody = triggerBody;
 	}
 	
+	public String getNormalizedDescription() {
+		String result = this.description.trim();
+		if (owner != null) {
+			String defaultPrefix = '"' + owner.getName().toUpperCase() + "\".";
+			if (result.startsWith(defaultPrefix))
+				result = result.substring(defaultPrefix.length());
+		}
+		return result;
+	}
+
 	/**
 	 * ignores description
 	 */

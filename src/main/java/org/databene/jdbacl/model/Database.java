@@ -311,9 +311,9 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	public synchronized void havePackagesImported() {
 		if (!packagesImported) {
 			try {
+				packagesImported = true;
 				if (importer != null)
 					importer.importPackages(this);
-				packagesImported = true;
 			} catch (SQLException e) {
 				throw new RuntimeException("Import of database packages failed: " + getName(), e);
 			}
@@ -327,7 +327,11 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	public void setPackagesImported(boolean packagesImported) {
 		this.packagesImported = packagesImported;
 	}
-
+	
+	
+	
+	// check constraints -----------------------------------------------------------------------------------------------
+	
 	public boolean isChecksImported() {
 		return this.checksImported;
 	}
