@@ -131,29 +131,25 @@ public class OracleDialect extends DatabaseDialect {
 	@Override
 	public DBSequence[] querySequences(Connection connection) throws SQLException {
 		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
+				"cycle_flag, order_flag, cache_size, last_number from user_sequences");
 		try {
-			ResultSet resultSet = statement.executeQuery("select sequence_name, min_value, max_value, increment_by, " +
-					"cycle_flag, order_flag, cache_size, last_number from user_sequences");
-			try {
-				ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
-				while (resultSet.next()) {
-					DBSequence sequence = new DBSequence(resultSet.getString(1), null);
-					sequence.setMinValue(new BigInteger(resultSet.getString(2)));
-					sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
-					sequence.setIncrement(new BigInteger(resultSet.getString(4)));
-					sequence.setCycle("Y".equals(resultSet.getString(5)));
-					sequence.setOrder("Y".equals(resultSet.getString(6)));
-					sequence.setCache(resultSet.getLong(7));
-					sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
-					builder.add(sequence);
-					LOGGER.debug("Imported sequence {}", sequence.getName());
-				}
-				return builder.toArray();
-			} finally {
-				DBUtil.close(resultSet);
+			ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class);
+			while (resultSet.next()) {
+				DBSequence sequence = new DBSequence(resultSet.getString(1), null);
+				sequence.setMinValue(new BigInteger(resultSet.getString(2)));
+				sequence.setMaxValue(new BigInteger(resultSet.getString(3)));
+				sequence.setIncrement(new BigInteger(resultSet.getString(4)));
+				sequence.setCycle("Y".equals(resultSet.getString(5)));
+				sequence.setOrder("Y".equals(resultSet.getString(6)));
+				sequence.setCache(resultSet.getLong(7));
+				sequence.setLastNumber(new BigInteger(resultSet.getString(8)));
+				builder.add(sequence);
+				LOGGER.debug("Imported sequence {}", sequence.getName());
 			}
+			return builder.toArray();
 		} finally {
-			DBUtil.close(statement);
+			DBUtil.closeResultSetAndStatement(resultSet);
 		}
 	}
 	
@@ -166,23 +162,27 @@ public class OracleDialect extends DatabaseDialect {
 			query += " and owner = '" + schemaName.toUpperCase() + "'";
 		ResultSet resultSet = statement.executeQuery(query);
 		ArrayBuilder<DBCheckConstraint> builder = new ArrayBuilder<DBCheckConstraint>(DBCheckConstraint.class);
-		while (resultSet.next()) {
-			String ownerName = resultSet.getString("owner");
-			if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
-				String constraintName = resultSet.getString("constraint_name");
-				String tableName = resultSet.getString("table_name");
-				String condition = resultSet.getString("search_condition");
-				if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
-					try {
-						DBCheckConstraint constraint = new DBCheckConstraint(
-								constraintName, !isDeterministicCheckName(constraintName), tableName, condition);
-						builder.add(constraint);
-					} catch (Exception e) {
-						LOGGER.error("Error parsing check constraint ", e);
+		try {
+			while (resultSet.next()) {
+				String ownerName = resultSet.getString("owner");
+				if (schemaName == null || StringUtil.equalsIgnoreCase(schemaName, ownerName)) {
+					String constraintName = resultSet.getString("constraint_name");
+					String tableName = resultSet.getString("table_name");
+					String condition = resultSet.getString("search_condition");
+					if (!SIMPLE_NOT_NULL_CHECK.matcher(condition).matches()) {
+						try {
+							DBCheckConstraint constraint = new DBCheckConstraint(
+									constraintName, !isDeterministicCheckName(constraintName), tableName, condition);
+							builder.add(constraint);
+						} catch (Exception e) {
+							LOGGER.error("Error parsing check constraint ", e);
+						}
 					}
+					LOGGER.debug("Imported check for table {}: {}", tableName, condition);
 				}
-				LOGGER.debug("Imported check for table {}: {}", tableName, condition);
 			}
+		} finally {
+			DBUtil.closeResultSetAndStatement(resultSet);
 		}
 		return builder.toArray();
 	}
@@ -275,25 +275,29 @@ public class OracleDialect extends DatabaseDialect {
 			"TRIGGER_BODY FROM SYS.ALL_TRIGGERS";
 		if (schema != null)
 			query += " WHERE OWNER = '" + schema.getName().toUpperCase() + "'";
-		List<Object[]> triggerInfos = DBUtil.query(query, connection);
+		ResultSet resultSet = DBUtil.executeQuery(query, connection);
 		List<DBTrigger> triggers = new ArrayList<DBTrigger>();
-		for (int i = 0; i < triggerInfos.size(); i++) {
-			Object[] triggerInfo = triggerInfos.get(i);
-			DBTrigger trigger = new DBTrigger((String) triggerInfo[1], schema);
-			trigger.setTriggerType((String) triggerInfo[2]);
-			trigger.setTriggeringEvent((String) triggerInfo[3]);
-			trigger.setTableOwner((String) triggerInfo[4]);
-			trigger.setBaseObjectType((String) triggerInfo[5]);
-			trigger.setTableName((String) triggerInfo[6]);
-			trigger.setColumnName((String) triggerInfo[7]);
-			trigger.setReferencingNames((String) triggerInfo[8]);
-			trigger.setWhenClause((String) triggerInfo[9]);
-			trigger.setStatus((String) triggerInfo[10]);
-			trigger.setDescription((String) triggerInfo[11]);
-			trigger.setActionType((String) triggerInfo[12]);
-			trigger.setTriggerBody((String) triggerInfo[13]);
-			triggers.add(trigger);
-			LOGGER.debug("Imported trigger: {}", trigger.getName());
+		try {
+			while (resultSet.next()) {
+				DBTrigger trigger = new DBTrigger(resultSet.getString(1), null);
+				schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
+				trigger.setTriggerType(resultSet.getString(2));
+				trigger.setTriggeringEvent(resultSet.getString(3));
+				trigger.setTableOwner(resultSet.getString(4));
+				trigger.setBaseObjectType(resultSet.getString(5));
+				trigger.setTableName(resultSet.getString(6));
+				trigger.setColumnName(resultSet.getString(7));
+				trigger.setReferencingNames(resultSet.getString(8));
+				trigger.setWhenClause(resultSet.getString(9));
+				trigger.setStatus(resultSet.getString(10));
+				trigger.setDescription(resultSet.getString(11));
+				trigger.setActionType(resultSet.getString(12));
+				trigger.setTriggerBody(resultSet.getString(13));
+				triggers.add(trigger);
+				LOGGER.debug("Imported trigger: {}", trigger.getName());
+			}
+		} finally {
+			DBUtil.closeResultSetAndStatement(resultSet);
 		}
 		return triggers;
 	}
@@ -317,7 +321,8 @@ public class OracleDialect extends DatabaseDialect {
 			String ownerName = (String) pkgInfo[0];
 			if (schema == null || schema.getName().equals(ownerName)) {
 				String name = (String) pkgInfo[1];
-				DBPackage pkg = new DBPackage(name, schema);
+				DBPackage pkg = new DBPackage(name, null);
+				schema.receivePackage(pkg);
 				pkg.setSubObjectName((String) pkgInfo[2]);
 				pkg.setObjectId(pkgInfo[3].toString());
 				pkg.setObjectType((String) pkgInfo[4]);
