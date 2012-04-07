@@ -138,6 +138,13 @@ public class SQLUtil {
 		printer.print(SQLUtil.fkSpec(fk, nameSpec));
     }
 
+	public static String[] prependAlias(String tableAlias, String[] columnNames) {
+		if (tableAlias != null)
+			for (int i = 0; i < columnNames.length; i++)
+				columnNames[i] = tableAlias + '.' + columnNames[i];
+		return columnNames;
+	}
+	
     public static String renderColumnNames(DBColumn[] columns) {
         StringBuilder builder = new StringBuilder(columns[0].getName());
         for (int i = 1; i < columns.length; i++)
