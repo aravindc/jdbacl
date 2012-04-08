@@ -124,6 +124,8 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	}
 	
 	public static void updateCacheFile(Database database) {
+		if (database == null)
+			throw new IllegalArgumentException("database is null");
 		String environment = database.getEnvironment();
 		if (environment != null) {
 			File cacheFile = getCacheFile(environment);
