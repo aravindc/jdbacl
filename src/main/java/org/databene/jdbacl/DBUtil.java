@@ -290,9 +290,19 @@ public class DBUtil {
     }
 
 	public static void closeResultSetAndStatement(ResultSet resultSet) {
-		Statement statement = DBUtil.getStatement(resultSet);
-		DBUtil.close(resultSet);
-		DBUtil.close(statement);
+		if (resultSet != null)
+			closeResultSetAndStatement(resultSet, getStatement(resultSet));
+	}
+
+	public static void closeResultSetAndStatement(ResultSet resultSet, Statement statement) {
+		if (resultSet != null) {
+			try {
+				close(resultSet);
+			} finally {
+				close(statement);
+			}
+		} else
+			close(statement);
 	}
 
 	public static int getOpenResultSetCount() {
@@ -324,23 +334,8 @@ public class DBUtil {
 		return cells;
 	}
 
-    /** @deprecated replaced by ConvertingIterable(ResultSetIterator, ResultSetConverter) */
-    @Deprecated
-    public static Object[] nextLine(ResultSet resultSet) throws SQLException {
-        if (!resultSet.next())
-            return null;
-        return currentLine(resultSet);
-    }
-
-    /** @deprecated replaced by ResultSetConverter */
-    @Deprecated
-    public static Object[] currentLine(ResultSet resultSet) throws SQLException {
-        Object[] cells = parseResultRow(resultSet);
-        return cells;
-    }
-
 	public static long countRows(String tableName, Connection connection) {
-		return DBUtil.queryLong("select count(*) from " + tableName, connection);
+		return DBUtil.queryLong("SELECT COUNT(*) FROM " + tableName, connection);
 	}
 
     public static String format(ResultSet resultSet) throws SQLException {
@@ -362,17 +357,19 @@ public class DBUtil {
     }
 
     public static String queryString(PreparedStatement statement) { 
+        ResultSet resultSet = null;
         try {
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             if (!resultSet.next())
                 throw new RuntimeException("Expected a row.");
             String value = resultSet.getString(1);
             if (resultSet.next())
                 throw new RuntimeException("Expected exactly one row, found more.");
-            close(resultSet);
             return value;
         } catch (SQLException e) {
             throw new RuntimeException("Database query failed: ", e);
+        } finally {
+            close(resultSet);
         }
     }
     
@@ -385,19 +382,21 @@ public class DBUtil {
     }
 
     public static Object queryScalar(String query, Connection connection) {
+    	Statement statement = null;
+    	ResultSet resultSet = null;
         try {
-        	Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+        	statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
             if (!resultSet.next())
                 throw new RuntimeException("Expected a row.");
             Object value = resultSet.getObject(1);
             if (resultSet.next())
                 throw new RuntimeException("Expected exactly one row, found more.");
-            close(resultSet);
-            close(statement);
             return value;
         } catch (SQLException e) {
-            throw new RuntimeException("Database query failed: ", e);
+            throw new RuntimeException("Database query failed: " + query, e);
+        } finally {
+            closeResultSetAndStatement(resultSet, statement);
         }
     }
 
@@ -487,8 +486,7 @@ public class DBUtil {
             statement = connection.createStatement();
             result = statement.executeUpdate(sql);
         } finally {
-            if (statement != null)
-                close(statement);
+        	close(statement);
         }
         return result;
     }
@@ -504,8 +502,7 @@ public class DBUtil {
 	        	builder.add(AnyConverter.convert(resultSet.getObject(1), componentType));
 	        return builder.toArray();
     	} finally {
-	    	close(resultSet);
-	    	close(statement);
+	    	closeResultSetAndStatement(resultSet, statement);
     	}
     }
 
@@ -515,19 +512,16 @@ public class DBUtil {
 	    	resultSet = executeQuery(query, connection);
 	    	return parseAndSimplifyResultSet(resultSet);
     	} finally {
-    		if (resultSet != null)
-    			closeResultSetAndStatement(resultSet);
+   			closeResultSetAndStatement(resultSet);
     	}
     }
 
     public static List<Object[]> query(String query, Connection connection) throws SQLException {
-    	ResultSet resultSet = null;
+    	ResultSet resultSet = executeQuery(query, connection); // note: exception handling happens in executeQuery()
     	try {
-	    	resultSet = executeQuery(query, connection);
-	    	return parseResultSet(resultSet);
+    		return parseResultSet(resultSet);
     	} finally {
-    		if (resultSet != null)
-    			closeResultSetAndStatement(resultSet);
+    		closeResultSetAndStatement(resultSet);
     	}
     }
 
@@ -542,8 +536,7 @@ public class DBUtil {
 	    		throw new IllegalStateException("One-row database query returned multiple rows: " + query);
 			return result;
     	} finally {
-    		if (resultSet != null)
-    			closeResultSetAndStatement(resultSet);
+   			closeResultSetAndStatement(resultSet);
     	}
     }
 
@@ -554,7 +547,14 @@ public class DBUtil {
     }
 
     public static ResultSet executeQuery(String query, Connection connection) throws SQLException {
-    	return connection.createStatement().executeQuery(query);
+    	Statement statement = null;
+    	try {
+	    	statement = connection.createStatement();
+			return statement.executeQuery(query);
+    	} catch (Exception e) {
+    		close(statement);
+			throw new RuntimeException(e);
+    	}
     }
 
 	public static String escape(String text) {
@@ -582,8 +582,7 @@ public class DBUtil {
 	        String[][] array = new String[rows.size()][];
 	        return new ResultsWithMetadata(columnNames, rows.toArray(array));
     	} finally {
-	    	close(resultSet);
-	    	close(statement);
+	    	closeResultSetAndStatement(resultSet, statement);
     	}
     }
 
