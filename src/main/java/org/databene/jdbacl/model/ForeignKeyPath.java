@@ -80,7 +80,7 @@ public class ForeignKeyPath {
 			return startTable;
 	}
 
-	public ForeignKeyPath deriveRoute(DBForeignKeyConstraint fk) {
+	public ForeignKeyPath derivePath(DBForeignKeyConstraint fk) {
 		ForeignKeyPath result = new ForeignKeyPath(this);
 		result.addEdge(fk);
 		return result;
