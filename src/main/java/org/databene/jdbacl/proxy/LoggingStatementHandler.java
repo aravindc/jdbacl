@@ -192,7 +192,7 @@ public class LoggingStatementHandler implements InvocationHandler {
 	public void close() throws SQLException {
 		if (closed)
 			return;
-		logAll("close", sql);
+		jdbcLogger.debug("close: " + sql);
 		this.closed = true;
 		openStatementCount.decrementAndGet();
 		if (openStatementMonitor != null)
