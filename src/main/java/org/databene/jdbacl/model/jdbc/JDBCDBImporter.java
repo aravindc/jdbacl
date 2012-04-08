@@ -228,7 +228,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	// catalog import --------------------------------------------------------------------------------------------------
 
 	public void importCatalogs(Database database) throws SQLException, ConnectFailedException {
-        logger.debug("Importing catalogs");
+        logger.debug("Importing catalogs from " + database.getEnvironment());
         StopWatch watch = new StopWatch("importCatalogs");
         ResultSet catalogSet = metaData.getCatalogs();
         int catalogCount = 0;
@@ -256,7 +256,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	// schema import ---------------------------------------------------------------------------------------------------
 	
     public void importSchemas(Database database) throws SQLException {
-        logger.debug("Importing schemas");
+        logger.debug("Importing schemas from " + database.getEnvironment());
         StopWatch watch = new StopWatch("importSchemas");
         int schemaCount = 0;
         ResultSet schemaSet = metaData.getSchemas();
@@ -295,7 +295,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     // table import ----------------------------------------------------------------------------------------------------
 
 	public void importAllTables(Database database) throws SQLException {
-        logger.info("Importing tables");
+        logger.info("Importing tables from " + database.getEnvironment());
         if (tableExclusionPattern != null)
         	logger.debug("excluding tables: {}", tableExclusionPattern);
         if (tableInclusionPattern != null && !".*".equals(tableInclusionPattern))
@@ -648,7 +648,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
     // check import ----------------------------------------------------------------------------------------------------
 
     public final void importAllChecks(Database database) {
-        logger.info("Importing checks");
+        logger.info("Importing checks from " + database.getEnvironment());
         StopWatch watch = new StopWatch("importAllChecks");
         try {
 			int count = 0;
@@ -669,7 +669,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 			        }
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("Error importing checks", e);
+			throw new RuntimeException("Error importing checks from " + database.getEnvironment(), e);
 		}
 		watch.stop();
     }
@@ -699,7 +699,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	            }
 	        }
         } catch (SQLException e) {
-        	errorHandler.handleError("Error importing foreign key constraints", e);
+        	errorHandler.handleError("Error importing foreign key constraints for table " + table, e);
         } finally {
 	        DBUtil.close(resultSet);
         }
@@ -711,6 +711,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	// sequence import -------------------------------------------------------------------------------------------------
 	
 	public void importSequences(Database database) {
+		logger.info("Importing sequences from " + database.getEnvironment());
         StopWatch watch = new StopWatch("importSequences");
 		try {
 			if (dialect.isSequenceSupported()) {
@@ -727,7 +728,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error importing sequences", e);
+			logger.error("Error importing sequences from " + database.getEnvironment(), e);
 		}
 		watch.stop();
 	}

@@ -132,7 +132,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	}
 	
 	public static Database writeCacheFile(File file, Database database) {
-		LOGGER.info("Exporting Database meta data to cache file");
+		LOGGER.info("Exporting Database meta data of " + database.getEnvironment() + " to cache file");
 		try {
 			FileUtil.ensureDirectoryExists(file.getParentFile());
 			new XMLModelExporter(file).export(database);
