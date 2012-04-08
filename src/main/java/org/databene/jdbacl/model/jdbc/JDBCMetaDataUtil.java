@@ -22,6 +22,9 @@
 package org.databene.jdbacl.model.jdbc;
 
 import java.sql.Connection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ImportFailedException;
@@ -36,6 +39,20 @@ import org.databene.jdbacl.model.cache.CachingDBImporter;
  * @author Volker Bergmann
  */
 public class JDBCMetaDataUtil {
+
+	public static Future<Database> getFutureMetaData(String environment, 
+			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
+			String tableInclusionPattern, String tableExclusionPattern, boolean lazy, boolean cached) 
+				throws ConnectFailedException, ImportFailedException {
+		final DBMetaDataImporter importer = getJDBCDBImporter(environment, importUKs, importIndexes, importSequences, 
+				importChecks, tableInclusionPattern, tableExclusionPattern, cached);
+		Callable<Database> callable = new Callable<Database>() {
+			public Database call() throws Exception {
+				return importer.importDatabase();
+			}
+		};
+		return Executors.newSingleThreadExecutor().submit(callable);
+	}
 
 	public static Database getMetaData(String environment, 
 			boolean importUKs, boolean importIndexes, boolean importSequences, boolean importChecks,
