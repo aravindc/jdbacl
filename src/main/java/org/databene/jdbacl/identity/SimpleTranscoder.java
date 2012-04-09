@@ -67,7 +67,7 @@ public class SimpleTranscoder {
 		return row;
     }
 
-	/* TODO v0.7 use this for merging
+	/* TODO v1.0 use this for merging
 	@Override
     public void merge(Connection source, Connection target, int pageSize,
 			KeyMapper mapper, Context context) {

@@ -164,7 +164,7 @@ public class DBColumn extends AbstractDBTableComponent {
         } else {
             // if there needs to be a NotNullConstraint, check if there exists one, first
             if (this.isNullable()) {
-				String constraintName = (getTable() != null ? getTable().getName() : "_") + '_' + name + "_NOT_NULL"; // TODO v0.7 get constraint name from DB
+				String constraintName = (getTable() != null ? getTable().getName() : "_") + '_' + name + "_NOT_NULL"; // TODO v1.0 get constraint name from DB
 				this.notNullConstraint = new DBNotNullConstraint(getTable(), constraintName , true, name);
 			}
         }
