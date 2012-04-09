@@ -388,10 +388,10 @@ public class DBUtil {
         	statement = connection.createStatement();
             resultSet = statement.executeQuery(query);
             if (!resultSet.next())
-                throw new RuntimeException("Expected a row.");
+                throw new RuntimeException("Query has an empty result: " + query);
             Object value = resultSet.getObject(1);
             if (resultSet.next())
-                throw new RuntimeException("Expected exactly one row, found more.");
+                throw new RuntimeException("Expected exactly one row, but found more for query: " + query);
             return value;
         } catch (SQLException e) {
             throw new RuntimeException("Database query failed: " + query, e);
@@ -553,7 +553,7 @@ public class DBUtil {
 			return statement.executeQuery(query);
     	} catch (Exception e) {
     		close(statement);
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error executing query: " + query, e);
     	}
     }
 
