@@ -29,6 +29,7 @@ import java.sql.Connection;
 
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.sql.Query;
 import org.junit.Test;
 
 /**
@@ -126,6 +127,18 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
 	public void testRenderCase() {
 		assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col", 
 				dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
+	}
+	
+	@Test
+	public void testRestrictRowNums() {
+		// test without offset
+		Query query = Query.select("x").from("TEST");
+		dialect.restrictRownums(0, 100, query);
+		assertEquals("SELECT TOP 100 x FROM TEST", query.toString());
+		// test with offset
+		query = Query.select("x").from("TEST");
+		dialect.restrictRownums(100, 50, query);
+		assertEquals("SELECT LIMIT 100 50 x FROM TEST", query.toString());
 	}
 	
 }

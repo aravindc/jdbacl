@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.databene.commons.TimeUtil;
 import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.sql.Query;
 import org.junit.Test;
 
 /**
@@ -121,6 +122,18 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 	public void testRenderCase() {
 		assertEquals("CASE WHEN condition1 THEN result1 WHEN condition2 THEN result2 ELSE result4 END AS col", 
 				dialect.renderCase("col", "result4", "condition1", "result1", "condition2", "result2"));
+	}
+	
+	@Test
+	public void testRestrictRowNums() {
+		// test <=
+		Query query = Query.select("x").from("TEST");
+		dialect.restrictRownums(1, 100, query);
+		assertEquals("SELECT x FROM TEST WHERE ROWNUM <= 100", query.toString());
+		// test between
+		query = Query.select("x").from("TEST");
+		dialect.restrictRownums(100, 50, query);
+		assertEquals("SELECT x FROM TEST WHERE ROWNUM BETWEEN 100 AND 150", query.toString());
 	}
 	
 }

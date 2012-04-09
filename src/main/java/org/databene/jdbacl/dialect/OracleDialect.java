@@ -51,6 +51,7 @@ import org.databene.jdbacl.model.DBProcedure;
 import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTrigger;
+import org.databene.jdbacl.sql.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,7 +308,7 @@ public class OracleDialect extends DatabaseDialect {
 	public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
 		
 		// query packages
-		/* TODO this version does not work on each oracle instance
+		/* TODO v1.0 this version does not work on each oracle instance
 		String query = "SELECT OWNER, OBJECT_NAME, SUBOBJECT_NAME, OBJECT_ID, OBJECT_TYPE, STATUS" +
 				" FROM USER_OBJECTS WHERE UPPER(OBJECT_TYPE) = 'PACKAGE'";
 		if (schema != null)
@@ -351,6 +352,16 @@ public class OracleDialect extends DatabaseDialect {
 			LOGGER.debug("Imported package procedure {}.{}", owner.getName(),  proc.getName());
 		}		
 		return packages.values();
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+		String condition;
+		if (firstRowIndex > 1)
+			condition = "ROWNUM BETWEEN " + firstRowIndex + " AND " + (firstRowIndex + rowCount); 
+		else
+			condition = "ROWNUM <= " + rowCount;
+		query.and(condition);
 	}
 	
 }

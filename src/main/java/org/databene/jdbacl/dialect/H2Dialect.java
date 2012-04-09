@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -31,6 +31,7 @@ import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * {@link DatabaseDialect} implementation for the H2 database.
@@ -134,6 +135,14 @@ public class H2Dialect extends DatabaseDialect {
 	@Override
 	public String regexQuery(String expression, boolean not, String regex) {
 		return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
+	     */
+		throw new UnsupportedOperationException("H2Dialect.applyRownumRestriction() is not implemented");
 	}
 
 }

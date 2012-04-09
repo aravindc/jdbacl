@@ -27,6 +27,7 @@
 package org.databene.jdbacl.dialect;
 
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * Space holder for unknown databases.<br/><br/>
@@ -71,6 +72,11 @@ public class UnknownDialect extends DatabaseDialect {
 	@Override
 	public boolean isDeterministicIndexName(String indexName) {
 		return true; // on unknown database systems, assume the name is reproducible - that's the safer choice
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+		throw new UnsupportedOperationException("UnknownDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 	}
 
 }

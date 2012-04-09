@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.databene.commons.StringUtil;
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * Implements generic database concepts for SQL Server.<br/><br/>
@@ -86,6 +87,15 @@ public class SqlServerDialect extends DatabaseDialect {
 			builder.append(" ELSE ").append(elseExpression); // else part
 		builder.append(" END"); // closing the case
 		return builder.toString();
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount,
+			Query query) {
+	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+			MS SQL Server: SELECT TOP 10 * FROM T
+	     */
+		throw new UnsupportedOperationException("SqlServerDialect.applyRownumRestriction() is not implemented");
 	}
 	
 }

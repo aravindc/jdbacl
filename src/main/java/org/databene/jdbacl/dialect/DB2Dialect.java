@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -29,6 +29,7 @@ package org.databene.jdbacl.dialect;
 import java.util.regex.Pattern;
 
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * Implements generic database concepts for DB2<br/><br/>
@@ -88,6 +89,14 @@ public class DB2Dialect extends DatabaseDialect {
 	@Override
 	public boolean isDeterministicIndexName(String indexName) {
 		return !randomNamePattern.matcher(indexName).matches();
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+			DB2: SELECT * FROM T WHERE ID_T > 20 FETCH FIRST 10 ROWS ONLY
+	     */
+		throw new UnsupportedOperationException("DB2Dialect.applyRownumRestriction() is not implemented");
 	}
 
 }

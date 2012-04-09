@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2008-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2008-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -36,6 +36,7 @@ import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * Implements generic database concepts for HSQL<br/><br/>
@@ -137,6 +138,14 @@ public class HSQLDialect extends DatabaseDialect {
 	@Override
 	public String trim(String expression) {
 		return "LTRIM(RTRIM(" + expression + "))";
+	}
+
+	@Override
+	public void restrictRownums(int offset, int rowCount, Query query) {
+		if (offset == 0)
+			query.addSelectCondition("TOP " + rowCount);
+		else
+			query.addSelectCondition("LIMIT " + offset + " " + rowCount);
 	}
 	
 }

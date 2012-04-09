@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -36,6 +36,7 @@ import org.databene.commons.ArrayBuilder;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * {@link DatabaseDialect} implementation for the Firebird database.<br/>
@@ -151,6 +152,14 @@ public class FirebirdDialect extends DatabaseDialect {
 	@Override
 	public boolean isDeterministicIndexName(String indexName) {
 		return !randomIndexNamePattern.matcher(indexName).matches();
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
+			Firebird: SELECT FIRST 10 SKIP 20 * FROM T
+	     */
+		throw new UnsupportedOperationException("FirebirdDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 	}
 
 }

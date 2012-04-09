@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -29,6 +29,7 @@ package org.databene.jdbacl.dialect;
 import java.util.regex.Pattern;
 
 import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.sql.Query;
 
 /**
  * Implements generic database concepts for Derby.<br/><br/>
@@ -84,6 +85,11 @@ public class DerbyDialect extends DatabaseDialect {
 	@Override
 	public boolean isDeterministicIndexName(String indexName) {
 		return !randomIndexNamePattern.matcher(indexName).matches();
+	}
+
+	@Override
+	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
+		throw new UnsupportedOperationException("DerbyDialect.applyRownumRestriction() is not implemented"); // TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
 	}
 
 }

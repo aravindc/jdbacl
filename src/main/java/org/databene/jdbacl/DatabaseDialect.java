@@ -53,6 +53,7 @@ import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBTrigger;
+import org.databene.jdbacl.sql.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -371,5 +372,7 @@ public abstract class DatabaseDialect {
     public List<DBPackage> queryPackages(DBSchema schema, Connection connection) throws SQLException {
 		return new ArrayList<DBPackage>();
 	}
+
+	public abstract void restrictRownums(int offset, int rowCount, Query query);
 
 }
