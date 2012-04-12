@@ -108,7 +108,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
 	public List<DBTableComponent> getComponents() {
 		List<DBTableComponent> result = new ArrayList<DBTableComponent>();
-		result.addAll(columns.values());
+		result.addAll(getColumns());
 		havePKImported();
 		if (pk != null)
 			result.add(pk);
