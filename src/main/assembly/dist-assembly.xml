@@ -14,38 +14,59 @@
             <includes>
                 <include>license.txt</include>
             </includes>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
         </fileSet>
 
         <!-- main -->
         <fileSet>
             <directory>src/main/java</directory>
             <outputDirectory>src</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
             <outputDirectory>src</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
         </fileSet>
 
         <!-- tests -->
         <fileSet>
             <directory>src/test/java</directory>
             <outputDirectory>test</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>src/test/resources</directory>
             <outputDirectory>test</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
         </fileSet>
 
 		<!-- batch files -->
 		<fileSet>
 			<directory>src/main/script</directory>
 			<outputDirectory>bin</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
 		</fileSet>
 
         <!-- doc -->
         <fileSet>
             <directory>target/site/apidocs</directory>
             <outputDirectory>doc/api</outputDirectory>
+            <excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
         </fileSet>
 	    <fileSet>
 			<directory>target</directory>
@@ -55,7 +76,8 @@
 			</includes>
 			<excludes>
 				<exclude>*-sources.jar</exclude>
-			</excludes>
+            	<exclude>__MACOSX</exclude>
+            </excludes>
 	    </fileSet>
     </fileSets>
 
