@@ -152,6 +152,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	private void exportTable(DBTable table, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", table.getName());
+		// TODO have a 'columnsImported' flag
 		if (lazy && !table.isPKImported())
 			addAttribute("pkImported", "false", atts);
 		if (lazy && !table.areFKsImported())
@@ -161,7 +162,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		if (lazy && !table.areChecksImported())
 			addAttribute("checksImported", "false", atts);
 		writer.startElement("table", atts);
-		for (DBColumn column : table.getColumns())
+		for (DBColumn column : table.getColumns()) // TODO export columns only for non-filtered tables in non-lazy mode
 			exportColumn(column, writer);
 		exportPK(table, writer);
 		exportFKs(table, writer);
