@@ -121,7 +121,7 @@ public abstract class DatabaseDialect {
     }
 
     public DBSequence[] querySequences(Connection connection) throws SQLException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " does not support querying sequences");
 	}
 
 	public void createSequence(String name, long initialValue, Connection connection) throws SQLException {
