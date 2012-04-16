@@ -37,7 +37,6 @@ public class MySQLDialect extends DatabaseDialect {
 
 	public MySQLDialect() {
 	    super("mysql", false, false, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/mysql-reserved_words.txt");
 	}
 
 	@Override

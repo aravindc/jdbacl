@@ -75,7 +75,6 @@ public class OracleDialect extends DatabaseDialect {
 
 	public OracleDialect() {
 	    super("oracle", true, true, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/oracle-reserved_words.txt");
     }
 
 	@Override

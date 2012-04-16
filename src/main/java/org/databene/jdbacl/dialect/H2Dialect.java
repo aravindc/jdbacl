@@ -52,7 +52,6 @@ public class H2Dialect extends DatabaseDialect {
 
     public H2Dialect() {
 	    super("h2", true, true, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/h2-reserved_words.txt");
     }
 
 	@Override

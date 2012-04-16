@@ -51,7 +51,6 @@ public class PostgreSQLDialect extends DatabaseDialect {
 
     public PostgreSQLDialect() {
 	    super("postgres", false, true, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/oracle-reserved_words.txt");
     }
 
     @Override

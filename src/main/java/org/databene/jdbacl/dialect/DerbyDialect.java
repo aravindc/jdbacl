@@ -53,7 +53,6 @@ public class DerbyDialect extends DatabaseDialect {
 
     public DerbyDialect(boolean sequenceSupported) {
 	    super("derby", true, sequenceSupported, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/derby-reserved_words.txt");
     }
 
 	@Override

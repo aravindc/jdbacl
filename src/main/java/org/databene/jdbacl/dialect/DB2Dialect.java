@@ -46,7 +46,6 @@ public class DB2Dialect extends DatabaseDialect {
 
     public DB2Dialect() {
 	    super("db2", false, true, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/db2-reserved_words.txt");
     }
 
 	@Override

@@ -58,7 +58,6 @@ public class FirebirdDialect extends DatabaseDialect {
 
     public FirebirdDialect() {
 	    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN);
-	    parseReservedWords("org/databene/jdbacl/dialect/firebird-reserved_words.txt");
     }
 
     public String getJDBCDriverClass() {

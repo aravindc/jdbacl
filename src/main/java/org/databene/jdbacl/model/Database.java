@@ -26,15 +26,19 @@
 
 package org.databene.jdbacl.model;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
 import org.databene.commons.collection.OrderedNameMap;
 import org.databene.commons.version.VersionNumber;
+import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 
 /**
@@ -54,6 +58,8 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	private String user;
 	private String tableInclusionPattern;
 	private String tableExclusionPattern;
+	
+	private Set<String> reservedWords;
 	
 	private OrderedNameMap<DBCatalog> catalogs;
 	
@@ -82,6 +88,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         super(environment, "database");
         try {
 			this.environment = environment;
+			this.reservedWords = null;
 			this.catalogs = OrderedNameMap.createCaseIgnorantMap();
 			this.sequencesImported = false;
 			this.triggersImported = false;
@@ -149,6 +156,23 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 		this.tableExclusionPattern = tableExclusionPattern;
 	}
 	
+	public boolean isReservedWord(String word) {
+		return getReservedWords().contains(word);
+	}
+	
+	private Set<String> getReservedWords() {
+		if (reservedWords == null) {
+			try {
+				Connection connection = (importer != null ? importer.getConnection() : null);
+				DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(productName, productVersion);
+				reservedWords = dialect.getReservedWords(connection);
+			} catch (Exception e) {
+				throw new RuntimeException("Error fetching reserved words", e);
+			}
+		}
+		return reservedWords;
+	}
+
 	public JDBCDBImporter getImporter() {
 		return importer;
 	}
@@ -345,5 +369,5 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 			if (importer != null)
 				importer.importAllChecks(this);
 	}
-	
+
 }

@@ -29,6 +29,7 @@ package org.databene.jdbacl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -83,22 +84,62 @@ public abstract class DatabaseDialect {
         this.sequenceSupported = sequenceSupported;
         this.dateFormat = new SimpleDateFormat(datePattern);
         this.timeFormat = new SimpleDateFormat(timePattern);
-        this.reservedWords = new HashSet<String>();
+        this.reservedWords = null;
     }
 
     public String getSystem() {
     	return system;
     }
     
-	public boolean isReservedWord(String word) {
-		return (word != null && reservedWords.contains(word.toUpperCase()));
+	public boolean isReservedWord(String word, Connection connection) throws SQLException {
+		return (word != null && getReservedWords(connection).contains(word.toUpperCase()));
 	}
 
-	public String[] getReservedWords() {
-		return reservedWords.toArray(new String[reservedWords.size()]);
+	public Set<String> getReservedWords(Connection connection) throws SQLException {
+		if (reservedWords == null)
+			importReservedWords(connection);
+		return reservedWords;
 	}
 	
-	protected void parseReservedWords(String resourceName) {
+	/**
+	 * Imports the reserved words defined in a configuration file, then adds words retrieved by 
+	 * {@link DatabaseMetaData#getSQLKeywords()}. If no system-specific configuration file is found, 
+	 * jdbacl falls back to the keywords defined in SQL:2003. The combination of both approaches 
+	 * happens, since the documentation of {@link DatabaseMetaData#getSQLKeywords()} says that it 
+	 * "Retrieves a comma-separated list of all of this database's SQL keywords that are NOT also 
+	 * SQL:2003 keywords. By adding keywords dynamically retrieved from the JDBC driver I also get 
+	 * the chance to automatically handle keywords introduced in a new database version without 
+	 * having loads of different reserved-words-files.
+	 * @throws SQLException 
+	 */
+	protected void importReservedWords(Connection connection) throws SQLException {
+		this.reservedWords = new HashSet<String>();
+		parseReservedWordsConfigFile();
+		if (connection != null)
+			importReservedWordsFromDriver(connection);
+	}
+
+	private void importReservedWordsFromDriver(Connection connection) throws SQLException {
+		DatabaseMetaData metaData = connection.getMetaData();
+		String keywordList = metaData.getSQLKeywords();
+		logger.debug("Imported keywords: " + keywordList);
+		String[] keywords = StringUtil.splitAndTrim(keywordList, ',');
+		for (String keyword : keywords)
+			this.reservedWords.add(keyword.toUpperCase());
+	}
+
+	private void parseReservedWordsConfigFile() {
+		String resourceName = "org/databene/jdbacl/dialect/" + system + "-reserved_words.txt";
+		if (IOUtil.isURIAvailable(resourceName)) {
+			parseReservedWords(resourceName);
+		} else {
+			logger.debug("Configuration file not found: " + resourceName + ". Falling back to SQL:2003 keywords");
+			parseReservedWords("org/databene/jdbacl/dialect/SQL2003-reserved_words.txt");
+		}
+	}
+
+	private void parseReservedWords(String resourceName) {
+		logger.debug("reading reserved word from config file " + resourceName);
 		try {
 			for (String word : IOUtil.readTextLines(resourceName, false))
 				reservedWords.add(word.trim());
