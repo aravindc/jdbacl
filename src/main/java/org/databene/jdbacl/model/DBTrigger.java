@@ -169,16 +169,16 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 		if (!(object instanceof DBTrigger))
 			return false;
 		DBTrigger that = (DBTrigger) object;
-		return this.triggerType.equals(that.triggerType)
-			&& this.triggeringEvent.equals(that.triggeringEvent)
-			&& this.baseObjectType.equals(that.baseObjectType)
+		return NullSafeComparator.equals(this.triggerType, that.triggerType)
+			&& NullSafeComparator.equals(this.triggeringEvent, that.triggeringEvent)
+			&& NullSafeComparator.equals(this.baseObjectType, that.baseObjectType)
 			&& NullSafeComparator.equals(this.tableName, that.tableName)
 			&& NullSafeComparator.equals(this.columnName, that.columnName)
 			&& NullSafeComparator.equals(this.referencingNames, that.referencingNames)
 			&& NullSafeComparator.equals(this.whenClause, that.whenClause)
-			&& this.status.equals(that.status)
-			&& this.actionType.equals(that.actionType)
-			&& this.triggerBody.trim().equals(that.triggerBody.trim());
+			&& NullSafeComparator.equals(this.status, that.status)
+			&& NullSafeComparator.equals(this.actionType, that.actionType)
+			&& NullSafeComparator.equals(this.triggerBody.trim(), that.triggerBody.trim());
 	}
 
 }
