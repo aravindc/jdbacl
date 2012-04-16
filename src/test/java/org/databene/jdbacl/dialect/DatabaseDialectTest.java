@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -74,10 +74,10 @@ public abstract class DatabaseDialectTest<E extends DatabaseDialect> {
 	}
 
 	@Test
-	public void testReservedWords() {
-		assertTrue(dialect.isReservedWord("TABLE"));
-		assertFalse(dialect.isReservedWord(""));
-		assertFalse(dialect.isReservedWord(null));
+	public void testCanonicalReservedWords() throws Exception {
+		assertTrue(dialect.isReservedWord("TABLE", null));
+		assertFalse(dialect.isReservedWord("", null));
+		assertFalse(dialect.isReservedWord(null, null));
 	}
 	
 	// helpers ---------------------------------------------------------------------------------------------------------

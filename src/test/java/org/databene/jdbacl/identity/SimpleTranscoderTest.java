@@ -25,6 +25,8 @@ import static org.junit.Assert.*;
 
 import java.sql.Connection;
 
+import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.dialect.HSQLUtil;
 import org.databene.jdbacl.identity.mem.MemKeyMapper;
 import org.databene.jdbacl.model.DBRow;
@@ -50,6 +52,8 @@ public class SimpleTranscoderTest extends AbstractIdentityTest {
 		createTables(target);
 
 		Database database = importDatabase(target);
+		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
+				database.getDatabaseProductName(), database.getDatabaseProductVersion());
 		DBTable countryTable = database.getTable("COUNTRY");
 		DBTable stateTable = database.getTable("STATE");
 
@@ -58,13 +62,13 @@ public class SimpleTranscoderTest extends AbstractIdentityTest {
 		MemKeyMapper mapper = new MemKeyMapper(source, "s", target, "t", identityProvider, database);
 		
 		// country
-		DBRow country = countryTable.queryByPK("DE", source);
+		DBRow country = countryTable.queryByPK("DE", source, dialect);
 		checkCountry("DE", "GERMANY", country);
 		SimpleTranscoder.transcode(country, "DE", "DX", "s", identityProvider, mapper);
 		checkCountry("DX", "GERMANY", country);
 
 		// state
-		DBRow state = stateTable.queryByPK(1, source);
+		DBRow state = stateTable.queryByPK(1, source, dialect);
 		checkState(1, "DE", "BY", state);
 		SimpleTranscoder.transcode(state, "DE|BY", 1001, "s", identityProvider, mapper);
 		checkState(1001, "DX", "BY", state);
