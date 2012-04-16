@@ -32,6 +32,8 @@ import org.databene.commons.SystemInfo;
 import org.databene.commons.iterator.ConvertingIterator;
 import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.ArrayResultSetIterator;
+import org.databene.jdbacl.DatabaseDialect;
+import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.QueryIterator;
 import org.databene.jdbacl.ResultSetConverter;
 import org.databene.jdbacl.SQLUtil;
@@ -86,11 +88,14 @@ public class SubNkPkQueryIdentity extends IdentityModel {
     	HeavyweightIterator<Object> ownerPkIterator;
     	String ownerNK;
     	TabularIterator subNkPkIterator;
+    	DatabaseDialect dialect;
 
 	    public RecursiveIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 	        this.connection = connection;
 	        this.dbId = dbId;
 	        this.mapper = mapper;
+	        this.dialect = DatabaseDialectManager.getDialectForProduct(
+	        		database.getDatabaseProductName(), database.getDatabaseProductVersion());
 	        ownerPkIterator = createParentPkIterator(connection, database); // TODO v1.0 support multiple parents
 	        createSubNkPkIterator(connection, dbId);
         }
@@ -142,7 +147,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 	        		throw new InvalidIdentityDefinitionError(tableName + " row with PK " + ownerPk + 
 	        				" cannot be found. Most likely this is a subsequent fault of a parent's identity" +
 	        				" definition: " + ArrayFormat.format(parentTableNames));
-	        	String query = SQLUtil.substituteMarkers(subNkPkQuery, "?", ownerPk);
+	        	String query = SQLUtil.substituteMarkers(subNkPkQuery, "?", ownerPk, dialect);
 	        	subNkPkIterator = new ArrayResultSetIterator(connection, query);
 	        } else
 	        	subNkPkIterator = null;

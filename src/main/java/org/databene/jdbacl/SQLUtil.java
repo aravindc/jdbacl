@@ -202,31 +202,24 @@ public class SQLUtil {
 	    }
     }
 	
-	public static String substituteMarkers(String sql, String marker, Object substitution) {
-		return sql.replace(marker, renderValue(substitution));
+	public static String substituteMarkers(String sql, String marker, Object substitution, DatabaseDialect dialect) {
+		return sql.replace(marker, dialect.formatValue(substitution));
     }
 
-    public static String renderQuery(DBTable table, String[] columnNames, Object[] values) {
+    public static String renderQuery(DBTable table, String[] columnNames, Object[] values, DatabaseDialect dialect) {
 		StringBuilder builder = new StringBuilder("SELECT * FROM ").append(table.getName());
-		builder.append(" WHERE ").append(renderWhereClause(columnNames, values));
+		builder.append(" WHERE ").append(renderWhereClause(columnNames, values, dialect));
 		return builder.toString();
     }
     
-    public static String renderWhereClause(String[] columnNames, Object[] values) {
+    public static String renderWhereClause(String[] columnNames, Object[] values, DatabaseDialect dialect) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < columnNames.length; i++) {
 			if (i > 0)
 				builder.append(" AND ");
-			builder.append(columnNames[i]).append(" = ").append(renderValue(values[i]));
+			builder.append(columnNames[i]).append(" = ").append(dialect.formatValue(values[i]));
 		}
 		return builder.toString();
-    }
-    
-    public static String renderValue(Object value) {
-	    if (value instanceof String || value instanceof Character)
-	    	return "'" + value + "'";
-	    else
-	    	return String.valueOf(value);
     }
     
 	public static Boolean mutatesDataOrStructure(String sql) {
@@ -348,12 +341,12 @@ public class SQLUtil {
 		return appendConstraintName(constraint, builder, nameSpec);
 	}
 	
-	public static String insert(String table, Object... values) {
+	public static String insert(String table, DatabaseDialect dialect, Object... values) {
 		StringBuilder builder = new StringBuilder("insert into ").append(table).append(" values (");
 		for (int i = 0; i < values.length; i++) {
 			if (i > 0)
 				builder.append(", ");
-			builder.append(SQLUtil.renderValue(values[i]));
+			builder.append(dialect.formatValue(values[i]));
 		}
 		return builder.append(")").toString();
 	}
@@ -562,5 +555,15 @@ public class SQLUtil {
 	private static String quoteNameIfNecessary(String name) {
 		return (name != null && name.indexOf(' ') >= 0 ? '"' + name + '"' : name);
     }
+
+	public static String formatValueList(List<String> values, DatabaseDialect dialect) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < values.size(); i++) {
+        	if (i > 0)
+        		builder.append(", ");
+        	builder.append(dialect.formatValue(values.get(i)));
+        }
+        return builder.toString();
+	}
 
 }

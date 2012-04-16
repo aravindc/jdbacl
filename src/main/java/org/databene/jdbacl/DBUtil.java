@@ -661,8 +661,8 @@ public class DBUtil {
 		return false;
 	}
 
-	public static void insert(String table, Connection connection, Object... values) throws SQLException {
-		DBUtil.executeUpdate(SQLUtil.insert(table, values), connection);
+	public static void insert(String table, Connection connection, DatabaseDialect dialect, Object... values) throws SQLException {
+		DBUtil.executeUpdate(SQLUtil.insert(table, dialect, values), connection);
 	}
 
 }

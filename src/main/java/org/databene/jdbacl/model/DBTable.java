@@ -42,6 +42,7 @@ import org.databene.commons.iterator.ConvertingIterator;
 import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.ArrayResultSetIterator;
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.QueryIterator;
 import org.databene.jdbacl.ResultSetConverter;
 import org.databene.jdbacl.SQLUtil;
@@ -549,12 +550,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		return DBUtil.countRows(name, connection);
 	}
 
-	public DBRow queryByPK(Object pk, Connection connection) throws SQLException {
+	public DBRow queryByPK(Object pk, Connection connection, DatabaseDialect dialect) throws SQLException {
     	String[] pkColumnNames = getPrimaryKeyConstraint().getColumnNames();
     	if (pkColumnNames.length == 0)
     		throw new ObjectNotFoundException("Table " + name + " has no primary key");
     	Object[] pkComponents = (pk.getClass().isArray() ? (Object[]) pk : new Object[] { pk });
-		String whereClause = SQLUtil.renderWhereClause(pkColumnNames, pkComponents);
+		String whereClause = SQLUtil.renderWhereClause(pkColumnNames, pkComponents, dialect);
         DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
         if (!iterator.hasNext())
         	throw new ObjectNotFoundException("No " + name + " row with id (" + pkComponents + ")");
@@ -562,12 +563,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		iterator.close();
 		return result;
     }
-    
+/*    
     public DBRowIterator queryRowsByCellValues(String[] columns, Object[] values, Connection connection) throws SQLException {
-		String whereClause = SQLUtil.renderWhereClause(columns, values);
+		String whereClause = SQLUtil.renderWhereClause(columns, values, dialect);
         return new DBRowIterator(this, connection, whereClause);
     }
-    
+*/ 
 	public HeavyweightIterator<Object> queryPKValues(Connection connection) {
 		StringBuilder query = new StringBuilder("select ");
 		query.append(ArrayFormat.format(getPKColumnNames()));
@@ -601,7 +602,5 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	    	return false;
 	    return NullSafeComparator.equals(this.name, that.getName());
     }
-
-
 
 }
