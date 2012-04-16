@@ -1,0 +1,18 @@
+Release Notes jdbacl 0.8.1
+--------------------------
+
+
+Enhancements
+------------
+- Supporting CUBRID database
+- Improved retrieval of reserved words in database dialects
+
+
+Changes
+-------
+ 
+
+
+Bug fixes
+---------
+- SQL date value rendering
