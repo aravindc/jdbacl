@@ -319,7 +319,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
             }
             String tableTypeSpec = tableSet.getString(4);
             String tableRemarks = tableSet.getString(5);
-            if (dialect.isReservedWord(tableName))
+            if (database.isReservedWord(tableName))
             	logger.warn("Table name is a reserved word: {}", tableName);
             if (logger.isDebugEnabled())
                 logger.debug("importing table: {}, {}, {}, {}, {}", 
