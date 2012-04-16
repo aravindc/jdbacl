@@ -133,6 +133,7 @@
 			<groupId>cubrid</groupId>
 			<artifactId>cubrid-jdbc</artifactId>
 			<version>8.4.1.2032</version>
+		    <scope>test</scope>
 		</dependency>
 		
 		<dependency>
