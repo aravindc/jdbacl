@@ -201,4 +201,12 @@ public class CubridDialect extends DatabaseDialect {
 			query.addOption("limit " + offset + ", " + rowCount);
 	}
 
+	public boolean supportsRegex() {
+		return true;
+	}
+
+	public String regexQuery(String expression, boolean not, String regex) {
+		return expression + (not ? " NOT " : "") + " REGEX '" + regex + "'";
+	}
+	
 }
