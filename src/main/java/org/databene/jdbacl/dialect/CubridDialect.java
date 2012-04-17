@@ -35,19 +35,15 @@ import org.databene.jdbacl.model.DBSchema;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.sql.Query;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link DatabaseDialect} implementation for the CUBRID database.<br/><br/>
  * Created: 13.04.2012 06:53:40
- * @since 0.7.7
+ * @since 0.8.2
  * @author Volker Bergmann
  */
 public class CubridDialect extends DatabaseDialect {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(CubridDialect.class);
-
 	public CubridDialect() {
 		super("cubrid", true, true, "'yyyy-MM-dd'", "'HH-mm-ss'");
 	}
@@ -132,30 +128,104 @@ public class CubridDialect extends DatabaseDialect {
 	
 	@Override
 	public List<DBTrigger> queryTriggers(DBSchema schema, Connection connection) throws SQLException {
-		String query = "SELECT owner, name, status, priority, event, " +
-			"target_class, target_attribute, target_class_attribute, condition_type, condition, condition_time, " +
-			"action_type, action_definition, action_time FROM db_trigger";
+		String query = "SELECT t.owner, t.name, t.status, t.priority, t.event, " +
+			"c.class_name as table_name, t.target_attribute, t.target_class_attribute, " +
+			"t.condition_type, t.condition, t.condition_time, " +
+			"t.action_type, t.action_definition, t.action_time FROM db_trigger as t " +
+			"join _db_class as c on t.target_class = c.class_of";
 		ResultSet resultSet = DBUtil.executeQuery(query, connection);
 		List<DBTrigger> triggers = new ArrayList<DBTrigger>();
 		try {
 			while (resultSet.next()) {
-				DBTrigger trigger = new DBTrigger(resultSet.getString("name"), null);
+				String triggerName = resultSet.getString("name");
+				DBTrigger trigger = new DBTrigger(triggerName, null);
 				trigger.setOwner(schema);
 				schema.receiveTrigger(trigger); // use receiveTrigger(), because the DBTrigger ctor would cause a recursion in trigger import
-				trigger.setStatus(resultSet.getString("status"));
-				// TODO priority is ignored
-				trigger.setTriggeringEvent(resultSet.getString("event"));
-				// TODO target_class is ignored
-				// TODO target_attribute is ignored
-				// TODO target_class_attribute is ignored
-				// TODO condition_type is ignored
+				
+				// parse status
+				int statusFlag = resultSet.getInt("status");
+				String status = (statusFlag == 2 ? "ACTIVE" : "INACTIVE");
+				trigger.setStatus(status);
+				
+				// parse priority
+				trigger.setPriority(resultSet.getDouble("priority"));
+				
+				// parse event
+				int eventFlag = resultSet.getInt("event");
+				String event;
+				switch (eventFlag) {
+					case 0 : event = "UPDATE"; break;
+					case 1 : event = "UPDATE STATEMENT"; break;
+					case 2 : event = "DELETE"; break;
+					case 3 : event = "DELETE STATEMENT"; break; 
+					case 4 : event = "INSERT"; break;
+					case 5 : event = "INSERT STATEMENT"; break;
+					case 8 : event = "COMMIT"; break;
+					case 9 : event = "ROLLBACK"; break;
+					default: event = "<ERROR>";
+						logger.error("Illegal event flag in trigger {}: {}", triggerName, eventFlag);
+				}
+				trigger.setTriggeringEvent(event);
+				
+				// parse table name
+				trigger.setTableName(resultSet.getString("table_name"));
+				
+				// parse target column
+				trigger.setColumnName(resultSet.getString("target_attribute"));
+				
+				// parse target_class_attribute (0/1)
+				trigger.setStaticColumn(resultSet.getInt("target_class_attribute") == 1);
+				
+				// condition_type ignored (1 -> condition exists, null -> no condition exists)
+				
+				// parse condition
 				trigger.setWhenClause(resultSet.getString("condition"));
-				// TODO condition_time is ignored
-				trigger.setActionType(resultSet.getString("action_type"));
+				
+				// parse condition_time
+				Object conditionTimeObject = resultSet.getObject("condition_time"); // may be null
+				if (conditionTimeObject != null) {
+					int conditionTimeFlag = ((Number) conditionTimeObject).intValue();
+					String conditionTime;
+					switch (conditionTimeFlag) {
+						case 1 : conditionTime = "BEFORE"; break;
+						case 2 : conditionTime = "AFTER"; break;
+						case 3 : conditionTime = "DEFERRED"; break;
+						default: conditionTime = "<ERROR>";
+								logger.error("Illegal condition time flag in trigger {}: {}", triggerName, conditionTime);
+					}
+					trigger.setConditionTime(conditionTime);
+				}
+				
+				// parse action type
+				int actionTypeFlag = resultSet.getInt("action_type");
+				String actionType;
+				switch (actionTypeFlag) {
+					case 1 : actionType = "INSERT OR UPDATE OR DELETE OR CALL OR EVALUATE"; break;
+					case 2 : actionType = "REJECT"; break;
+					case 3 : actionType = "INVALIDATE_TRANSACTION"; break;
+					case 4 : actionType = "PRINT"; break;
+					default: actionType = "<ERROR>";
+							logger.error("Illegal action type flag in trigger {}: {}", triggerName, actionTypeFlag);
+				}
+				trigger.setActionType(actionType);
+				
+				// parse action definition
 				trigger.setTriggerBody(resultSet.getString("action_definition"));
-				// TODO action_time is ignored
+				
+				// parse action_time
+				int actionTimeFlag = resultSet.getInt("action_time");
+				String actionTime;
+				switch (actionTimeFlag) {
+					case 1 : actionTime = "BEFORE"; break;
+					case 2 : actionTime = "AFTER"; break;
+					case 3 : actionTime = "DEFERRED"; break;
+					default: actionTime = "<ERROR>";
+							logger.error("Illegal action time flag in trigger {}: {}", triggerName, actionTime);
+				}
+				trigger.setTriggerType(actionTime);
+				
 				triggers.add(trigger);
-				LOGGER.debug("Imported trigger: {}", trigger.getName());
+				logger.debug("Imported trigger: {}", trigger.getName());
 			}
 		} finally {
 			DBUtil.closeResultSetAndStatement(resultSet);
