@@ -35,13 +35,14 @@ import org.databene.jdbacl.sql.Query;
  */
 public class SqlServerDialect extends DatabaseDialect {
 
-	private static final String DATE_PATTERN = "''yyyy-MM-dd'T'HH:mm:ss''";
+	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+	private static final String DATETIME_PATTERN = "''yyyy-MM-dd'T'HH:mm:ss''";
 
 	Pattern randomNamePattern = Pattern.compile("SYS_\\w*");
 
 	public SqlServerDialect() {
-	    super("sql_server", false, false, DATE_PATTERN, TIME_PATTERN);
+	    super("sql_server", false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
 	@Override

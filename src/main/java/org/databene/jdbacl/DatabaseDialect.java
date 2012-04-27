@@ -46,6 +46,7 @@ import org.databene.commons.ConfigurationError;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.StringUtil;
+import org.databene.commons.TimeUtil;
 import org.databene.commons.converter.TimestampFormatter;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBCatalog;
@@ -74,16 +75,18 @@ public abstract class DatabaseDialect {
     public    final boolean quoteTableNames;
     protected final boolean sequenceSupported;
 	private   final DateFormat dateFormat;
+	private   final DateFormat datetimeFormat;
 	private   final DateFormat timeFormat;
 	private   Set<String> reservedWords;
     
     public DatabaseDialect(String system, boolean quoteTableNames, boolean sequenceSupported, 
-    		String datePattern, String timePattern) {
+    		String datePattern, String timePattern, String datetimePattern) {
         this.system = system;
         this.quoteTableNames = quoteTableNames;
         this.sequenceSupported = sequenceSupported;
         this.dateFormat = new SimpleDateFormat(datePattern);
         this.timeFormat = new SimpleDateFormat(timePattern);
+        this.datetimeFormat = new SimpleDateFormat(datetimePattern);
         this.reservedWords = null;
     }
 
@@ -294,9 +297,12 @@ public abstract class DatabaseDialect {
 			return formatTimestamp((Timestamp) value);
 		else if (value instanceof Time)
 			return timeFormat.format(value);
-		else if (value instanceof Date)
-			return dateFormat.format(value);
-		else
+		else if (value instanceof Date) {
+			if (TimeUtil.isMidnight((Date) value))
+				return dateFormat.format(value);
+			else
+				return datetimeFormat.format(value);
+		} else
 			return String.valueOf(value);
     }
 

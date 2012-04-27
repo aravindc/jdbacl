@@ -34,9 +34,10 @@ public class MySQLDialect extends DatabaseDialect {
 
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
 	public MySQLDialect() {
-	    super("mysql", false, false, DATE_PATTERN, TIME_PATTERN);
+	    super("mysql", false, false, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
 	}
 
 	@Override

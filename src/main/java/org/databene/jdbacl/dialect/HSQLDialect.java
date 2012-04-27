@@ -48,6 +48,7 @@ public class HSQLDialect extends DatabaseDialect {
     
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
 	Pattern randomPKNamePattern = Pattern.compile("SYS_IDX_\\w+");
 	Pattern randomUKNamePattern = Pattern.compile("SYS_IDX_SYS_\\w+");
@@ -55,7 +56,7 @@ public class HSQLDialect extends DatabaseDialect {
 	Pattern randomIndexNamePattern = Pattern.compile("SYS_IDX_\\w+");
 
 	public HSQLDialect() {
-	    super("hsql", true, true, DATE_PATTERN, TIME_PATTERN);
+	    super("hsql", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
 	@Override

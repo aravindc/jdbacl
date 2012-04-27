@@ -50,6 +50,7 @@ public class FirebirdDialect extends DatabaseDialect {
 
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
 	Pattern randomPKNamePattern = Pattern.compile("INTEG_\\d+");
 	Pattern randomUKNamePattern = Pattern.compile("RDB\\$\\w+");
@@ -57,7 +58,7 @@ public class FirebirdDialect extends DatabaseDialect {
 	Pattern randomIndexNamePattern = Pattern.compile("RDB\\$\\w+");
 
     public FirebirdDialect() {
-	    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN);
+	    super("firebird", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
     public String getJDBCDriverClass() {

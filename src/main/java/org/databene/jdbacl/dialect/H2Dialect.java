@@ -44,6 +44,7 @@ public class H2Dialect extends DatabaseDialect {
     
 	private static final String DATE_PATTERN = "''yyyy-MM-dd''";
 	private static final String TIME_PATTERN = "''HH:mm:ss''";
+	private static final String DATETIME_PATTERN = "''yyyy-MM-dd HH:mm:ss''";
 
 	Pattern randomPKNamePattern = Pattern.compile("CONSTRAINT_\\w+");
 	Pattern randomUKNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+");
@@ -51,7 +52,7 @@ public class H2Dialect extends DatabaseDialect {
 	Pattern randomIndexNamePattern = Pattern.compile("CONSTRAINT_INDEX_\\w+|PRIMARY_KEY_\\w+");
 
     public H2Dialect() {
-	    super("h2", true, true, DATE_PATTERN, TIME_PATTERN);
+	    super("h2", true, true, DATE_PATTERN, TIME_PATTERN, DATETIME_PATTERN);
     }
 
 	@Override
