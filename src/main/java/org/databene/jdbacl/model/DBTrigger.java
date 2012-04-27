@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -22,7 +22,6 @@
 package org.databene.jdbacl.model;
 
 import org.databene.commons.NullSafeComparator;
-import org.databene.commons.anno.Nullable;
 
 /**
  * Represents a database trigger.<br/><br/>
@@ -34,19 +33,26 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 
 	private static final long serialVersionUID = -183721433730785529L;
 	
-	private String triggerType; // "after statement", "before statement", "before each row"
-	private String triggeringEvent; // "insert or update or delete"
+	/** Type of the trigger, e.g. "AFTER STATEMENT", "BEFORE STATEMENT", "BEFORE EACH ROW" */
+	private String triggerType;
+	
+	/** the event type which invokes the trigger, e.g. "INSERT OR UPDATE OR DELETE" */
+	private String triggeringEvent;
+	
 	private String tableOwner;
 	private String baseObjectType;
 	private String tableName;
-	private @Nullable String columnName;
+	private String columnName;
 	private String referencingNames;
-	private @Nullable String whenClause;
+	private String whenClause;
 	private String status;
 	private String description;
 	private String actionType;
 	private String triggerBody;
 	
+	private Double priority;
+	private Boolean staticColumn;
+	private String conditionTime;
 
 	public DBTrigger(String name, DBSchema owner) {
 		super(name, "trigger", owner);
@@ -150,6 +156,30 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 
 	public void setTriggerBody(String triggerBody) {
 		this.triggerBody = triggerBody;
+	}
+	
+	public double getPriority() {
+		return priority;
+	}
+	
+	public void setPriority(double priority) {
+		this.priority = priority;
+	}
+	
+	public Boolean getStaticColumn() {
+		return staticColumn;
+	}
+	
+	public void setStaticColumn(Boolean staticColumn) {
+		this.staticColumn = staticColumn;
+	}
+	
+	public String getConditionTime() {
+		return conditionTime;
+	}
+	
+	public void setConditionTime(String conditionTime) {
+		this.conditionTime = conditionTime;
 	}
 	
 	public String getNormalizedDescription() {
