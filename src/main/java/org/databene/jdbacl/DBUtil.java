@@ -74,6 +74,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.sql.PooledConnection;
 
@@ -105,27 +106,36 @@ public class DBUtil {
     	}
     }
     
+    public static Map<String, String> getEnvironmentData(String environment) throws IOException {
+		return IOUtil.readProperties(environmentFileName(environment));
+    }
+    
     public static JDBCConnectData getConnectData(String environment) {
 		try {
-			String filename = environment + ".env.properties";
-			File file = FileUtil.getFileIgnoreCase(new File(filename), false);
-			if (!file.exists()) {
-				File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
-				file = FileUtil.getFileIgnoreCase(defaultUserHomeFile, false);
-			}
-			String path;
-			if (file.exists()) {
-				path = file.getCanonicalPath();
-			} else if (IOUtil.isURIAvailable(filename)) {
-				path = filename;
-			} else {
-				throw new ConfigurationError("No environment definition '" + filename + "' found");
-			}
+			String path = environmentFileName(environment);
 			return JDBCConnectData.parseSingleDbProperties(path);
 		} catch (IOException e) {
 			throw new ConfigurationError("Error reading environment data for '" + environment + "'");
 		}
     }
+
+	public static String environmentFileName(String environment) throws IOException {
+		String filename = environment + ".env.properties";
+		File file = FileUtil.getFileIgnoreCase(new File(filename), false);
+		if (!file.exists()) {
+			File defaultUserHomeFile = new File(SystemInfo.getUserHome() + SystemInfo.getFileSeparator() + "databene", filename);
+			file = FileUtil.getFileIgnoreCase(defaultUserHomeFile, false);
+		}
+		String path;
+		if (file.exists()) {
+			path = file.getCanonicalPath();
+		} else if (IOUtil.isURIAvailable(filename)) {
+			path = filename;
+		} else {
+			throw new ConfigurationError("No environment definition '" + filename + "' found");
+		}
+		return path;
+	}
     
 	public static Connection connect(String environment, boolean readOnly) throws ConnectFailedException {
 		JDBCConnectData connectData = DBUtil.getConnectData(environment);
