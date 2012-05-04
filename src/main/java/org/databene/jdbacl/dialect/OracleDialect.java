@@ -65,9 +65,9 @@ public class OracleDialect extends DatabaseDialect {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OracleDialect.class);
     
-	private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd HH:mm:ss''', ''yyyy-mm-dd HH24:mi:ss'')'";
+	private static final String DATE_PATTERN = "'to_date('''yyyy-MM-dd''', ''yyyy-mm-dd'')'";
 	private static final String TIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'";
-	private static final String DATETIME_PATTERN = "'to_date('''HH:mm:ss''', ''HH24:mi:ss'')'"; // TODO
+	private static final String DATETIME_PATTERN = "'to_date('''yyyy-MM-dd HH:mm:ss''', ''yyyy-mm-dd HH24:mi:ss'')'";
     private static final String TIMESTAMP_MESSAGE = "to_timestamp(''{0}'', ''yyyy-mm-dd HH24:mi:ss.FF'')";
     private static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSSSSSSS";
     private static final Pattern SIMPLE_NOT_NULL_CHECK = Pattern.compile("\"[A-Z0-9_]+\" IS NOT NULL");

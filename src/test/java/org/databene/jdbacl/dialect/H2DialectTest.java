@@ -45,7 +45,12 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 
 	@Test
 	public void testFormatDate() {
-		assertEquals("'1971-02-03'", dialect.formatValue(DATETIME_19710203131415));
+		assertEquals("'1971-02-03'", dialect.formatValue(DATE_19710203));
+	}
+	
+	@Test
+	public void testFormatDatetime() {
+		assertEquals("'1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
 	}
 	
 	@Test

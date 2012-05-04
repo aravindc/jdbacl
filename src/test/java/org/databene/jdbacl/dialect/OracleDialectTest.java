@@ -46,9 +46,14 @@ public class OracleDialectTest extends DatabaseDialectTest<OracleDialect> {
 
 	@Test
 	public void testFormatDate() {
+		Date date = TimeUtil.date(1971, 1, 3);
+		assertEquals("to_date('1971-02-03', 'yyyy-mm-dd')", dialect.formatValue(date));
+	}
+	
+	@Test
+	public void testFormatDatetime() {
 		Date date = TimeUtil.date(1971, 1, 3, 13, 14, 15, 0);
-		assertEquals("to_date('1971-02-03 13:14:15', 'yyyy-mm-dd HH24:mi:ss')", 
-				dialect.formatValue(date));
+		assertEquals("to_date('1971-02-03 13:14:15', 'yyyy-mm-dd HH24:mi:ss')", dialect.formatValue(date));
 	}
 	
 	@Test

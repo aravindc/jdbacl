@@ -41,7 +41,7 @@ public class DerbyDialect extends DatabaseDialect {
 
 	private static final String DATE_PATTERN = "'DATE('''yyyy-MM-dd''')'";
 	private static final String TIME_PATTERN = "'TIME('''HH:mm:ss''')'";
-	private static final String DATETIME_PATTERN = "'DATETIME('''yyyy-MM-dd HH:mm:ss''')'"; // TODO
+	private static final String DATETIME_PATTERN = "'TIMESTAMP('''yyyy-MM-dd HH:mm:ss''')'";
 
 	Pattern randomPKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");
 	Pattern randomUKNamePattern = Pattern.compile("SQL[0-9A-F]{15}");

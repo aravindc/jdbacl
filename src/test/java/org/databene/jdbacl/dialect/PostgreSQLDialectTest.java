@@ -43,7 +43,12 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
 
 	@Test
 	public void testFormatDate() {
-		assertEquals("date '1971-02-03'", dialect.formatValue(DATETIME_19710203131415));
+		assertEquals("date '1971-02-03'", dialect.formatValue(DATE_19710203));
+	}
+	
+	@Test
+	public void testFormatDatetime() {
+		assertEquals("timestamp '1971-02-03 13:14:15'", dialect.formatValue(DATETIME_19710203131415));
 	}
 	
 	@Test
