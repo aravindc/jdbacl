@@ -66,7 +66,7 @@ public class XMLModelImporterTest extends AbstractModelTest {
 	
 	@Test
 	public void testOnline() throws Exception {
-		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter("hsqlmem"));
+		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(ENVIRONMENT));
 		Database db = importer.importDatabase();
 		new TreeLogger().log(new DBTreeModel(db));
 		assertFalse(db.isSequencesImported());

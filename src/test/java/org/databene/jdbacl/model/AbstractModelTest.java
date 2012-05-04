@@ -37,7 +37,7 @@ import org.databene.jdbacl.DBUtil;
  */
 public abstract class AbstractModelTest {
 	
-	private static final String ENVIRONMENT = "hsqlmem";
+	protected static final String ENVIRONMENT = "org/databene/jdbacl/model/hsqlmem";
 	protected static final String CREATE_TABLES_FILE_NAME = "org/databene/jdbacl/model/xml/create_tables.sql";
 	protected static final String DROP_TABLES_FILE_NAME = "org/databene/jdbacl/model/xml/drop_tables.sql";
 	protected static String EAGER_TEST_MODEL_FILENAME = "org/databene/jdbacl/model/xml/testmodel-eager.xml";
@@ -99,7 +99,7 @@ public abstract class AbstractModelTest {
 			connection = DBUtil.connect(ENVIRONMENT, false);
 			DBUtil.executeScriptFile(DROP_TABLES_FILE_NAME, Encodings.UTF_8, connection, false, null);
 		} finally {
-			connection.close();
+			DBUtil.close(connection);
 		}
 	}
 	
