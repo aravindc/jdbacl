@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -96,6 +97,21 @@ public class DBUtil {
     
     
     // connection handling ---------------------------------------------------------------------------------------------
+    
+    public static String[] getEnvironmentNames() {
+		File databeneFolder = new File(SystemInfo.getUserHome(), "databene");
+		String[] fileNames = databeneFolder.list(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return (name.toLowerCase().endsWith(".env.properties"));
+			}
+		});
+		String[] result = new String[fileNames.length]; 
+		for (int i = 0; i < fileNames.length; i++) {
+			String fileName = fileNames[i];
+			result[i] = fileName.substring(0, fileName.length() - ".env.properties".length());
+		}
+		return result;
+    }
     
     public static boolean existsEnvironment(String environment) {
     	try {
