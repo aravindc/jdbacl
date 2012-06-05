@@ -45,7 +45,7 @@ import org.databene.jdbacl.sql.Query;
 public class CubridDialect extends DatabaseDialect {
 	
 	public CubridDialect() {
-		super("cubrid", true, true, "'yyyy-MM-dd'", "'HH-mm-ss'", "'yyyy-MM-dd HH-mm-ss'");
+		super("cubrid", true, true, "''yyyy-MM-dd''", "''HH:mm:ss''", "''yyyy-MM-dd HH:mm:ss''");
 	}
 
 	@Override
@@ -122,7 +122,16 @@ public class CubridDialect extends DatabaseDialect {
 		return builder.toString();
 	}
 
-
+	@Override
+	public String renderFetchSequenceValue(String sequenceName) {
+		return "SELECT " + sequenceName + ".NEXT_VALUE";
+	}
+	
+    public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+		DBUtil.executeUpdate("ALTER SERIAL " + sequenceName + " START WITH " + value, connection);
+    }
+    
+	
 	
 	// querying triggers -----------------------------------------------------------------------------------------------
 	
@@ -276,7 +285,7 @@ public class CubridDialect extends DatabaseDialect {
 	}
 
 	public String regexQuery(String expression, boolean not, String regex) {
-		return expression + (not ? " NOT " : "") + " REGEX '" + regex + "'";
+		return expression + (not ? " NOT" : "") + " REGEX '" + regex + "'";
 	}
 	
 }
