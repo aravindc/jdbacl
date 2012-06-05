@@ -21,16 +21,11 @@
 
 package org.databene.jdbacl.swing;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
-import org.databene.commons.SystemInfo;
+import org.databene.jdbacl.DBUtil;
 
 /**
  * {@link JComboBox} which recognizes the configured environments and lets the user choose one.<br/><br/>
@@ -53,26 +48,18 @@ public class EnvironmentSelector extends JComboBox {
 	public static class EnvironmentModel extends AbstractListModel implements ComboBoxModel {
 
 		private String selectedItem;
-		private List<String> environments;
+		private String[] environments;
 		
 		EnvironmentModel() {
-			File databeneFolder = new File(SystemInfo.getUserHome(), "databene");
-			String[] fileNames = databeneFolder.list(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return (name.toLowerCase().endsWith(".env.properties"));
-				}
-			});
-			environments = new ArrayList<String>(fileNames.length); 
-			for (String fileName : fileNames)
-				environments.add(fileName.substring(0, fileName.length() - ".env.properties".length()));
+			environments = DBUtil.getEnvironmentNames(); 
 		}
 
 		public Object getElementAt(int index) {
-			return environments.get(index);
+			return environments[index];
 		}
 
 		public int getSize() {
-			return environments.size();
+			return environments.length;
 		}
 
 		public Object getSelectedItem() {
