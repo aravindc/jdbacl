@@ -332,7 +332,7 @@ public abstract class DatabaseDialect {
     		return builder.append(name);
     }
     
-    private UnsupportedOperationException checkSequenceSupport(String methodName) {
+    protected UnsupportedOperationException checkSequenceSupport(String methodName) {
 		if (!sequenceSupported)
 			return new UnsupportedOperationException("Sequence not supported in " + system);
 		else
