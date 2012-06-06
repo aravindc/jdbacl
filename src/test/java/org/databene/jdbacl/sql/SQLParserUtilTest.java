@@ -249,6 +249,13 @@ public class SQLParserUtilTest {
 		String text = "a=1 or b=2";
 		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
 	}
+	
+	@Test
+	public void testCheck() {
+		SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream("OBJ_NAME NOT LIKE 'JOURNAL%' AND OBJ_NAME NOT LIKE 'DEPLOY%' AND OBJ_NAME NOT LIKE 'LOG%' AND OBJ_NAME <> 'TEMP_GLOBE_SESSION'"));
+	}
+	
+	// helper methods --------------------------------------------------------------------------------------------------
 
 	protected void check(String text, String stringRep, int result) {
 		Expression<?> expression = SQLParserUtil.parseExpression(new ANTLRNoCaseStringStream(text));
