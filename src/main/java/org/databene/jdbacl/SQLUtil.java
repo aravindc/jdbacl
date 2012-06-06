@@ -358,7 +358,7 @@ public class SQLUtil {
 		// render intermediate joins
 		String currentReferrer = startAlias;
 		for (int i = 0; i < edges.size() - 1; i++) {
-			String refereeAlias = intermediateAliasBase + "_" + (i + 1);
+			String refereeAlias = intermediateAliasBase + "_" + (i + 1) + "__";
 			DBForeignKeyConstraint fk = edges.get(i);
 			if (i > 0)
 				builder.append(' ');
