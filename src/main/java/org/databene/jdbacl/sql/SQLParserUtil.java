@@ -156,6 +156,7 @@ public class SQLParserUtil {
 			case SQLLexer.IS: return convertIs(node);
 			case SQLLexer.NOT: return convertNot(node);
 			case SQLLexer.NULL: return convertNull(node);
+			case SQLLexer.LIKE: return convertLike(node);
 			case SQLLexer.IN: return convertIn(node);
 			case SQLLexer.BETWEEN: return convertBetween(node);
 			case SQLLexer.PLUS: return convertPlus(node);
@@ -233,6 +234,18 @@ public class SQLParserUtil {
 
 	private static Expression<?> convertNull(CommonTree node) {
 		return new NullExpression();
+	}
+
+	private static Expression<?> convertLike(CommonTree node) {
+		Expression<?> valueEx = convertExpressionNode(childAt(0, node));
+		CommonTree child1 = childAt(1, node);
+		boolean not = (child1.getType() == SQLLexer.NOT);
+		int collectionIndex = (not ? 2 : 1);
+		Expression<?> refEx = convertExpressionNode(childAt(collectionIndex, node));
+		Expression<?> result = new LikeExpression(valueEx, refEx);
+		if (not)
+			result = new LogicalComplementExpression(result);
+		return result;
 	}
 
 	private static Expression<?> convertIn(CommonTree node) {
