@@ -24,8 +24,11 @@ package org.databene.jdbacl.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.databene.commons.ArrayFormat;
 import org.databene.commons.ArrayUtil;
 import org.databene.commons.CollectionUtil;
+import org.databene.commons.ObjectNotFoundException;
+import org.databene.commons.StringUtil;
 import org.databene.jdbacl.SQLUtil;
 
 /**
@@ -106,7 +109,7 @@ public class ForeignKeyPath {
 	
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(getClass().getSimpleName()).append('[');
+		StringBuilder builder = new StringBuilder();
 		for (DBForeignKeyConstraint edge : edges)
 			builder.append(edge.getTable().getName())
 				.append(SQLUtil.renderColumnNames(edge.getColumnNames()))
@@ -115,7 +118,29 @@ public class ForeignKeyPath {
 			DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
 			builder.append(endEdge.getRefereeTable().getName()).append(SQLUtil.renderColumnNames(endEdge.getRefereeColumnNames()));
 		}
-		return builder.append(']').toString();
+		return builder.toString();
 	}
-	
+
+	public static ForeignKeyPath parse(String spec, Database database) {
+		String[] nodes = spec.split(" \\->");
+		ForeignKeyPath path = new ForeignKeyPath();
+		for (int i = 0; i < nodes.length - 1; i++)
+			path.addEdge(parseFK(nodes[i], database));
+		return path;
+	}
+
+	private static DBForeignKeyConstraint parseFK(String spec, Database database) {
+		spec = spec.trim();
+		int iBracket = spec.indexOf('(');
+		String tableName = spec.substring(0, iBracket);
+		String columnList = spec.substring(iBracket + 1, spec.length() - 1);
+		String[] columns = StringUtil.splitAndTrim(columnList, ',');
+		DBTable refererTable = database.getTable(tableName, true);
+		DBForeignKeyConstraint fk = refererTable.getForeignKeyConstraint(columns);
+		if (fk == null)
+			throw new ObjectNotFoundException("Foreign ke constraint not found: " + tableName + 
+					'(' + ArrayFormat.format(columns) + ')');
+		return fk;
+	}
+
 }
