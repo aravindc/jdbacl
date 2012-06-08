@@ -364,4 +364,8 @@ public class OracleDialect extends DatabaseDialect {
 		query.and(condition);
 	}
 	
+	public String trim(String expression) {
+		return "TRIM(" + expression + ")";
+	}
+
 }
