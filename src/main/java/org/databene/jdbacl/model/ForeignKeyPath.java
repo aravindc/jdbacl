@@ -107,20 +107,6 @@ public class ForeignKeyPath {
 		return CollectionUtil.lastElement(edges).getRefereeColumnNames();
 	}
 	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (DBForeignKeyConstraint edge : edges)
-			builder.append(edge.getTable().getName())
-				.append(SQLUtil.renderColumnNames(edge.getColumnNames()))
-				.append(" -> ");
-		if (edges.size() > 0) {
-			DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
-			builder.append(endEdge.getRefereeTable().getName()).append(SQLUtil.renderColumnNames(endEdge.getRefereeColumnNames()));
-		}
-		return builder.toString();
-	}
-
 	public static ForeignKeyPath parse(String spec, Database database) {
 		String[] nodes = spec.split(" \\->");
 		ForeignKeyPath path = new ForeignKeyPath();
@@ -141,6 +127,31 @@ public class ForeignKeyPath {
 			throw new ObjectNotFoundException("Foreign ke constraint not found: " + tableName + 
 					'(' + ArrayFormat.format(columns) + ')');
 		return fk;
+	}
+
+	public String getTablePath() {
+		StringBuilder builder = new StringBuilder();
+		for (DBForeignKeyConstraint edge : edges)
+			builder.append(edge.getTable().getName()).append(", ");
+		if (edges.size() > 0) {
+			DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
+			builder.append(endEdge.getRefereeTable().getName());
+		}
+		return builder.toString();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		for (DBForeignKeyConstraint edge : edges)
+			builder.append(edge.getTable().getName())
+				.append(SQLUtil.renderColumnNames(edge.getColumnNames()))
+				.append(" -> ");
+		if (edges.size() > 0) {
+			DBForeignKeyConstraint endEdge = CollectionUtil.lastElement(edges);
+			builder.append(endEdge.getRefereeTable().getName()).append(SQLUtil.renderColumnNames(endEdge.getRefereeColumnNames()));
+		}
+		return builder.toString();
 	}
 
 }
