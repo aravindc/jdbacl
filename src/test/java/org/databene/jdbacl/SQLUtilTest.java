@@ -184,7 +184,7 @@ public class SQLUtilTest {
 		DBForeignKeyConstraint ba = new DBForeignKeyConstraint("ba_fk", true, b, "a_id", a, "id");
 		
 		String sql = SQLUtil.joinFK(ba, "inner", "_start", "_end");
-		assertEquals("join a _end on _start.a_id = _end.id", sql);
+		assertEquals("JOIN a _end ON _start.a_id = _end.id", sql);
 	}
 	
 	@Test
@@ -204,7 +204,7 @@ public class SQLUtilTest {
 		
 		ForeignKeyPath route = new ForeignKeyPath(cb, ba);
 		String sql = SQLUtil.joinFKPath(route, "inner", "start__", "end__", "tmp");
-		assertEquals("join b tmp_1__ on start__.b_id = tmp_1__.id join a end__ on tmp_1__.a_id = end__.id", sql);
+		assertEquals("JOIN b tmp_1__ ON start__.b_id = tmp_1__.id JOIN a end__ ON tmp_1__.a_id = end__.id", sql);
 	}
 	
 	// helpers ---------------------------------------------------------------------------------------------------------
