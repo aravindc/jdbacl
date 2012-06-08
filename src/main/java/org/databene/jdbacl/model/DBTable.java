@@ -383,7 +383,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
         return new HashSet<DBForeignKeyConstraint>(foreignKeyConstraints);
     }
 
-	public DBForeignKeyConstraint getForeignKeyConstraint(String[] columnNames) {
+	public DBForeignKeyConstraint getForeignKeyConstraint(String... columnNames) {
     	haveFKsImported();
 		for (DBForeignKeyConstraint fk : foreignKeyConstraints)
 			if (StringUtil.equalsIgnoreCase(fk.getColumnNames(), columnNames))
