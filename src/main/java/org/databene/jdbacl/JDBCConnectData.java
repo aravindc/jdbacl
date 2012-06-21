@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.databene.commons.IOUtil;
+import org.databene.commons.StringUtil;
 
 /**
  * Data Object that contains the typical data required for a JDBC database login.<br/><br/>
@@ -42,25 +43,32 @@ public class JDBCConnectData {
 	public final String catalog;
 	public final String schema;
 	
+	public final boolean readOnly;
+	
 	public JDBCConnectData(String driver, String url, String user, String password) {
-	    this(driver, url, user, password, null, null);
+	    this(driver, url, user, password, null, null, false);
     }
 	
-	public JDBCConnectData(String driver, String url, String user, String password, String catalog, String schema) {
+	public JDBCConnectData(String driver, String url, String user, String password, String catalog, String schema, boolean readOnly) {
 	    this.driver = driver;
 	    this.url = url;
 	    this.user = user;
 	    this.password = password;
 	    this.schema = schema;
 	    this.catalog = catalog;
+	    this.readOnly = readOnly;
     }
 
 	public static JDBCConnectData parseSingleDbProperties(String filename) throws IOException {
 		Map<String, String> properties = IOUtil.readProperties(filename);
+		String readOnlyConfig = properties.get("db_readonly");
+		boolean readOnly = (!StringUtil.isEmpty(readOnlyConfig) ? Boolean.parseBoolean(readOnlyConfig) : false);
+		
 		return new JDBCConnectData(
 				properties.get("db_driver"), properties.get("db_url"), 
 				properties.get("db_user"), properties.get("db_password"), 
-				properties.get("db_catalog"), properties.get("db_schema"));
+				properties.get("db_catalog"), properties.get("db_schema"), 
+				readOnly);
 	}
 
 }
