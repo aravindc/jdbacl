@@ -77,10 +77,11 @@ public class Query {
 		return this;
 	}
 
-	public void and(String condition) {
+	public Query and(String condition) {
 		if (whereClause.length() > 0)
 			whereClause.append(" AND ");
 		whereClause.append(condition);
+		return this;
 	}
 	
 	public void addOption(String option) {
