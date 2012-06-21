@@ -58,7 +58,7 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 
     @Override
     public String[] getColumnNames() {
-        return columnNames;
+        return columnNames.clone();
     }
 
 	public void addColumnName(String columnName) {
