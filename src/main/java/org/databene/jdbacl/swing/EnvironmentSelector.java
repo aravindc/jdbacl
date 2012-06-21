@@ -37,7 +37,13 @@ import org.databene.jdbacl.DBUtil;
 public class EnvironmentSelector extends JComboBox {
 
 	public EnvironmentSelector() {
+		this(null);
+	}
+	
+	public EnvironmentSelector(String selection) {
 		super(new EnvironmentModel());
+		if (selection != null)
+			setSelectedItem(selection);
 	}
 	
 	@Override
