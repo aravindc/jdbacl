@@ -28,6 +28,7 @@ package org.databene.jdbacl;
 
 import org.databene.commons.ArrayBuilder;
 import org.databene.commons.ArrayFormat;
+import org.databene.commons.ArrayUtil;
 import org.databene.commons.BeanUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.ConnectFailedException;
@@ -63,6 +64,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -163,6 +165,8 @@ public class DBUtil {
 			throw new ConfigurationError("No JDBC URL specified");
 		if (StringUtil.isEmpty(data.driver))
 			throw new ConfigurationError("No JDBC driver class name specified");
+		if (!readOnly && data.readOnly)
+			throw new ConfigurationError("Environment is configured to be read only but was connected for read/write access");
 	    return connect(data.url, data.driver, data.user, data.password, readOnly);
     }
 
@@ -353,11 +357,16 @@ public class DBUtil {
     }
 
 	protected static Object[] parseResultRow(ResultSet resultSet) throws SQLException {
-		int columnCount = resultSet.getMetaData().getColumnCount();
+		int columnCount = columnCount(resultSet);
 		Object[] cells = new Object[columnCount];
 		for (int i = 0; i < columnCount; i++)
 		    cells[i] = resultSet.getObject(i + 1);
 		return cells;
+	}
+
+
+	public static int columnCount(ResultSet resultSet) throws SQLException {
+		return resultSet.getMetaData().getColumnCount();
 	}
 
 	public static long countRows(String tableName, Connection connection) {
@@ -517,7 +526,7 @@ public class DBUtil {
         return result;
     }
 
-    public static <T> T[] queryScalarArray(String query, Class<T> componentType, Connection connection) throws SQLException {
+    public static <T> T[] queryScalarRowsAsArray(String query, Class<T> componentType, Connection connection) {
     	Statement statement = null;
     	ResultSet resultSet = null;
     	try {
@@ -527,6 +536,28 @@ public class DBUtil {
 	        while (resultSet.next())
 	        	builder.add(AnyConverter.convert(resultSet.getObject(1), componentType));
 	        return builder.toArray();
+        } catch (SQLException e) {
+            throw new RuntimeException("Database query failed: " + query, e);
+    	} finally {
+	    	closeResultSetAndStatement(resultSet, statement);
+    	}
+    }
+
+    public static <T> T[] queryScalarRow(String query, Class<T> componentType, Connection connection) {
+    	Statement statement = null;
+    	ResultSet resultSet = null;
+    	try {
+	    	statement = connection.createStatement();
+	    	resultSet = statement.executeQuery(query);
+	    	assertNext(resultSet, query);
+	        int columnCount = columnCount(resultSet);
+	        T[] result = ArrayUtil.newInstance(componentType, columnCount);
+	        for (int i = 0; i < columnCount; i++)
+	        	Array.set(result, i, AnyConverter.convert(resultSet.getObject(1), componentType));
+	        assertNoNext(resultSet, query);
+	        return result;
+        } catch (SQLException e) {
+            throw new RuntimeException("Database query failed: " + query, e);
     	} finally {
 	    	closeResultSetAndStatement(resultSet, statement);
     	}
@@ -555,16 +586,28 @@ public class DBUtil {
     	ResultSet resultSet = null;
     	try {
 	    	resultSet = executeQuery(query, connection);
-	    	if (!resultSet.next())
-	    		throw new ObjectNotFoundException("Database query did not return a result: " + query);
+	    	assertNext(resultSet, query);
 	    	Object[] result = parseResultRow(resultSet);
-	    	if (resultSet.next())
-	    		throw new IllegalStateException("One-row database query returned multiple rows: " + query);
+	    	assertNoNext(resultSet, query);
 			return result;
     	} finally {
    			closeResultSetAndStatement(resultSet);
     	}
     }
+
+
+	public static void assertNoNext(ResultSet resultSet, String query)
+			throws SQLException {
+		if (resultSet.next())
+			throw new IllegalStateException("One-row database query returned multiple rows: " + query);
+	}
+
+
+	public static void assertNext(ResultSet resultSet, String query)
+			throws SQLException {
+		if (!resultSet.next())
+			throw new ObjectNotFoundException("Database query did not return a result: " + query);
+	}
 
     public static HeavyweightIterator<Object[]> iterateQueryResults(String query, Connection connection) throws SQLException {
     	ResultSet resultSet = connection.createStatement().executeQuery(query);
