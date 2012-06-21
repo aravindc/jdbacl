@@ -176,4 +176,8 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 		}
 	}
 
+	public String iconPath() {
+		return null; // TODO
+	}
+
 }
