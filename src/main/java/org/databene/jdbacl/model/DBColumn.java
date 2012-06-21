@@ -177,6 +177,10 @@ public class DBColumn extends AbstractDBTableComponent {
     public void setVersionColumn(boolean versionColumn) {
         this.versionColumn = versionColumn;
     }
+    
+    public boolean isIntegerType() {
+    	return type.isInteger() || (type.isDecimal() && (fractionDigits == null || fractionDigits == 0));
+    }
 
 	public DBForeignKeyConstraint getForeignKeyConstraint() {
 		for (DBForeignKeyConstraint fk : getTable().getForeignKeyConstraints())
