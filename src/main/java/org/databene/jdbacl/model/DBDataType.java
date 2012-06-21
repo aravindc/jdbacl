@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -44,11 +44,32 @@ public class DBDataType implements Named, Serializable {
     private static final long serialVersionUID = 7725335502838132325L;
     
     private static final Set<Integer> ALPHA_TYPES = CollectionUtil.toSet(
-    	Types.CHAR, Types.CLOB, Types.LONGVARCHAR, Types.LONGNVARCHAR, Types.NCHAR, Types.NCLOB, Types.NVARCHAR, Types.VARCHAR
-    );
+        	Types.CHAR, 
+        	Types.CLOB, 
+        	Types.LONGVARCHAR, 
+        	Types.LONGNVARCHAR, 
+        	Types.NCHAR, 
+        	Types.NCLOB, 
+        	Types.NVARCHAR, 
+        	Types.VARCHAR
+        );
 
     private static final Set<Integer> NUMBER_TYPES = CollectionUtil.toSet(
-        	Types.BIGINT, Types.DECIMAL, Types.DOUBLE, Types.FLOAT, Types.INTEGER, Types.NUMERIC, Types.SMALLINT, Types.TINYINT
+        	Types.BIGINT, 
+        	Types.DECIMAL, 
+        	Types.DOUBLE, 
+        	Types.FLOAT, 
+        	Types.INTEGER, 
+        	Types.NUMERIC, 
+        	Types.SMALLINT, 
+        	Types.TINYINT
+        );
+
+    private static final Set<Integer> INTEGER_TYPES = CollectionUtil.toSet(
+        	Types.BIGINT, 
+        	Types.INTEGER, 
+        	Types.SMALLINT, 
+        	Types.TINYINT
         );
 
     @SuppressWarnings("unchecked")
@@ -176,6 +197,10 @@ public class DBDataType implements Named, Serializable {
         	name.endsWith("CLOB") || "BLOB".equals(name);
     }
 
+    public boolean isVarChar() {
+        return jdbcType == Types.VARCHAR || jdbcType == Types.NVARCHAR;
+    }
+
     public boolean isAlpha() {
     	if (ALPHA_TYPES.contains(jdbcType)) // standard types
     		return true;
@@ -184,6 +209,14 @@ public class DBDataType implements Named, Serializable {
 
 	public boolean isNumber() {
         return NUMBER_TYPES.contains(jdbcType);
+	}
+
+	public boolean isInteger() {
+        return INTEGER_TYPES.contains(jdbcType);
+	}
+
+	public boolean isDecimal() {
+        return jdbcType == Types.DECIMAL || jdbcType == Types.NUMERIC;
 	}
 
 	public boolean isTemporal() {
