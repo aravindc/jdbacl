@@ -201,11 +201,12 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		public void receiveColumn(String columnName, DBDataType dataType,
 				Integer columnSize, Integer fractionDigits, boolean nullable,
 				String defaultValue, String comment, DBTable table) {
-			DBColumn column = new DBColumn(columnName, null, dataType, columnSize, fractionDigits);
+			DBColumn column = new DBColumn(columnName, table, dataType, columnSize, fractionDigits);
 	        column.setTable(DBTable.this);
 	        columns.put(column.getName(), column);
 	        column.setDoc(comment);
 	        column.setNullable(nullable);
+	        column.setDefaultValue(defaultValue);
 		}
 	}
 	
@@ -266,7 +267,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     public Set<DBUniqueConstraint> getUniqueConstraints(boolean includePK) {
     	haveIndexesImported();
     	Set<DBUniqueConstraint> result = new HashSet<DBUniqueConstraint>(uniqueConstraints);
-    	if (includePK)
+    	if (includePK && pk != null)
     		result.add(pk);
     	return result;
     }
