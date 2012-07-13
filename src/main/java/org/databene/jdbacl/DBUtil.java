@@ -553,7 +553,7 @@ public class DBUtil {
 	        int columnCount = columnCount(resultSet);
 	        T[] result = ArrayUtil.newInstance(componentType, columnCount);
 	        for (int i = 0; i < columnCount; i++)
-	        	Array.set(result, i, AnyConverter.convert(resultSet.getObject(1), componentType));
+	        	Array.set(result, i, AnyConverter.convert(resultSet.getObject(i + 1), componentType));
 	        assertNoNext(resultSet, query);
 	        return result;
         } catch (SQLException e) {
