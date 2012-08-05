@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -273,8 +273,8 @@ public class SQLUtil {
 
 	public static boolean isQuery(String sql) {
 		sql = normalizeSQL(sql);
-		// anything else than SELECT must be a mutation...
-	    if (!sql.startsWith("select"))
+		// anything else than SELECT or WITH must be a mutation...
+	    if (!sql.startsWith("select") && !sql.startsWith("with"))
 	    	return false;
 	    // ... but a 'select' statement might be a 'select into'
 	    StringTokenizer t = new StringTokenizer(sql);
@@ -384,28 +384,31 @@ public class SQLUtil {
 				fk.getRefereeTable().getName(), refereeAlias, fk.getRefereeColumnNames());
 	}
 
-	public static String leftJoin(String alias1, String[] columns1, 
-			String table2, String alias2, String[] columns2) {
-		return join("LEFT", alias1, columns1, table2, alias2, columns2);
+	public static String leftJoin(String leftAlias, String[] leftColumns, 
+			String rightTable, String rightAlias, String[] rightColumns) {
+		return join("LEFT", leftAlias, leftColumns, rightTable, rightAlias, rightColumns);
 	}
 
-	public static String innerJoin(String alias1, String[] columns1, 
-			String table2, String alias2, String[] columns2) {
-		return join("INNER", alias1, columns1, table2, alias2, columns2);
+	public static String innerJoin(String leftAlias, String[] leftColumns, 
+			String rightTable, String rightAlias, String[] rightColumns) {
+		return join("INNER", leftAlias, leftColumns, rightTable, rightAlias, rightColumns);
 	}
 
-	public static String join(String type, String refererAlias, String[] refererColumns, 
-			String refereeTable, String refereeAlias, String[] refereeColumns) {
+	public static String join(String type, String leftAlias, String[] leftColumns, 
+			String rightTable, String rightAlias, String[] rightColumns) {
+		if (leftColumns.length != rightColumns.length)
+			throw new IllegalArgumentException("The join partners' column count does not match: " + 
+					leftColumns.length + " vs. " + rightColumns.length);
 		StringBuilder builder = new StringBuilder();
 		if (!StringUtil.isEmpty(type) && !"INNER".equalsIgnoreCase(type))
 			builder.append(type).append(' ');
 		builder.append("JOIN ");
-		builder.append(refereeTable).append(" ").append(refereeAlias).append(" ON "); 
-		for (int i = 0; i < refererColumns.length; i++) {
+		builder.append(rightTable).append(" ").append(rightAlias).append(" ON "); 
+		for (int i = 0; i < leftColumns.length; i++) {
 			if (i > 0)
 				builder.append(" AND ");
-			builder.append(refererAlias).append('.').append(refererColumns[i]);
-			builder.append(" = ").append(refereeAlias).append('.').append(refereeColumns[i]);
+			builder.append(leftAlias).append('.').append(leftColumns[i]);
+			builder.append(" = ").append(rightAlias).append('.').append(rightColumns[i]);
 		}
 		return builder.toString();
 	}
@@ -537,6 +540,18 @@ public class SQLUtil {
 			if (tableAlias2 != null)
 				builder.append(tableAlias2).append('.');
 			builder.append(colNames2[i]);
+		}
+		return builder.toString();
+	}
+
+	public static String allNull(String[] columns, String tableAlias) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < columns.length; i++) {
+			if (i > 0)
+				builder.append(" AND ");
+			if (tableAlias != null)
+				builder.append(tableAlias).append('.');
+			builder.append(columns[i]).append(" IS NULL");
 		}
 		return builder.toString();
 	}
