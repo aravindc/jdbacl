@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -44,10 +44,12 @@ import java.sql.SQLException;
  */
 public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetIterator.class);
+
     private ResultSet resultSet;
     private Boolean hasNext;
     private String[] columnLabels;
-
+    private boolean closed;
     private String query;
     
     // constructors ----------------------------------------------------------------------------------------------------
@@ -61,6 +63,7 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     		throw new IllegalArgumentException("resultSet is null");
         this.resultSet = resultSet;
         this.hasNext = null;
+        this.closed = false;
         this.query = query;
     }
 
@@ -82,15 +85,15 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     }
     
     public boolean hasNext() {
-        if (logger.isDebugEnabled())
-            logger.debug("hasNext() called on: " + this);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("hasNext() called on: " + this);
         if (hasNext != null)
             return hasNext;
-        if (resultSet == null)
+        if (closed)
         	return false;
         try {
-            if (logger.isDebugEnabled())
-            	logger.debug("hasNext() checks resultSet availability of: " + this);
+            if (LOGGER.isDebugEnabled())
+            	LOGGER.debug("hasNext() checks resultSet availability of: " + this);
             hasNext = resultSet.next();
             if (!hasNext)
             	close();
@@ -101,8 +104,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     }
 
     public ResultSet next() {
-        if (logger.isDebugEnabled())
-            logger.debug("next() called on: " + this);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("next() called on: " + this);
         if (!hasNext())
             throw new IllegalStateException("No more row available. Use hasNext() for checking availability.");
         hasNext = null;
@@ -114,13 +117,12 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     }
 
     public synchronized void close() {
-        if (logger.isDebugEnabled())
-            logger.debug("closing " + this);
-        hasNext = false;
-    	if (resultSet == null)
+    	if (closed)
     		return;
+    	LOGGER.debug("closing {}", this);
+        hasNext = false;
     	DBUtil.closeResultSetAndStatement(resultSet);
-    	resultSet = null;
+    	closed = true;
     }
     
     // java.lang.Object overrides --------------------------------------------------------------------------------------
@@ -129,7 +131,5 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     public String toString() {
         return getClass().getSimpleName() + '[' + query + ']';
     }
-
-    private static final Logger logger = LoggerFactory.getLogger(ResultSetIterator.class);
 
 }
