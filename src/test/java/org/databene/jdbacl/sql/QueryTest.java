@@ -45,4 +45,10 @@ public class QueryTest {
 		assertEquals("SELECT COL FROM TEST WHERE ID > 0", query.toString());
 	}
 	
+	@Test
+	public void testLeftJoin() {
+		Query query = Query.select("col").from("left", "left__").leftJoin("left__", new String[] { "l1", "l2" }, "right", "right__", new String[] {"r1", "r2"});
+		assertEquals("SELECT col FROM left left__ LEFT JOIN right right__ ON left__.l1 = right__.r1 AND left__.l2 = right__.r2", query.toString());
+	}
+	
 }
