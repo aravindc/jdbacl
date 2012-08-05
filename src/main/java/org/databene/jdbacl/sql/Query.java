@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.databene.commons.CollectionUtil;
+import org.databene.jdbacl.SQLUtil;
 
 /**
  * Helper class for constructing SQL queries.<br/><br/>
@@ -37,6 +38,7 @@ public class Query {
 	private List<String> selectConditions;
 	private List<String> selections;
 	private List<String> tablesWithAliases;
+	private List<String> joins;
 	private StringBuilder whereClause;
 	private List<String> options;
 	
@@ -48,6 +50,7 @@ public class Query {
 		this.selectConditions = new ArrayList<String>();
 		this.selections = CollectionUtil.toList(selection);
 		this.tablesWithAliases = new ArrayList<String>();
+		this.joins = new ArrayList<String>();
 		if (table != null)
 			this.tablesWithAliases.add(table);
 		this.whereClause = new StringBuilder();
@@ -65,7 +68,20 @@ public class Query {
 	}
 
 	public Query from(String tableName) {
-		this.tablesWithAliases.add(tableName);
+		return from(tableName, null);
+	}
+
+	public Query from(String tableName, String alias) {
+		if (tableName.indexOf(' ') >= 0)
+			throw new IllegalArgumentException("Tbale name must not contain spaces: '" + tableName + "'");
+		String term = tableName + (alias != null ? " " + alias : "");
+		this.tablesWithAliases.add(term);
+		return this;
+	}
+
+	public Query leftJoin(String leftAlias, String[] leftColumns, 
+			String rightTable, String rightAlias, String[] rightColumns) {
+		joins.add(SQLUtil.leftJoin(leftAlias, leftColumns, rightTable, rightAlias, rightColumns));
 		return this;
 	}
 
@@ -104,6 +120,8 @@ public class Query {
 				builder.append(", ");
 			builder.append(tablesWithAliases.get(i));
 		}
+		for (String join : joins)
+			builder.append(" ").append(join);
 		if (whereClause.length() > 0)
 			builder.append(" WHERE ").append(whereClause);
 		for (String option : options)
