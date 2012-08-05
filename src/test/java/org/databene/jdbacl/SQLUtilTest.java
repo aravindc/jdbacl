@@ -51,6 +51,7 @@ public class SQLUtilTest {
 	private static final String ALTER_SESSION = "ALTER SESSION BLABLA";
 	
 	private static final String QUERY = "select * from users";
+	private static final String WITH = "with temp as (select dummy c from dual) select * from temp a, temp b";
 	
 	private static final String ALTER_TABLE = "ALTER TABLE users";
 	private static final String DROP_TABLE = "drop table users";
@@ -69,6 +70,7 @@ public class SQLUtilTest {
 		assertFalse(SQLUtil.isQuery(DROP_TABLE));
 		assertFalse(SQLUtil.isQuery(ALTER_TABLE));
 		assertTrue(SQLUtil.isQuery(QUERY));
+		assertTrue(SQLUtil.isQuery(WITH));
 		assertFalse(SQLUtil.isQuery(ALTER_SESSION));
 		assertFalse(SQLUtil.isQuery(INSERT));
 		assertFalse(SQLUtil.isQuery(UPDATE));
@@ -205,6 +207,14 @@ public class SQLUtilTest {
 		ForeignKeyPath route = new ForeignKeyPath(cb, ba);
 		String sql = SQLUtil.joinFKPath(route, "inner", "start__", "end__", "tmp");
 		assertEquals("JOIN b tmp_1__ ON start__.b_id = tmp_1__.id JOIN a end__ ON tmp_1__.a_id = end__.id", sql);
+	}
+	
+	@Test
+	public void testAllNull() {
+		assertEquals("c IS NULL", SQLUtil.allNull(new String[] {"c"}, null));
+		assertEquals("c1 IS NULL AND c2 IS NULL", SQLUtil.allNull(new String[] {"c1", "c2"}, null));
+		assertEquals("t.c IS NULL", SQLUtil.allNull(new String[] {"c"}, "t"));
+		assertEquals("t.c1 IS NULL AND t.c2 IS NULL", SQLUtil.allNull(new String[] {"c1", "c2"}, "t"));
 	}
 	
 	// helpers ---------------------------------------------------------------------------------------------------------
