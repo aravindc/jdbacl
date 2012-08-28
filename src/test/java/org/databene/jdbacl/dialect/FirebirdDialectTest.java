@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.DatabaseTestUtil;
 import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
@@ -106,8 +107,8 @@ public class FirebirdDialectTest extends DatabaseDialectTest<FirebirdDialect> {
 	
 	@Test // requires a Firebird installation configured as environment named 'firebird'
 	public void testSetNextSequenceValue() throws Exception {
-		if (!DBUtil.existsEnvironment("firebird")) {
-			logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'firebird' environment defined");
+		if (DatabaseTestUtil.getConnectData("firebird") == null) {
+			logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'firebird' environment defined or online");
 			return;
 		}
 		Connection connection = DBUtil.connect("firebird", false);

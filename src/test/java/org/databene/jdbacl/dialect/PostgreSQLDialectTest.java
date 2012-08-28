@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import java.sql.Connection;
 
 import org.databene.jdbacl.DBUtil;
+import org.databene.jdbacl.DatabaseTestUtil;
 import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
@@ -98,9 +99,9 @@ public class PostgreSQLDialectTest extends DatabaseDialectTest<PostgreSQLDialect
 	
 	@Test // requires a PostgreSQL installation configured as environment named 'postgres'
 	public void testSetNextSequenceValue() throws Exception {
-		if (!DBUtil.existsEnvironment("postgres")) {
+		if (DatabaseTestUtil.getConnectData("postgres") == null) {
 			logger.warn("Skipping test " + getClass() + ".testSetNextSequenceValue() since there is no 'postgres' " +
-					"environment defined");
+					"environment defined or online");
 			return;
 		}
 		Connection connection = DBUtil.connect("postgres", false);
