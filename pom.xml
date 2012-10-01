@@ -6,12 +6,12 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.8.5-SNAPSHOT</version>
+    <version>0.8.5</version>
 
     <properties>
-    	<webdecs_version>0.6.12-SNAPSHOT</webdecs_version>
-    	<script_version>0.7.9-SNAPSHOT</script_version>
-    	<commons_version>0.5.18-SNAPSHOT</commons_version>
+    	<webdecs_version>0.6.12</webdecs_version>
+    	<script_version>0.7.9</script_version>
+    	<commons_version>0.5.18</commons_version>
     	<contiperf_version>2.2.0</contiperf_version>
     </properties>
 
@@ -319,8 +319,8 @@
 	<distributionManagement>
 		<repository>
 			<id>databene.repo</id>
-			<name>databene Internal Repository</name>
-			<url>ftp://databene.org/databene/m2</url>
+			<name>Databene Internal Repository</name>
+			<url>ftp://databene.org</url>
 		</repository>
 	</distributionManagement>
   
