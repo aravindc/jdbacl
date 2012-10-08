@@ -6,12 +6,12 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6-SNAPSHOT</version>
 
     <properties>
-    	<webdecs_version>0.6.12</webdecs_version>
-    	<script_version>0.7.9</script_version>
-    	<commons_version>0.5.18</commons_version>
+    	<webdecs_version>0.6.13-SNAPSHOT</webdecs_version>
+    	<script_version>0.7.10-SNAPSHOT</script_version>
+    	<commons_version>0.5.19-SNAPSHOT</commons_version>
     	<contiperf_version>2.2.0</contiperf_version>
     </properties>
 
@@ -172,17 +172,6 @@
                     <exclude>log4j.xml</exclude>
                 </excludes>
             </resource>
-
-            <resource>
-                <filtering>false</filtering>
-                <directory>${basedir}/src/demo/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-                 <excludes>
-                    <exclude>**/version.properties</exclude>
-                </excludes>
-           </resource>
 
             <resource>
                 <filtering>true</filtering>
