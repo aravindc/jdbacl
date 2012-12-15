@@ -28,7 +28,12 @@ import org.databene.commons.CollectionUtil;
 import org.databene.jdbacl.SQLUtil;
 
 /**
- * Helper class for constructing SQL queries.<br/><br/>
+ * Helper class for constructing SQL queries.
+ * General structure: 
+ * 		[selectConditions] SELECT selections 
+ * 		FROM tablesWithAliases [[LEFT | RIGHT | OUTER | INNER] JOIN joins]
+ * 		[WHERE whereClause] [options]
+ * <br/><br/>
  * Created: 09.04.2012 10:16:54
  * @since 0.8.1
  * @author Volker Bergmann
