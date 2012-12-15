@@ -420,6 +420,6 @@ public abstract class DatabaseDialect {
 		return new ArrayList<DBPackage>();
 	}
 
-	public abstract void restrictRownums(int offset, int rowCount, Query query);
+	public abstract void restrictRownums(int rowOffset, int rowCount, Query query);
 
 }
