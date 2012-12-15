@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.databene.commons.IOUtil;
 import org.databene.commons.tree.TreeLogger;
 import org.databene.jdbacl.model.AbstractModelTest;
 import org.databene.jdbacl.model.DBSequence;
@@ -57,24 +58,32 @@ public class XMLModelImporterTest extends AbstractModelTest {
 	@Test
 	public void testOffline() throws Exception {
 		XMLModelImporter importer = new XMLModelImporter(EAGER_TEST_MODEL_FILENAME, null);
-		Database actual = importer.importDatabase();
-		assertTrue(actual instanceof Database);
-		new TreeLogger().log(new DBTreeModel(actual));
-		Database expected = createTestModel(false);
-		assertTrue(expected.isIdentical(actual));
+		try {
+			Database actual = importer.importDatabase();
+			assertTrue(actual instanceof Database);
+			new TreeLogger().log(new DBTreeModel(actual));
+			Database expected = createTestModel(false);
+			assertTrue(expected.isIdentical(actual));
+		} finally {
+			IOUtil.close(importer);
+		}
 	}
 	
 	@Test
 	public void testOnline() throws Exception {
 		XMLModelImporter importer = new XMLModelImporter(LAZY_TEST_MODEL_FILENAME, new JDBCDBImporter(ENVIRONMENT));
-		Database db = importer.importDatabase();
-		new TreeLogger().log(new DBTreeModel(db));
-		assertFalse(db.isSequencesImported());
-		List<DBSequence> sequences = db.getSequences();
-		assertEquals(1, sequences.size());
-		assertEquals("SEQ1", sequences.get(0).getName());
-		assertEquals(BigInteger.valueOf(1000), sequences.get(0).getStart());
-		assertTrue(db.isSequencesImported());
+		try {
+			Database db = importer.importDatabase();
+			new TreeLogger().log(new DBTreeModel(db));
+			assertFalse(db.isSequencesImported());
+			List<DBSequence> sequences = db.getSequences();
+			assertEquals(1, sequences.size());
+			assertEquals("SEQ1", sequences.get(0).getName());
+			assertEquals(BigInteger.valueOf(1000), sequences.get(0).getStart());
+			assertTrue(db.isSequencesImported());
+		} finally {
+			IOUtil.close(importer);
+		}
 	}
 	
 }
