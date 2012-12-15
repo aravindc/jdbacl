@@ -152,7 +152,8 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	private void exportTable(DBTable table, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", table.getName());
-		// TODO have a 'columnsImported' flag
+		if (lazy && !table.areColumnsImported())
+			addAttribute("columnsImported", "false", atts);
 		if (lazy && !table.isPKImported())
 			addAttribute("pkImported", "false", atts);
 		if (lazy && !table.areFKsImported())
@@ -162,13 +163,20 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		if (lazy && !table.areChecksImported())
 			addAttribute("checksImported", "false", atts);
 		writer.startElement("table", atts);
-		for (DBColumn column : table.getColumns()) // TODO export columns only for non-filtered tables in non-lazy mode
-			exportColumn(column, writer);
+		exportColumns(table, writer);
 		exportPK(table, writer);
 		exportFKs(table, writer);
 		exportUKsAndIndexes(table, writer);
 		exportChecks(table, writer);
 		writer.endElement("table");
+	}
+
+	private void exportColumns(DBTable table, SimpleXMLWriter writer) throws SAXException {
+		if (!lazy || table.areColumnsImported()) {
+			List<DBColumn> columnsToExport = table.getColumns();
+			for (DBColumn column : columnsToExport)
+				exportColumn(column, writer);
+		}
 	}
 
 	private void exportColumn(DBColumn column, SimpleXMLWriter writer) throws SAXException {
@@ -205,7 +213,35 @@ public class XMLModelExporter implements DBMetaDataExporter {
 
 	public void exportFKs(DBTable table, SimpleXMLWriter writer) throws SAXException {
 		if (!lazy || table.areFKsImported())
-			exportFks(table.getForeignKeyConstraints(), writer);
+			for (DBForeignKeyConstraint fk : table.getForeignKeyConstraints())
+				exportFk(fk, writer);
+	}
+
+	private void exportFk(DBForeignKeyConstraint fk, SimpleXMLWriter writer) throws SAXException {
+		AttributesImpl atts = createAttributes("name", fk.getName());
+		String[] columnNames = fk.getColumnNames();
+		if (columnNames.length == 1)
+			addAttribute("column", columnNames[0], atts);
+		addAttribute("refereeTable", fk.getRefereeTable().getName(), atts);
+		String[] refereeColumns = fk.getRefereeColumnNames();
+		if (refereeColumns.length == 1)
+			addAttribute("refereeColumn", refereeColumns[0], atts);
+		if (fk.getUpdateRule() != FKChangeRule.NO_ACTION)
+			addAttribute("updateRule", fk.getUpdateRule().name(), atts);
+		if (fk.getDeleteRule() != FKChangeRule.NO_ACTION)
+			addAttribute("deleteRule", fk.getDeleteRule().name(), atts);
+		writer.startElement("fk", atts);
+		if (columnNames.length > 1) {
+			writer.startElement("columns");
+			for (String columnName : columnNames) {
+				AttributesImpl colAtts = createAttributes("name", columnName);
+				addAttribute("refereeColumn", fk.columnReferencedBy(columnName), colAtts);
+				writer.startElement("column", colAtts);
+				writer.endElement("column");
+			}
+			writer.endElement("columns");
+		}
+		writer.endElement("fk");
 	}
 
 	public void exportUKsAndIndexes(DBTable table, SimpleXMLWriter writer) throws SAXException {
@@ -215,8 +251,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private void exportUKs(Set<DBUniqueConstraint> uks, SimpleXMLWriter writer) 
-			throws SAXException {
+	private void exportUKs(Set<DBUniqueConstraint> uks, SimpleXMLWriter writer) throws SAXException {
 		for (DBUniqueConstraint uk : uks) {
 			if (uk instanceof DBPrimaryKeyConstraint)
 				continue;
@@ -243,35 +278,6 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			addAttribute("definition", check.getConditionText(), atts);
 			writer.startElement("check", atts);
 			writer.endElement("check");
-		}
-	}
-
-	private void exportFks(Set<DBForeignKeyConstraint> fks, SimpleXMLWriter writer) throws SAXException {
-		for (DBForeignKeyConstraint fk : fks) {
-			AttributesImpl atts = createAttributes("name", fk.getName());
-			String[] columnNames = fk.getColumnNames();
-			if (columnNames.length == 1)
-				addAttribute("column", columnNames[0], atts);
-			addAttribute("refereeTable", fk.getRefereeTable().getName(), atts);
-			String[] refereeColumns = fk.getRefereeColumnNames();
-			if (refereeColumns.length == 1)
-				addAttribute("refereeColumn", refereeColumns[0], atts);
-			if (fk.getUpdateRule() != FKChangeRule.NO_ACTION)
-				addAttribute("updateRule", fk.getUpdateRule().name(), atts);
-			if (fk.getDeleteRule() != FKChangeRule.NO_ACTION)
-				addAttribute("deleteRule", fk.getDeleteRule().name(), atts);
-			writer.startElement("fk", atts);
-			if (columnNames.length > 1) {
-				writer.startElement("columns");
-				for (String columnName : columnNames) {
-					AttributesImpl colAtts = createAttributes("name", columnName);
-					addAttribute("refereeColumn", fk.columnReferencedBy(columnName), colAtts);
-					writer.startElement("column", colAtts);
-					writer.endElement("column");
-				}
-				writer.endElement("columns");
-			}
-			writer.endElement("fk");
 		}
 	}
 
