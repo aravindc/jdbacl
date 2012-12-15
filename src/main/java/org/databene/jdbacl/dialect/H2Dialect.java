@@ -136,13 +136,18 @@ public class H2Dialect extends DatabaseDialect {
 	public String regexQuery(String expression, boolean not, String regex) {
 		return expression + (not ? " NOT" : "") + " REGEXP '" + regex + "'";
 	}
-
+	
+	/** restricts the query result set to a certain number of rows, optionally starting from an offset. 
+	 *  @param rowOffset the number of rows to skip from the beginning of the result set; 
+	 *  	use 0 for not skipping any.
+	 *  @param rowCount the number of rows to read; 
+	 *  	use 0 for unlimited access
+	 */
 	@Override
-	public void restrictRownums(int firstRowIndex, int rowCount, Query query) {
-	    /* TODO v0.8.2 implement DatabaseDialect.applyRownumRestriction()
-			MySQL, PostgreSQL, H2: SELECT * FROM T LIMIT 10 OFFSET 20
-	     */
-		throw new UnsupportedOperationException("H2Dialect.applyRownumRestriction() is not implemented");
+	public void restrictRownums(int rowOffset, int rowCount, Query query) {
+		query.addOption("LIMIT " + rowCount); // note: LIMIT must not be left out
+		if (rowOffset > 0)
+			query.addOption("OFFSET " + rowOffset); // note: The order LIMIT x OFFSET y is mandatory
 	}
 
 }
