@@ -140,12 +140,18 @@ public class HSQLDialect extends DatabaseDialect {
 		return "LTRIM(RTRIM(" + expression + "))";
 	}
 
+	/** restricts the query result set to a certain number of rows, optionally starting from an offset. 
+	 *  @param rowOffset the number of rows to skip from the beginning of the result set; 
+	 *  	use 0 for not skipping any.
+	 *  @param rowCount the number of rows to read; 
+	 *  	use 0 for unlimited access
+	 */
 	@Override
-	public void restrictRownums(int offset, int rowCount, Query query) {
-		if (offset == 0)
+	public void restrictRownums(int rowOffset, int rowCount, Query query) {
+		if (rowOffset == 0)
 			query.addSelectCondition("TOP " + rowCount);
 		else
-			query.addSelectCondition("LIMIT " + offset + " " + rowCount);
+			query.addSelectCondition("LIMIT " + rowOffset + " " + rowCount);
 	}
 	
 }
