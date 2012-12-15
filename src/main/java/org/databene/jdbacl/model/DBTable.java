@@ -152,7 +152,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
     public List<DBColumn> getColumns() {
 		haveColumnsImported();
-        return columns.values();
+		return columns.values();
     }
 
     public DBColumn[] getColumns(String[] columnNames) {
@@ -188,8 +188,19 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		column.setTable(this);
         columns.put(column.getName(), column);
 	}
+	
+	public boolean areColumnsImported() {
+		return (columns != null);
+	}
 
-	private void haveColumnsImported() {
+	public void setColumnsImported(boolean columnsImported) {
+		if (columnsImported)
+			this.columns = OrderedNameMap.<DBColumn>createCaseIgnorantMap();
+		else
+			this.columns = null;
+	}
+	
+	public void haveColumnsImported() {
 		if (columns == null) {
 			columns = OrderedNameMap.createCaseIgnorantMap();
 			if (importer != null)
