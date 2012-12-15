@@ -177,6 +177,8 @@ public class XMLModelImporter implements DBMetaDataImporter {
 	private DBTable parseTableStructure(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
 		DBTable table = (DBTable) schema.getTable(name);
+		boolean columnsImported = XMLUtil.getBooleanAttributeWithDefault(e, "columnsImported", true);
+		table.setColumnsImported(columnsImported);
 		boolean pkImported = XMLUtil.getBooleanAttributeWithDefault(e, "pkImported", true);
 		table.setPKImported(pkImported);
 		boolean fksImported = XMLUtil.getBooleanAttributeWithDefault(e, "fksImported", true);
