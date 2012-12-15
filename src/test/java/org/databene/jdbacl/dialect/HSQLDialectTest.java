@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2009-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2009-2012 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -21,12 +21,15 @@
 
 package org.databene.jdbacl.dialect;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
+import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.sql.Query;
@@ -135,15 +138,60 @@ public class HSQLDialectTest extends DatabaseDialectTest<HSQLDialect> {
 	}
 	
 	@Test
-	public void testRestrictRowNums() {
-		// test without offset
-		Query query = Query.select("x").from("TEST");
-		dialect.restrictRownums(0, 100, query);
-		assertEquals("SELECT TOP 100 x FROM TEST", query.toString());
-		// test with offset
-		query = Query.select("x").from("TEST");
-		dialect.restrictRownums(100, 50, query);
-		assertEquals("SELECT LIMIT 100 50 x FROM TEST", query.toString());
+	public void testOffsetAndRowCountRestriction() throws ConnectFailedException, SQLException {
+		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
+		String tableName = getClass().getSimpleName();
+		try {
+			createAndFillSimpleTable(connection, tableName);
+			Query query = Query.select("x").from(tableName);
+			dialect.restrictRownums(4, 2, query);
+			String sql = query.toString();
+			assertEquals("SELECT LIMIT 4 2 x FROM " + tableName, sql);
+			Integer[] result = DBUtil.queryScalarRowsAsArray(query.toString(), Integer.class, connection);
+			assertArrayEquals(new Integer[] { 4, 5 }, result);
+		} finally {
+			DBUtil.executeUpdate("drop table " + tableName, connection);
+		}
+	}
+
+	@Test
+	public void testOffsetRestriction() throws ConnectFailedException, SQLException {
+		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
+		String tableName = getClass().getSimpleName();
+		try {
+			createAndFillSimpleTable(connection, tableName);
+			Query query = Query.select("x").from(tableName);
+			dialect.restrictRownums(7, 0, query);
+			String sql = query.toString();
+			assertEquals("SELECT LIMIT 7 0 x FROM " + tableName, sql);
+			Integer[] result = DBUtil.queryScalarRowsAsArray(sql, Integer.class, connection);
+			assertArrayEquals(new Integer[] { 7, 8, 9 }, result);
+		} finally {
+			DBUtil.executeUpdate("drop table " + tableName, connection);
+		}
+	}
+
+	@Test
+	public void testRowCountRestriction() throws ConnectFailedException, SQLException {
+		Connection connection = HSQLUtil.connectInMemoryDB(getClass().getSimpleName());
+		String tableName = getClass().getSimpleName();
+		try {
+			createAndFillSimpleTable(connection, tableName);
+			Query query = Query.select("x").from(tableName);
+			dialect.restrictRownums(0, 4, query);
+			String sql = query.toString();
+			assertEquals("SELECT TOP 4 x FROM " + tableName, sql);
+			Integer[] result = DBUtil.queryScalarRowsAsArray(query.toString(), Integer.class, connection);
+			assertArrayEquals(new Integer[] { 0, 1, 2, 3 }, result);
+		} finally {
+			DBUtil.executeUpdate("drop table " + tableName, connection);
+		}
+	}
+
+	private void createAndFillSimpleTable(Connection connection, String tableName) throws SQLException {
+		DBUtil.executeUpdate("create table " + tableName + " ( x int )", connection);
+		for (int i = 0; i < 10; i++)
+			DBUtil.executeUpdate("insert into " + tableName + " values (" + i + ")", connection);
 	}
 	
 }
