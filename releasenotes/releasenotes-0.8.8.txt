@@ -12,3 +12,4 @@ Enhancements
 Bug fixes
 ---------
 - table dependency checking fails on self-referencing tables with referers
+- NPE in column rendering
