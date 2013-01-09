@@ -36,6 +36,7 @@ import org.databene.commons.SystemInfo;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBConstraint;
+import org.databene.jdbacl.model.DBDataType;
 import org.databene.jdbacl.model.DBForeignKeyConstraint;
 import org.databene.jdbacl.model.DBNotNullConstraint;
 import org.databene.jdbacl.model.DBObject;
@@ -193,7 +194,8 @@ public class SQLUtil {
     }
 	
 	public static void renderColumnTypeWithSize(DBColumn column, StringBuilder builder) {
-	    String typeName = column.getType().getName();
+	    DBDataType columnType = column.getType();
+		String typeName = (columnType != null ? columnType.getName() : null);
 	    builder.append(typeName);
 	    if (column.getSize() != null && !NO_SIZE_TYPES.contains(typeName)) {
 	    	builder.append("(" + column.getSize());
