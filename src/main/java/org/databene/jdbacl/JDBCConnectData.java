@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.databene.commons.IOUtil;
+import org.databene.commons.ParseUtil;
 import org.databene.commons.StringUtil;
 
 /**
@@ -62,7 +63,7 @@ public class JDBCConnectData {
 	public static JDBCConnectData parseSingleDbProperties(String filename) throws IOException {
 		Map<String, String> properties = IOUtil.readProperties(filename);
 		String readOnlyConfig = properties.get("db_readonly");
-		boolean readOnly = (!StringUtil.isEmpty(readOnlyConfig) ? Boolean.parseBoolean(readOnlyConfig) : false);
+		boolean readOnly = (!StringUtil.isEmpty(readOnlyConfig) ? ParseUtil.parseBoolean(readOnlyConfig, true) : false);
 		
 		return new JDBCConnectData(
 				properties.get("db_driver"), properties.get("db_url"), 

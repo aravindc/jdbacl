@@ -32,6 +32,7 @@ import org.databene.commons.Assert;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.IOUtil;
 import org.databene.commons.ImportFailedException;
+import org.databene.commons.ParseUtil;
 import org.databene.commons.StringUtil;
 import org.databene.commons.SyntaxError;
 import org.databene.commons.xml.XMLUtil;
@@ -337,13 +338,13 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			sequence.setMinValue(new BigInteger(minValue));
 		String cycle = e.getAttribute("cycle");
 		if (!StringUtil.isEmpty(cycle))
-			sequence.setCycle(Boolean.parseBoolean(cycle));
+			sequence.setCycle(ParseUtil.parseBoolean(cycle));
 		String cache = e.getAttribute("cache");
 		if (!StringUtil.isEmpty(cache))
 			sequence.setCache(Long.parseLong(cache));
 		String order = e.getAttribute("order");
 		if (!StringUtil.isEmpty(order))
-			sequence.setOrder(Boolean.parseBoolean(order));
+			sequence.setOrder(ParseUtil.parseBoolean(order));
 		return sequence;
 	}
 
