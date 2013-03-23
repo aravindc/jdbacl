@@ -107,6 +107,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
 	// CompositeDBObject interface -------------------------------------------------------------------------------------
 	
+	@Override
 	public List<DBTableComponent> getComponents() {
 		List<DBTableComponent> result = new ArrayList<DBTableComponent>();
 		result.addAll(getColumns());
@@ -145,6 +146,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     
     // column methods --------------------------------------------------------------------------------------------------
 	
+	@Override
 	public String[] getColumnNames() {
 		haveColumnsImported();
 		return CollectionUtil.toArray(NameUtil.getNames(columns.values()), String.class);
@@ -209,6 +211,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
 	
 	class ColReceiver implements JDBCDBImporter.ColumnReceiver {
+		@Override
 		public void receiveColumn(String columnName, DBDataType dataType,
 				Integer columnSize, Integer fractionDigits, boolean nullable,
 				String defaultValue, String comment, DBTable table) {
@@ -259,6 +262,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 
 	class PKRec implements JDBCDBImporter.PKReceiver {
 
+		@Override
 		public void receivePK(String pkName, boolean deterministicName, String[] columnNames, DBTable table) {
 			DBPrimaryKeyConstraint pk = new DBPrimaryKeyConstraint(null, pkName, deterministicName, columnNames);
 			DBTable.this.pk = pk;
@@ -367,6 +371,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	}
 
 	class IdxReceiver implements JDBCDBImporter.IndexReceiver {
+		@Override
 		public void receiveIndex(DBIndexInfo indexInfo, boolean deterministicName, DBTable table, DBSchema schema) {
 			DBIndex index = null;
 		    if (indexInfo.unique) {
@@ -435,6 +440,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
 	class FKRec implements JDBCDBImporter.FKReceiver {
 
+		@Override
 		public void receiveFK(DBForeignKeyConstraint fk, DBTable table) {
 			foreignKeyConstraints.add(fk);
 			fk.setTable(table);
@@ -496,7 +502,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     }
 
 	public void receiveReferrer(DBTable referrer) {
-		if (referrers == null);
+		if (referrers == null)
 			referrers = new OrderedSet<DBTable>();
 		referrers.add(referrer);
 	}
@@ -523,6 +529,7 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	}
 
 	class RefReceiver implements JDBCDBImporter.ReferrerReceiver {
+		@Override
 		public void receiveReferrer(String fktable_name, DBTable table) {
 			DBTable referrer = getSchema().getCatalog().getTable(fktable_name);
 			table.addReferrer(referrer);
@@ -533,15 +540,18 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 	
 	// implementation of the 'Dependent' interface ---------------------------------------------------------------------
 
-    public int countProviders() {
+    @Override
+	public int countProviders() {
         return getForeignKeyConstraints().size();
     }
 
-    public DBTable getProvider(int index) {
+    @Override
+	public DBTable getProvider(int index) {
         return foreignKeyConstraints.get(index).getRefereeTable();
     }
 
-    public boolean requiresProvider(int index) {
+    @Override
+	public boolean requiresProvider(int index) {
         String firstFkColumnName = foreignKeyConstraints.get(index).getForeignKeyColumnNames()[0];
 		return !getColumn(firstFkColumnName).isNullable();
     }
@@ -604,7 +614,8 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
 		return HashCodeBuilder.hashCode(owner, name);
     }
 
-    public boolean equals(Object other) {
+    @Override
+	public boolean equals(Object other) {
 	    if (this == other)
 		    return true;
 	    if (other == null || !(other instanceof DBTable))
