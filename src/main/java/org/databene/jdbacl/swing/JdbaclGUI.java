@@ -81,6 +81,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 		this.environmentSelector = new EnvironmentSelector();
 		this.databasePane = new DatabasePane(new TextFieldValueProvider(exclusionField));
 		this.environmentSelector.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				String environment = environmentSelector.getSelectedItem();
 				try {
@@ -121,6 +122,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 	    menubar.add(fileMenu);
 	    if (!SystemInfo.isMacOsx())
 	    	fileMenu.add(new AbstractAction("Exit") {
+				@Override
 				public void actionPerformed(ActionEvent evt) {
 					exit();
 				}
@@ -137,6 +139,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 	    menubar.add(helpMenu);
 	    if (!SystemInfo.isMacOsx())
 	    	helpMenu.add(new AbstractAction("About") {
+				@Override
 				public void actionPerformed(ActionEvent evt) {
 					about();
 				}
@@ -145,12 +148,14 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 		setJMenuBar(menubar);
     }
 
+	@Override
 	public void about() {
 		JOptionPane.showMessageDialog(this, 
 				"DB Sanity GUI " + SystemInfo.getLineSeparator() + // include version info
 				"(c) 2011 by Volker Bergmann");
     }
 
+	@Override
 	public void exit() {
 		saveState();
 		System.exit(0);
@@ -176,8 +181,19 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 		}
 	}
 
+	@Override
 	public String iconPath() {
 		return null; // TODO
+	}
+
+	@Override
+	public void preferences() {
+		// nothing to do
+	}
+
+	@Override
+	public boolean supportsPreferences() {
+		return false;
 	}
 
 }
