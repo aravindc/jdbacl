@@ -85,6 +85,7 @@ public class CubridDialect extends DatabaseDialect {
 		DBUtil.executeQuery("create serial " + name + " start with " + initialValue, connection);
 	}
 	
+	@Override
 	public String renderCreateSequence(DBSequence sequence) {
 		/*
 		CREATE SERIAL serial_name
@@ -127,7 +128,8 @@ public class CubridDialect extends DatabaseDialect {
 		return "SELECT " + sequenceName + ".NEXT_VALUE";
 	}
 	
-    public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
+    @Override
+	public void setNextSequenceValue(String sequenceName, long value, Connection connection) throws SQLException {
 		DBUtil.executeUpdate("ALTER SERIAL " + sequenceName + " START WITH " + value, connection);
     }
     
@@ -268,6 +270,7 @@ public class CubridDialect extends DatabaseDialect {
 	
 	// other features --------------------------------------------------------------------------------------------------
 
+	@Override
 	public String trim(String expression) {
 		return "trim(" + expression + ")";
 	}
@@ -280,10 +283,12 @@ public class CubridDialect extends DatabaseDialect {
 			query.addOption("limit " + offset + ", " + rowCount);
 	}
 
+	@Override
 	public boolean supportsRegex() {
 		return true;
 	}
 
+	@Override
 	public String regexQuery(String expression, boolean not, String regex) {
 		return expression + (not ? " NOT" : "") + " REGEX '" + regex + "'";
 	}

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -66,6 +66,7 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
+	@Override
 	public List<ContainerComponent> getComponents() {
 		List<ContainerComponent> result = new ArrayList<ContainerComponent>();
 		result.addAll(support.getTables());
@@ -75,11 +76,13 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 	
     // table operations ------------------------------------------------------------------------------------------------
 
-    public List<DBTable> getTables() {
+    @Override
+	public List<DBTable> getTables() {
         return support.getTables();
     }
 
-    public List<DBTable> getTables(boolean recursive) {
+    @Override
+	public List<DBTable> getTables(boolean recursive) {
 		return support.getTables(recursive);
     }
 
@@ -87,7 +90,8 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
     	return support.getTables(recursive, result);
     }
 
-    public DBTable getTable(String tableName) {
+    @Override
+	public DBTable getTable(String tableName) {
         return support.getTable(tableName);
     }
 
@@ -101,6 +105,7 @@ public class TableContainer extends AbstractCompositeDBObject<ContainerComponent
 
     // sequence operations ---------------------------------------------------------------------------------------------
     
+	@Override
 	public List<DBSequence> getSequences(boolean recursive) {
 		return support.getSequences(recursive);
 	}

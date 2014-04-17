@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2012-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -182,6 +182,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	
 	// database import -------------------------------------------------------------------------------------------------
 	
+	@Override
 	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
 		return new Database(environment, this, true);
 	}
@@ -218,6 +219,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 		}
 	}
 
+	@Override
 	public void close() {
         DBUtil.close(_connection);
 	}

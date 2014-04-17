@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2012-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -70,17 +70,17 @@ public class JDBCDBImporterTest extends AbstractJDBCDBImporterTest {
 		checkImports(true, true, true, db);
 	}
 
-	private void checkSequences(DBSchema schema) {
+	private static void checkSequences(DBSchema schema) {
 		List<DBSequence> sequences = schema.getSequences(true);
 		assertEquals(1, sequences.size());
 		assertEquals("SEQ1", sequences.get(0).getName());
 	}
 
-	private void checkTriggers(DBSchema schema) {
+	private static void checkTriggers(DBSchema schema) {
 		assertEquals(0, schema.getTriggers().size());
 	}
 
-	private void checkPackages(DBSchema schema) {
+	private static void checkPackages(DBSchema schema) {
 		assertEquals(0, schema.getPackages().size());
 	}
 

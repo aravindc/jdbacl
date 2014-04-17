@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -42,26 +42,32 @@ public class DatabaseTreeModel implements TreeModel<DBObject> {
 		this.database = database;
 	}
 
+	@Override
 	public DBObject getRoot() {
 		return database;
 	}
 
+	@Override
 	public DBObject getParent(DBObject child) {
 		return child.getOwner();
 	}
 
+	@Override
 	public boolean isLeaf(DBObject node) {
 		return !(node instanceof CompositeDBObject);
 	}
 
+	@Override
 	public int getChildCount(DBObject parent) {
 		return ((CompositeDBObject<?>) parent).getComponents().size();
 	}
 
+	@Override
 	public DBObject getChild(DBObject parent, int index) {
 		return ((CompositeDBObject<?>) parent).getComponents().get(index);
 	}
 
+	@Override
 	public int getIndexOfChild(DBObject parent, DBObject child) {
 		List<?> components = ((CompositeDBObject<?>) parent).getComponents();
 		return components.indexOf(child);

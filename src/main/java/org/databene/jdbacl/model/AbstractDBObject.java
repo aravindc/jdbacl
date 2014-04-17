@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -54,11 +54,13 @@ public abstract class AbstractDBObject implements DBObject {
 
     // properties ------------------------------------------------------------------------------------------------------
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 
-    public String getObjectType() {
+    @Override
+	public String getObjectType() {
     	return objectType;
     }
     
@@ -66,7 +68,8 @@ public abstract class AbstractDBObject implements DBObject {
         this.name = name;
     }
 
-    public String getDoc() {
+    @Override
+	public String getDoc() {
         return doc;
     }
 
@@ -74,10 +77,12 @@ public abstract class AbstractDBObject implements DBObject {
         this.doc = doc;
     }
 
-    public CompositeDBObject<?> getOwner() {
+    @Override
+	public CompositeDBObject<?> getOwner() {
 		return owner;
 	}
 
+	@Override
 	public void setOwner(CompositeDBObject<?> owner) {
 		this.owner = owner;
 	}

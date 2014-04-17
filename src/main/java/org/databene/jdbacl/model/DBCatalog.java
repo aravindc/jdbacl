@@ -72,24 +72,29 @@ public class DBCatalog extends AbstractCompositeDBObject<DBSchema> implements Na
         this.owner = database;
     }
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    @Override
+	public void setName(String name) {
         this.name = name;
     }
 
-    public String getDoc() {
+    @Override
+	public String getDoc() {
         return doc;
     }
 
-    public void setDoc(String doc) {
+    @Override
+	public void setDoc(String doc) {
         this.doc = doc;
     }
     
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
+	@Override
 	public List<DBSchema> getComponents() {
 		return schemas.values();
 	}

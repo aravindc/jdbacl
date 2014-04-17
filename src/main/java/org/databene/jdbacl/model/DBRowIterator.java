@@ -70,6 +70,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 		return this;
 	}
 
+	@Override
 	public boolean hasNext() {
 		if (closed)
 			return false;
@@ -79,6 +80,7 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
 		return result;
 	}
 
+	@Override
 	public DBRow next() {
 		try {
 			resultSetIterator.next();
@@ -94,10 +96,12 @@ public class DBRowIterator implements HeavyweightIterator<DBRow> {
         }
 	}
 
+	@Override
 	public void remove() {
 		throw new UnsupportedOperationException("remove() is not supported by " + getClass());
 	}
 
+	@Override
 	public void close() {
 		if (!closed) {
 			DBUtil.closeResultSetAndStatement(resultSet);

@@ -175,11 +175,11 @@ public class JDBCDriverInfo implements Serializable {
 	
 	// private helpers -------------------------------------------------------------------------------------------------
 	
-	private String normalizeNull(String value) {
+	private static String normalizeNull(String value) {
 		return (value == null || value.trim().length() == 0 ? null : value.trim());
 	}
 	
-	private String normalizeNotNull(String value) {
+	private static String normalizeNotNull(String value) {
 		return (value == null || value.trim().length() == 0 ? "" : value.trim());
 	}
 	

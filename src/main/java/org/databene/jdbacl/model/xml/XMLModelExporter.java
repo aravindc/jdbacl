@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -86,6 +86,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 	
 	// interface -------------------------------------------------------------------------------------------------------
 
+	@Override
 	public void export(Database database) throws IOException, SQLException {
 		OutputStream out = new FileOutputStream(file);
 		SimpleXMLWriter writer = null;
@@ -179,7 +180,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private void exportColumn(DBColumn column, SimpleXMLWriter writer) throws SAXException {
+	private static void exportColumn(DBColumn column, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", column.getName());
 		addAttribute("default", column.getDefaultValue(), atts);
 		addAttribute("jdbcType", String.valueOf(column.getType().getJdbcType()), atts);
@@ -217,7 +218,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 				exportFk(fk, writer);
 	}
 
-	private void exportFk(DBForeignKeyConstraint fk, SimpleXMLWriter writer) throws SAXException {
+	private static void exportFk(DBForeignKeyConstraint fk, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", fk.getName());
 		String[] columnNames = fk.getColumnNames();
 		if (columnNames.length == 1)
@@ -271,7 +272,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 			exportChecks(table.getCheckConstraints(), writer);
 	}
 
-	private void exportChecks(List<DBCheckConstraint> checks, SimpleXMLWriter writer) 
+	private static void exportChecks(List<DBCheckConstraint> checks, SimpleXMLWriter writer) 
 			throws SAXException {
 		for (DBCheckConstraint check : checks) {
 			AttributesImpl atts = createAttributes("name", check.getName());
@@ -306,7 +307,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("columns");
 	}
 
-	private void exportSequence(DBSequence sequence, SimpleXMLWriter writer) throws SAXException {
+	private static void exportSequence(DBSequence sequence, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", sequence.getName());
 		addIfNotNull("start", sequence.getStartIfNotDefault(), atts);
 		addIfNotNull("increment", sequence.getIncrementIfNotDefault(), atts);
@@ -319,7 +320,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("sequence");
 	}
 
-	private void exportTrigger(DBTrigger trigger, SimpleXMLWriter writer) throws SAXException {
+	private static void exportTrigger(DBTrigger trigger, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", trigger.getName());
 		addIfNotNull("triggerType", trigger.getTriggerType(), atts);
 		addIfNotNull("triggeringEvent", trigger.getTriggeringEvent(), atts);
@@ -337,7 +338,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("trigger");
 	}
 
-	private void exportPackage(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
+	private static void exportPackage(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
 		AttributesImpl atts = createAttributes("name", pkg.getName());
 		addIfNotNull("subObjectName", pkg.getSubObjectName(), atts);
 		addIfNotNull("objectId", pkg.getObjectId(), atts);
@@ -349,7 +350,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		writer.endElement("package");
 	}
 
-	private void exportPackageProcedures(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
+	private static void exportPackageProcedures(DBPackage pkg, SimpleXMLWriter writer) throws SAXException {
 		for (DBProcedure procedure : pkg.getProcedures()) {
 			AttributesImpl atts = createAttributes("name", procedure.getName());
 			addIfNotNull("objectId", procedure.getObjectId(), atts);
@@ -360,7 +361,7 @@ public class XMLModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private void addIfNotNull(String name, Object value, AttributesImpl atts) {
+	private static void addIfNotNull(String name, Object value, AttributesImpl atts) {
 		if (value != null)
 			addAttribute(name, value.toString(), atts);
 	}

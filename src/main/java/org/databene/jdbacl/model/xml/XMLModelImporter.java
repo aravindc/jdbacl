@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -83,6 +83,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		this.realImporter = realImporter;
 	}
 	
+	@Override
 	public Database importDatabase() throws ImportFailedException {
 		InputStream in = null;
 		try {
@@ -168,7 +169,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return schema;
 	}
 
-	private DBTable parseTableName(Element e, DBSchema schema) {
+	private static DBTable parseTableName(Element e, DBSchema schema) {
 		String name = e.getAttribute("name");
 		String typeSpec = e.getAttribute("type");
 		TableType type = (StringUtil.isEmpty(typeSpec) ? TableType.TABLE : TableType.valueOf(typeSpec));
@@ -208,7 +209,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return table;
 	}
 
-	private DBColumn parseColumn(Element e, DBTable table) {
+	private static DBColumn parseColumn(Element e, DBTable table) {
 		String name = e.getAttribute("name");
 		String typeAndSizeSpec = e.getAttribute("type");
 		int jdbcType = Integer.parseInt(e.getAttribute("jdbcType"));
@@ -236,7 +237,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return new DBUniqueConstraint(table, e.getAttribute("name"), autoNamed, parseColumnNames(e));
 	}
 
-	private DBForeignKeyConstraint parseFK(Element e, DBTable owner, DBSchema schema) {
+	private static DBForeignKeyConstraint parseFK(Element e, DBTable owner, DBSchema schema) {
 		String name = e.getAttribute("name");
 		String refereeTableName = e.getAttribute("refereeTable");
 		DBTable refereeTable = schema.getTable(refereeTableName);
@@ -269,7 +270,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return fk;
 	}
 
-	private DBCheckConstraint parseCheck(Element e, DBTable table) {
+	private static DBCheckConstraint parseCheck(Element e, DBTable table) {
 		try {
 			table.getCatalog().getDatabase().setChecksImported(true);
 			boolean autoNamed = false;
@@ -280,7 +281,6 @@ public class XMLModelImporter implements DBMetaDataImporter {
 			LOGGER.error("Error parsing check constraint", ex);
 			return null;
 		}
-		
 	}
 
 	private DBIndex parseIndex(Element e, DBTable table) {
@@ -310,7 +310,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return columnNames;
 	}
 
-	private void scanReferers(Database database) {
+	private static void scanReferers(Database database) {
 		for (DBTable table : database.getTables()) {
 			Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
 			for (DBForeignKeyConstraint fk : fks)
@@ -322,7 +322,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		}
 	}
 
-	private DBSequence parseSequence(Element e, DBSchema schema) {
+	private static DBSequence parseSequence(Element e, DBSchema schema) {
 		DBSequence sequence = new DBSequence(e.getAttribute("name"), schema);
 		String start = e.getAttribute("start");
 		if (!StringUtil.isEmpty(start))
@@ -348,7 +348,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return sequence;
 	}
 
-	private DBTrigger parseTrigger(Element e, DBSchema schema) {
+	private static DBTrigger parseTrigger(Element e, DBSchema schema) {
 		DBTrigger trigger = new DBTrigger(e.getAttribute("name"), null);
 		schema.receiveTrigger(trigger);
 		trigger.setOwner(schema);
@@ -391,7 +391,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return trigger;
 	}
 
-	private DBPackage parsePackage(Element e, DBSchema schema) {
+	private static DBPackage parsePackage(Element e, DBSchema schema) {
 		DBPackage pkg = new DBPackage(e.getAttribute("name"), null);
 		pkg.setSchema(schema);
 		schema.receivePackage(pkg);
@@ -414,7 +414,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		return pkg;
 	}
 
-	private void parsePackageProcedures(Element pkgElement, DBPackage pkg) {
+	private static void parsePackageProcedures(Element pkgElement, DBPackage pkg) {
 		for (Element e : XMLUtil.getChildElements(pkgElement)) {
 			String nodeName = e.getNodeName();
 			if ("procedure".equals(nodeName)) {
@@ -433,6 +433,7 @@ public class XMLModelImporter implements DBMetaDataImporter {
 		}
 	}
 
+	@Override
 	public void close() throws IOException {
 		// nothing special to do
 	}

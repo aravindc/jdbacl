@@ -179,6 +179,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 	
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
+	@Override
 	public List<DBCatalog> getComponents() {
 		return catalogs.values();
 	}
@@ -216,10 +217,12 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 
     // table operations ------------------------------------------------------------------------------------------------
 
+	@Override
 	public List<DBTable> getTables() {
 		return getTables(true);
 	}
 
+	@Override
 	public List<DBTable> getTables(boolean recursive) {
 		if (!recursive)
 			return new ArrayList<DBTable>();
@@ -230,6 +233,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
         return tables;
     }
 
+	@Override
 	public DBTable getTable(String name) {
 		return getTable(name, true);
 	}
@@ -259,6 +263,7 @@ public class Database extends AbstractCompositeDBObject<DBCatalog> implements Ta
 		return getSequences(true);
 	}
 
+	@Override
 	public List<DBSequence> getSequences(boolean recursive) {
 		haveSequencesImported();
 		if (!recursive)

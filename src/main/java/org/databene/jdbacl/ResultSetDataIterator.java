@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -77,10 +77,12 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
     	return columnLabels;
     }
     
+	@Override
 	public Class<ResultSet> getType() {
 		return ResultSet.class;
 	}
 
+	@Override
 	public DataContainer<ResultSet> next(DataContainer<ResultSet> container) {
         LOGGER.debug("next() called on {}", this);
         if (resultSet == null)
@@ -97,7 +99,8 @@ public class ResultSetDataIterator implements DataIterator<ResultSet> {
 		}
 	}
 
-    public synchronized void close() {
+    @Override
+	public synchronized void close() {
         LOGGER.debug("closing {}", this);
     	if (resultSet == null)
     		return;

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -56,9 +56,11 @@ public abstract class DBConstraint extends AbstractDBTableComponent implements M
      * Returns the columns which constitute this constraint
      * @return the columns which constitute this constraint
      */
-    public abstract String[] getColumnNames();
+    @Override
+	public abstract String[] getColumnNames();
 
-    public DBTable getTable() {
+    @Override
+	public DBTable getTable() {
         return (DBTable) getOwner();
     }
 

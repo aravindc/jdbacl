@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2007-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2007-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -84,7 +84,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
     	return columnLabels;
     }
     
-    public boolean hasNext() {
+    @Override
+	public boolean hasNext() {
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("hasNext() called on: " + this);
         if (hasNext != null)
@@ -103,7 +104,8 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
         }
     }
 
-    public ResultSet next() {
+    @Override
+	public ResultSet next() {
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("next() called on: " + this);
         if (!hasNext())
@@ -112,11 +114,13 @@ public class ResultSetIterator implements HeavyweightIterator<ResultSet> {
         return resultSet;
     }
 
-    public void remove() {
+    @Override
+	public void remove() {
         throw new UnsupportedOperationException("Not supported");
     }
 
-    public synchronized void close() {
+    @Override
+	public synchronized void close() {
     	if (closed)
     		return;
     	LOGGER.debug("closing {}", this);

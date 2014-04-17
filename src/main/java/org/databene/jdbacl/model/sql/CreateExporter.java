@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -54,7 +54,8 @@ public class CreateExporter implements DBMetaDataExporter {
 		this.file = file;
 	}
 
-    public void export(Database database) throws IOException {
+    @Override
+	public void export(Database database) throws IOException {
 	    PrintWriter out = null;
 	    try {
 	    	out = new PrintWriter(new FileWriter(file));
@@ -66,7 +67,7 @@ public class CreateExporter implements DBMetaDataExporter {
 	    }
     }
 
-	private void exportSequences(Database database, PrintWriter out) {
+	private static void exportSequences(Database database, PrintWriter out) {
 		List<DBSequence> sequences = database.getSequences(true);
 		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(
 			database.getDatabaseProductName(), database.getDatabaseProductVersion());
@@ -77,7 +78,7 @@ public class CreateExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private void exportTables(Database database, PrintWriter out) {
+	private static void exportTables(Database database, PrintWriter out) {
 		List<DBTable> tables = DBUtil.dependencyOrderedTables(database);
 		for (DBTable table : tables) {
 			SQLUtil.renderCreateTable(table, false, NameSpec.IF_REPRODUCIBLE, out);
@@ -86,12 +87,12 @@ public class CreateExporter implements DBMetaDataExporter {
 		}
     }
 
-	private void exportForeignKeys(Database database, PrintWriter out) {
+	private static void exportForeignKeys(Database database, PrintWriter out) {
 		for (DBTable table : database.getTables())
 			exportForeignKeys(table, out);
     }
 
-	private void exportForeignKeys(DBTable table, PrintWriter out) {
+	private static void exportForeignKeys(DBTable table, PrintWriter out) {
 		Set<DBForeignKeyConstraint> fks = table.getForeignKeyConstraints();
 		for (DBForeignKeyConstraint fk : fks) {
 			SQLUtil.renderAddForeignKey(fk, NameSpec.IF_REPRODUCIBLE, out);

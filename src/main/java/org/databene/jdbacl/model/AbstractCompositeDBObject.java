@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -45,6 +45,7 @@ public abstract class AbstractCompositeDBObject<C extends DBObject> extends Abst
     	super(name, type, owner);
     }
 
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

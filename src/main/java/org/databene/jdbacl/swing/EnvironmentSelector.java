@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -60,18 +60,22 @@ public class EnvironmentSelector extends JComboBox {
 			environments = DBUtil.getEnvironmentNames(); 
 		}
 
+		@Override
 		public Object getElementAt(int index) {
 			return environments[index];
 		}
 
+		@Override
 		public int getSize() {
 			return environments.length;
 		}
 
+		@Override
 		public Object getSelectedItem() {
 			return selectedItem;
 		}
 
+		@Override
 		public void setSelectedItem(Object item) {
 			this.selectedItem = (String) item;
 		}

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -60,6 +60,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
 		this.rootDirectory = rootDirectory;
 	}
 
+	@Override
 	public void export(Database database) throws IOException, SQLException {
 		FileUtil.ensureDirectoryExists(rootDirectory);
 		exportColumns(database);
@@ -180,7 +181,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private String renderChangeRule(FKChangeRule rule) {
+	private static String renderChangeRule(FKChangeRule rule) {
 		switch (rule) {
 			case NO_ACTION   : return "";
 			case CASCADE     : return "CASCADE";
@@ -264,7 +265,7 @@ public class CSVModelExporter implements DBMetaDataExporter {
 		}
 	}
 
-	private PrintWriter createPrintWriter(File file) throws IOException {
+	private static PrintWriter createPrintWriter(File file) throws IOException {
 		return new PrintWriter(new BufferedWriter(new FileWriter(file)));
 	}
 

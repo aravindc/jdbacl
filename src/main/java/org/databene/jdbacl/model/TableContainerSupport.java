@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2011-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -57,11 +57,13 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
     
     // table operations ------------------------------------------------------------------------------------------------
 
-    public List<DBTable> getTables() {
+    @Override
+	public List<DBTable> getTables() {
         return getTables(false);
     }
 
-    public List<DBTable> getTables(boolean recursive) {
+    @Override
+	public List<DBTable> getTables(boolean recursive) {
 		return getTables(recursive, new ArrayList<DBTable>());
     }
 
@@ -73,7 +75,8 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
 		return result;
     }
 
-    public DBTable getTable(String tableName) {
+    @Override
+	public DBTable getTable(String tableName) {
         return tables.get(tableName);
     }
 
@@ -91,6 +94,7 @@ public class TableContainerSupport implements TableHolder, SequenceHolder {
     	this.sequences.put(sequence.getName(), sequence);
     }
     
+	@Override
 	public List<DBSequence> getSequences(boolean recursive) {
 		return getSequences(recursive, new ArrayList<DBSequence>());
 	}

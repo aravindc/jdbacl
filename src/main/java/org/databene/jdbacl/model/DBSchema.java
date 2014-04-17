@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2006-2012 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2006-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -66,7 +66,8 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
     // properties ------------------------------------------------------------------------------------------------------
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 
@@ -86,21 +87,25 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
 
     // CompositeDBObject implementation --------------------------------------------------------------------------------
 
+	@Override
 	public List<DBObject> getComponents() {
 		return components;
 	}
 	
     // table operations ------------------------------------------------------------------------------------------------
 
-    public List<DBTable> getTables() {
+    @Override
+	public List<DBTable> getTables() {
 		return tables.values();
     }
 
+	@Override
 	public List<DBTable> getTables(boolean recursive) {
 		return getTables();
 	}
 	
-    public DBTable getTable(String tableName) {
+    @Override
+	public DBTable getTable(String tableName) {
         return tables.get(tableName);
     }
 
@@ -116,6 +121,7 @@ public class DBSchema extends AbstractCompositeDBObject<DBObject> implements Tab
     
     // sequence operations ---------------------------------------------------------------------------------------------
 
+	@Override
 	public List<DBSequence> getSequences(boolean recursive) {
 		getDatabase().haveSequencesImported();
 		return sequences.values();

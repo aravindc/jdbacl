@@ -64,6 +64,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 		this.environment = environment;
 	}
 
+	@Override
 	public Database importDatabase() throws ConnectFailedException, ImportFailedException {
 		File file = getCacheFile();
 		long now = System.currentTimeMillis();
@@ -74,7 +75,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 			return importFreshData(file);
 	}
 
-	private long getTimeToLive() {
+	private static long getTimeToLive() {
 		String sysProp = System.getProperty(TIME_TO_LIVE_SYSPROP);
 		if (!StringUtil.isEmpty(sysProp)) {
 			long scale = 1;
@@ -88,6 +89,7 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 			return DEFAULT_TIME_TO_LIVE;
 	}
 
+	@Override
 	public void close() throws IOException {
 		if (realImporter instanceof Closeable)
 			((Closeable) realImporter).close();

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -74,7 +74,8 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 
 	// implementation --------------------------------------------------------------------------------------------------
 	
-    public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
+    @Override
+	public TabularIterator createNkPkIterator(Connection connection, String dbId, KeyMapper mapper, Database database) {
 		return new RecursiveIterator(connection, dbId, mapper, database);
     }
     
@@ -110,6 +111,7 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 	    	return new ConvertingIterator<ResultSet, Object>(rawIterator, converter);
 		}
 
+		@Override
 		public boolean hasNext() {
 			if (subNkPkIterator.hasNext())
 				return true;
@@ -120,21 +122,25 @@ public class SubNkPkQueryIdentity extends IdentityModel {
 	    	return (subNkPkIterator != null && subNkPkIterator.hasNext());
 	    }
 
-	    public Object[] next() {
+	    @Override
+		public Object[] next() {
 	    	Object[] result = (Object[]) subNkPkIterator.next();
 	    	result[0] = ownerNK + '|' + result[0];
 	    	return result;
 	    }
 
+		@Override
 		public String[] getColumnNames() {
 			return subNkPkIterator.getColumnNames();
 		}
 
-	    public void remove() {
+	    @Override
+		public void remove() {
 		    throw new UnsupportedOperationException(getClass() + " does not support removal");
 	    }
 
-	    public void close() {
+	    @Override
+		public void close() {
 	    	IOUtil.close(subNkPkIterator);
 		    IOUtil.close(ownerPkIterator);
 	    }
