@@ -6,12 +6,12 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.8.17-SNAPSHOT</version>
+    <version>0.8.17</version>
 
     <properties>
-    	<webdecs_version>0.8.2-SNAPSHOT</webdecs_version>
-    	<script_version>0.7.21-SNAPSHOT</script_version>
-    	<commons_version>0.5.32-SNAPSHOT</commons_version>
+    	<webdecs_version>0.8.3</webdecs_version>
+    	<script_version>0.7.21</script_version>
+    	<commons_version>0.5.32</commons_version>
     	<contiperf_version>2.3.2</contiperf_version>
     </properties>
 
