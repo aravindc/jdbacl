@@ -26,8 +26,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.databene.webdecs.DataIterator;
-import org.databene.webdecs.util.DataIteratorProxy;
+import org.databene.formats.DataIterator;
+import org.databene.formats.util.DataIteratorProxy;
 
 /**
  * {@link DataIterator} which provides the results of a SQL query.<br/><br/>

@@ -27,8 +27,8 @@ import java.sql.SQLException;
 
 import org.databene.commons.IOUtil;
 import org.databene.commons.StringUtil;
-import org.databene.webdecs.DataContainer;
-import org.databene.webdecs.DataIterator;
+import org.databene.formats.DataContainer;
+import org.databene.formats.DataIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -27,14 +27,14 @@ import org.databene.commons.CollectionUtil;
 import org.databene.commons.ConfigurationError;
 import org.databene.commons.StringUtil;
 import org.databene.commons.xml.XMLUtil;
+import org.databene.formats.xml.AbstractXMLElementParser;
+import org.databene.formats.xml.ParseContext;
 import org.databene.jdbacl.identity.IdentityModel;
 import org.databene.jdbacl.identity.IdentityProvider;
 import org.databene.jdbacl.identity.NaturalPkIdentity;
 import org.databene.jdbacl.identity.NkPkQueryIdentity;
 import org.databene.jdbacl.identity.SubNkPkQueryIdentity;
 import org.databene.jdbacl.identity.UniqueKeyIdentity;
-import org.databene.webdecs.xml.AbstractXMLElementParser;
-import org.databene.webdecs.xml.ParseContext;
 import org.w3c.dom.Element;
 
 /**

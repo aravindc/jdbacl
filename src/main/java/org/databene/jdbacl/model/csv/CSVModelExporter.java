@@ -30,7 +30,7 @@ import java.sql.SQLException;
 
 import org.databene.commons.FileUtil;
 import org.databene.commons.IOUtil;
-import org.databene.document.csv.CSVUtil;
+import org.databene.formats.csv.CSVUtil;
 import org.databene.jdbacl.SQLUtil;
 import org.databene.jdbacl.model.DBCheckConstraint;
 import org.databene.jdbacl.model.DBColumn;
