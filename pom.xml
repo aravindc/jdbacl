@@ -6,12 +6,12 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>0.8.18</version>
+    <version>1.0.0-EA1</version>
 
     <properties>
-    	<webdecs_version>0.8.4</webdecs_version>
-    	<script_version>0.7.22</script_version>
-    	<commons_version>0.5.33</commons_version>
+    	<formats_version>1.0.0-EA1</formats_version>
+    	<script_version>1.0.0-EA1</script_version>
+    	<commons_version>1.0.0-EA1</commons_version>
     	<contiperf_version>2.3.2</contiperf_version>
     </properties>
 
@@ -71,8 +71,8 @@
         </dependency>
         <dependency>
             <groupId>org.databene</groupId>
-            <artifactId>databene-webdecs</artifactId>
-            <version>${webdecs_version}</version>
+            <artifactId>databene-formats</artifactId>
+            <version>${formats_version}</version>
         </dependency>
         <dependency>
             <groupId>org.databene</groupId>
@@ -222,6 +222,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <source>1.6</source>
@@ -231,6 +232,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -242,7 +244,9 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
                 <configuration>
                     <descriptors>
                         <descriptor>src/main/assembly/dist-assembly.xml</descriptor>
@@ -252,6 +256,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.3</version>
                 <executions>
                     <execution>
                         <goals>
@@ -263,7 +268,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
@@ -271,11 +276,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.6.1</version>
+				<version>2.9.1</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 				</configuration>
-				<!--  
 				<executions>
 					<execution>
 						<goals>
@@ -284,7 +288,6 @@
 						</goals>
 					</execution>
 				</executions>
-				-->
 			</plugin>
         </plugins>
     </build>
