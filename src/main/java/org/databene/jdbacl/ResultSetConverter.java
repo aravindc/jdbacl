@@ -58,7 +58,8 @@ public class ResultSetConverter<E> extends UnsafeConverter<ResultSet, E> {
     
     // Converter interface ---------------------------------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
+    @Override
+	@SuppressWarnings("unchecked")
     public E convert(ResultSet resultSet) throws ConversionException {
         Object[] tmp = convertToArray(resultSet);
         if (targetType.isArray())

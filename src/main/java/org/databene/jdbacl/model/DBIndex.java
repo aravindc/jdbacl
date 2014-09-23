@@ -55,14 +55,16 @@ public abstract class DBIndex extends AbstractDBTableComponent implements MultiC
 
     public abstract boolean isUnique();
     
-    public abstract String[] getColumnNames();
+    @Override
+	public abstract String[] getColumnNames();
     
     public abstract void addColumnName(String columnName);
     
     
     // properties ------------------------------------------------------------------------------------------------------
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 

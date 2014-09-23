@@ -66,6 +66,7 @@ public abstract class IdentityModel implements Named {
 		return tableName;
 	}
 
+	@Override
 	public String getName() {
 		return tableName;
 	}

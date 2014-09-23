@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010-2011 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -39,11 +39,13 @@ public abstract class AbstractDBTableComponent extends AbstractDBObject implemen
 		super(name, type, owner);
 	}
 
-    public DBTable getTable() {
+    @Override
+	public DBTable getTable() {
         return (DBTable) getOwner();
     }
 
-    public void setTable(DBTable table) {
+    @Override
+	public void setTable(DBTable table) {
         setOwner(table);
     }
 

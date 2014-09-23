@@ -81,6 +81,7 @@ public class DatabasePane extends JPanel {
 		public Importer(String environment) {
 			this.environment = environment;
 		}
+		@Override
 		public void run() {
 			try {
 				Database database = JDBCMetaDataUtil.getMetaData(environment, true, true, true, true, 
@@ -88,6 +89,7 @@ public class DatabasePane extends JPanel {
 				DatabasePane.this.importer = importer;
 				final TreeModel model = new SwingTreeModelAdapter<DBObject>(new DatabaseTreeModel(database));
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						tree = new DatabaseTree(model);
 						scrollPane.setViewportView(tree);

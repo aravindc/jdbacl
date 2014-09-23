@@ -40,6 +40,7 @@ public class LikeExpression extends BinaryExpression<Boolean> {
 		super(value, pattern);
 	}
 
+	@Override
 	public Boolean evaluate(Context context) {
 		String value = ToStringConverter.convert(term1.evaluate(context), null);
 		String pattern = ToStringConverter.convert(term2.evaluate(context), null);

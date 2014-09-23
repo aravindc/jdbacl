@@ -80,12 +80,12 @@ public class IdentityParser extends AbstractXMLElementParser<Object> {
 	
 	// private helpers -------------------------------------------------------------------------------------------------
 
-	private IdentityModel parseNkPkQuery(Element element, String tableName) {
+	private static IdentityModel parseNkPkQuery(Element element, String tableName) {
 	    String nkPkQuery = XMLUtil.getWholeText(element);
 	    return new NkPkQueryIdentity(tableName, nkPkQuery);
     }
 
-	private IdentityModel parseNaturalPk(Element element, String tableName) {
+	private static IdentityModel parseNaturalPk(Element element, String tableName) {
 		return new NaturalPkIdentity(tableName);
     }
 

@@ -27,6 +27,7 @@ import java.io.File;
 import java.sql.Connection;
 
 import org.databene.commons.FileUtil;
+import org.databene.commons.IOUtil;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.Database;
@@ -59,23 +60,24 @@ public class CachingDBImporterTest {
 		Connection connection = DBUtil.connect(ENVIRONMENT, false);
 		DBUtil.executeUpdate("create table " + TEST_TABLE_NAME + " ( id int, primary key (id))", connection);
 		JDBCDBImporter realImporter = new JDBCDBImporter(ENVIRONMENT);
-		CachingDBImporter importer = new CachingDBImporter(realImporter, ENVIRONMENT);
-		File cacheFile = importer.getCacheFile();
-		FileUtil.deleteIfExists(cacheFile);
-		
-		// when importing the database without accessing the indexes...
-		Database db1 = importer.importDatabase();
-		DBTable table1 = db1.getTable(TEST_TABLE_NAME);
-		
-		// ...then the indexes shall not be fetched
-		assertFalse(table1.areIndexesImported());
-		
-		// when requesting meta data a second time...
-		Database db2 = importer.importDatabase();
-		DBTable table2 = db2.getTable(TEST_TABLE_NAME);
-		
-		// then the cache must be able to fetch the missing information dynamically
-		assertEquals(1, table2.getIndexes().size());
+		CachingDBImporter importer = null;
+		try {
+			importer = new CachingDBImporter(realImporter, ENVIRONMENT);
+			File cacheFile = importer.getCacheFile();
+			FileUtil.deleteIfExists(cacheFile);
+			// when importing the database without accessing the indexes...
+			Database db1 = importer.importDatabase();
+			DBTable table1 = db1.getTable(TEST_TABLE_NAME);
+			// ...then the indexes shall not be fetched
+			assertFalse(table1.areIndexesImported());
+			// when requesting meta data a second time...
+			Database db2 = importer.importDatabase();
+			DBTable table2 = db2.getTable(TEST_TABLE_NAME);
+			// then the cache must be able to fetch the missing information dynamically
+			assertEquals(1, table2.getIndexes().size());
+		} finally {
+			IOUtil.close(importer);
+		}
 	}
 	
 }

@@ -50,9 +50,10 @@ public class DatabaseDialectManagerTest {
 		check("HSQLDB", "2.9",   HSQL2Dialect.class);
 	}
 
-	private void check(String product, String version, Class<? extends DatabaseDialect> expectedClass) {
+	private static void check(String product, String version, Class<? extends DatabaseDialect> expectedClass) {
 		VersionNumber versionNumber = VersionNumber.valueOf(version);
 		DatabaseDialect dialect = DatabaseDialectManager.getDialectForProduct(product, versionNumber);
 		assertEquals(expectedClass, dialect.getClass());
 	}
+
 }

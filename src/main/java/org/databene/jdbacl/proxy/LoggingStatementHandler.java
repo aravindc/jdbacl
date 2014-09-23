@@ -90,6 +90,7 @@ public class LoggingStatementHandler implements InvocationHandler {
 	
 	// InvocationHandler interface implementation ----------------------------------------------------------------------
 
+	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
 		try {
@@ -216,7 +217,7 @@ public class LoggingStatementHandler implements InvocationHandler {
 
 	// private helpers -------------------------------------------------------------------------------------------------
 	
-	private void logAll(String method, String sql) {
+	private static void logAll(String method, String sql) {
 		if (jdbcLogger.isDebugEnabled())
 			jdbcLogger.debug(method + ": " + sql);
 		sqlLogger.debug(sql);

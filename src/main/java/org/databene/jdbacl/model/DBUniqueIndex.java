@@ -69,6 +69,7 @@ public class DBUniqueIndex extends DBIndex {
 			constraint.addColumnName(columnName);
 	}
     
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

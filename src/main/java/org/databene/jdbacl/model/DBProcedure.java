@@ -64,6 +64,7 @@ public class DBProcedure extends AbstractDBObject {
 		this.overload = overload;
 	}
 
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

@@ -195,6 +195,7 @@ public class DBTrigger extends AbstractDBObject implements ContainerComponent {
 	/**
 	 * ignores description
 	 */
+	@Override
 	public boolean isIdentical(DBObject object) {
 		if (!(object instanceof DBTrigger))
 			return false;

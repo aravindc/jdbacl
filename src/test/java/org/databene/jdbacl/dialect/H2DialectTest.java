@@ -190,7 +190,7 @@ public class H2DialectTest extends DatabaseDialectTest<H2Dialect> {
 		}
 	}
 
-	private void createAndFillSimpleTable(Connection connection, String tableName) throws SQLException {
+	private static void createAndFillSimpleTable(Connection connection, String tableName) throws SQLException {
 		DBUtil.executeUpdate("create table " + tableName + " ( x int )", connection);
 		for (int i = 0; i < 10; i++)
 			DBUtil.executeUpdate("insert into " + tableName + " values (" + i + ")", connection);

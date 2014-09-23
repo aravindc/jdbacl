@@ -95,7 +95,8 @@ public class MemKeyMapper extends KeyMapper {
 					targetDBMapper.getDbId());
 	}
 	
-    public void registerSource(String sourceDbId, Connection connection) {
+    @Override
+	public void registerSource(String sourceDbId, Connection connection) {
 	    SourceDatabaseMapper mapper = sourceDBMappers.get(sourceDbId);
 	    if (mapper == null) {
 	    	mapper = new SourceDatabaseMapper(this, connection, sourceDbId, database);

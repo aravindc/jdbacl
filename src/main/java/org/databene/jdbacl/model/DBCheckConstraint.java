@@ -64,6 +64,7 @@ public class DBCheckConstraint extends DBConstraint {
 		return tableName;
 	}
 	
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

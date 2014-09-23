@@ -54,7 +54,8 @@ public class DBNotNullConstraint extends DBConstraint {
         return new String[] { columnName };
     }
 
-    public boolean isIdentical(DBObject other) {
+    @Override
+	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;
 		if (other == null || !(other instanceof DBNotNullConstraint))

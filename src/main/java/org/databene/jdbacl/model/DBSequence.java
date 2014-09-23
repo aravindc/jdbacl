@@ -156,6 +156,7 @@ public class DBSequence extends AbstractDBObject implements ContainerComponent {
 		this.lastNumber = lastNumber;
 	}
 	
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

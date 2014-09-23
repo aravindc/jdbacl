@@ -75,6 +75,7 @@ public class SqlServerDialect extends DatabaseDialect {
 		return !randomNamePattern.matcher(indexName).matches();
 	}
 
+	@Override
 	public String renderCase(String columnName, String elseExpression, String... whenThenExpressionPairs) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(columnName).append(" = "); // applying column name

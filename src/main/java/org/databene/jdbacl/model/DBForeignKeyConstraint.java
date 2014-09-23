@@ -103,6 +103,7 @@ public class DBForeignKeyConstraint extends DBConstraint implements MultiColumnO
 		return refereeColumnNames;
     }
     
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

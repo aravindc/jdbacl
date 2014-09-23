@@ -183,7 +183,7 @@ public class JdbaclGUI extends JFrame implements JavaApplication {
 
 	@Override
 	public String iconPath() {
-		return null; // TODO
+		return null;
 	}
 
 	@Override

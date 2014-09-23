@@ -184,7 +184,8 @@ public class DBDataType implements Named, Serializable {
 
 // properties ------------------------------------------------------------------------------------------------------
 
-    public String getName() {
+    @Override
+	public String getName() {
         return name;
     }
 

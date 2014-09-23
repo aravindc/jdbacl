@@ -90,6 +90,7 @@ public class LoggingPreparedStatementHandler implements InvocationHandler {
 			openStatementMonitor.register(this);
 	}
 
+	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
 		try {

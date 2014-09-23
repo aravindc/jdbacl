@@ -103,6 +103,7 @@ public class DBUtil {
     public static String[] getEnvironmentNames() {
 		File databeneFolder = new File(SystemInfo.getUserHome(), "databene");
 		String[] fileNames = databeneFolder.list(new FilenameFilter() {
+			@Override
 			public boolean accept(File dir, String name) {
 				return (name.toLowerCase().endsWith(".env.properties"));
 			}

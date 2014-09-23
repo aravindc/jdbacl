@@ -627,7 +627,7 @@ public class JDBCDBImporter implements DBMetaDataImporter {
         watch.stop();
      }
 
-	private FKChangeRule parseRule(short rule) {
+	private static FKChangeRule parseRule(short rule) {
 		switch (rule) {
 			case DatabaseMetaData.importedKeyNoAction:   return FKChangeRule.NO_ACTION;
 			case DatabaseMetaData.importedKeyCascade:    return FKChangeRule.CASCADE;

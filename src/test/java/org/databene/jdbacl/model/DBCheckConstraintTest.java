@@ -48,7 +48,7 @@ public class DBCheckConstraintTest {
 		check("col1=1 and (col2 IS not null and (col3 is not null or col3 is not null or col4 is not null)) or col5=0", "col1", "col2", "col3", "col4", "col5"); 
 	}
 	
-	private void check(String condition, String... expectedColumnNames) {
+	private static void check(String condition, String... expectedColumnNames) {
 		DBCheckConstraint constraint = new DBCheckConstraint("ck", false, "tbl", condition);
 		Set<String> expectedSet = CollectionUtil.toSet(expectedColumnNames);
 		Set<String> actualSet = CollectionUtil.toSet(constraint.getColumnNames());

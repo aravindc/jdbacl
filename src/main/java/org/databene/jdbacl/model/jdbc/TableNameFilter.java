@@ -41,6 +41,7 @@ public class TableNameFilter implements Filter<String> {
 		this.tableExclusionPattern = (tableExclusionPattern != null ? Pattern.compile(tableExclusionPattern) : null);
 	}
 
+	@Override
 	public boolean accept(String tableName) {
 		if (tableName.contains("$") || (tableExclusionPattern != null && tableExclusionPattern.matcher(tableName).matches()))
 			return false;

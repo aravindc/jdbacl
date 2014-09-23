@@ -28,5 +28,5 @@ package org.databene.jdbacl.model;
  * @author Volker Bergmann
  */
 public interface ContainerComponent extends DBObject {
-
+	// empty marker interface
 }

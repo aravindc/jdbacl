@@ -85,6 +85,7 @@ public class UniqueKeyIdentity extends IdentityModel {
 			this.pkColumnNames = columnNames;
 		}
 
+		@Override
 		public String[] getColumnNames() {
 			String[] labels = new String[1 + pkColumnNames.length];
 			labels[0] = "NK";
@@ -106,6 +107,7 @@ public class UniqueKeyIdentity extends IdentityModel {
 			this.mapper = mapper;
 		}
 
+		@Override
 		public Object[] convert(Object[] raw) {
 			NKBuilder nkBuilder = new NKBuilder();
 			for (int i = 0; i < columnNames.length; i++) {

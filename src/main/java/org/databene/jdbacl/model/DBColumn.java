@@ -223,6 +223,7 @@ public class DBColumn extends AbstractDBTableComponent {
         return builder.toString();
     }
 
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

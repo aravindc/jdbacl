@@ -59,12 +59,12 @@ public class VersionInfoTest {
 		System.out.println("using commons " + commonsVersion);
 	}
 
-	private VersionInfo getVersionInfo() {
+	private static VersionInfo getVersionInfo() {
 		VersionInfo version = VersionInfo.getInfo("jdbacl");
 		return version;
 	}
 
-	private void checkVersionNumber(String versionNumber) {
+	private static void checkVersionNumber(String versionNumber) {
 		assertFalse("version number is empty", versionNumber == null || versionNumber.length() == 0);
 		assertFalse("version number was not substituted", versionNumber.startsWith("${"));
 	}

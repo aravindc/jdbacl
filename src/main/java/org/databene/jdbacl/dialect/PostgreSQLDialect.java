@@ -77,7 +77,8 @@ public class PostgreSQLDialect extends DatabaseDialect {
     	return result;
     }
     
-    public DBSequence[] querySequences(Connection connection) throws SQLException {
+    @Override
+	public DBSequence[] querySequences(Connection connection) throws SQLException {
     	// query sequence names
     	List<Object[]> rows = DBUtil.query("select relname from pg_class where relkind = 'S'", connection);
     	ArrayBuilder<DBSequence> builder = new ArrayBuilder<DBSequence>(DBSequence.class, rows.size());

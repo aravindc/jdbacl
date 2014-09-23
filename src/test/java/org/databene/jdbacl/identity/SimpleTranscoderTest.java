@@ -74,12 +74,12 @@ public class SimpleTranscoderTest extends AbstractIdentityTest {
 		checkState(1001, "DX", "BY", state);
 	}
 
-	private void checkCountry(String code, String name, DBRow country) {
+	private static void checkCountry(String code, String name, DBRow country) {
 		assertEquals(code, country.getCellValue("code"));
 		assertEquals(name, country.getCellValue("name"));
 	}
 	
-	private void checkState(int id, String countryCode, String stateCode, DBRow state) {
+	private static void checkState(int id, String countryCode, String stateCode, DBRow state) {
 		assertEquals(id, state.getCellValue("id"));
 		assertEquals(countryCode, state.getCellValue("country"));
 		assertEquals(stateCode, state.getCellValue("code"));

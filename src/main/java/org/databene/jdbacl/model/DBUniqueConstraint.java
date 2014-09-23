@@ -66,6 +66,7 @@ public class DBUniqueConstraint extends DBConstraint implements MultiColumnObjec
 			columnNames = ArrayUtil.append(columnName, columnNames);
 	}
 	
+	@Override
 	public boolean isIdentical(DBObject other) {
 		if (this == other)
 			return true;

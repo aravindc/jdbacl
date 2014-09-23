@@ -66,7 +66,7 @@ public class GlobalRowId {
 	    return schemaId + '.' + tableName + '#' + renderPK(pk);
 	}
 
-	private String renderPK(Object pk) {
+	private static String renderPK(Object pk) {
 		if (pk.getClass().isArray())
 			return ArrayFormat.format((Object[]) pk);
 		else

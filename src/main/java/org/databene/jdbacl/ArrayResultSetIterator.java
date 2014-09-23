@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2010 by Volker Bergmann. All rights reserved.
+ * (c) Copyright 2010-2014 by Volker Bergmann. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted under the terms of the
@@ -39,6 +39,7 @@ public class ArrayResultSetIterator extends ConvertingIterator<ResultSet, Object
 	    super(new QueryIterator(query, connection, 500), new ResultSetConverter<Object[]>(Object[].class, false));
     }
 
+	@Override
 	public String[] getColumnNames() {
 		return ((QueryIterator) source).getColumnLabels();
 	}
