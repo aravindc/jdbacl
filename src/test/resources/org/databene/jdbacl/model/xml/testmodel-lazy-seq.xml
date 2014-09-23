@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <database environment="org/databene/jdbacl/model/hsqlmem" databaseProductName="hsql" databaseProductVersion="1.5.8" importDate="2011-10-21 16:50:38" user="Alice" tableInclusionPattern="MY_.*" tableExclusionPattern=".*_JN" checksImported="false" sequencesImported="false" triggersImported="false" packagesImported="false">
   <catalog>
     <schema name="public">
