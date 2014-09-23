@@ -6,13 +6,13 @@
 
     <groupId>org.databene</groupId>
     <artifactId>jdbacl</artifactId>
-    <version>1.0.0-EA1</version>
+    <version>0.8.19-EA1</version>
 
     <properties>
     	<formats_version>1.0.0-EA1</formats_version>
     	<script_version>1.0.0-EA1</script_version>
     	<commons_version>1.0.0-EA1</commons_version>
-    	<contiperf_version>2.3.2</contiperf_version>
+    	<contiperf_version>2.3.3</contiperf_version>
     </properties>
 
     <packaging>jar</packaging>
