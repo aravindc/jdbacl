@@ -5,25 +5,25 @@
 
 	<groupId>org.databene</groupId>
 	<artifactId>jdbacl</artifactId>
-	<version>0.8.19-EA2</version>
-
-	<properties>
-		<formats_version>1.0.0-EA2</formats_version>
-		<script_version>1.0.0-EA2</script_version>
-		<commons_version>1.0.0-EA2</commons_version>
-		<contiperf_version>2.3.4-EA2</contiperf_version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
-
+	<version>0.8.19</version>
 	<packaging>jar</packaging>
-	<name>databene jdbacl</name>
-	<url>http://databene.org/jdbacl</url>
-	<inceptionYear>2006</inceptionYear>
+
+
+	<name>Databene jdbacl</name>
 	<description>
     	'jdbacl' stands for 'Java DataBase ACcess Layer' and provides utilities for accessing JDBC databases from
     	Java programs, retrieving meta information in an object model and querying database data.
     </description>
+	<url>http://databene.org/jdbacl</url>
+	<inceptionYear>2006</inceptionYear>
+
+	<properties>
+		<formats_version>1.0.0</formats_version>
+		<script_version>1.0.0</script_version>
+		<contiperf_version>2.3.4</contiperf_version>
+		<commons_version>1.0.0</commons_version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<licenses>
 		<license>
@@ -72,7 +72,7 @@
 
 	<dependencies>
 
-		<!-- databene dependencies -->
+		<!-- Databene dependencies -->
 		<dependency>
 			<groupId>org.databene</groupId>
 			<artifactId>databene-commons</artifactId>
@@ -104,7 +104,14 @@
 			<version>3.3</version>
 		</dependency>
 
-		<!-- databases -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+
+		<!-- Test dependencies -->
+		<!-- databases (for testing) -->
 		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
@@ -134,13 +141,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>cubrid</groupId>
-			<artifactId>cubrid-jdbc</artifactId>
-			<version>8.4.1.2032</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>net.sf.squirrel-sql.thirdparty-non-maven</groupId>
 			<artifactId>jaybird</artifactId>
 			<version>2.1.6</version>
@@ -154,13 +154,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-
-		<!-- Test dependencies -->
+		<!-- other (for testing) -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -185,14 +179,6 @@
 	</dependencies>
 
 	<build>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ftp</artifactId>
-				<version>1.0-alpha-6</version>
-			</extension>
-		</extensions>
 
 		<resources>
 			<resource>
@@ -231,6 +217,7 @@
 		</testResources>
 
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -238,21 +225,6 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.databene.jdbacl.swing.JdbaclGUI</mainClass>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-						</manifest>
-					</archive>
 				</configuration>
 			</plugin>
 
@@ -277,6 +249,21 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.4</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>org.databene.jdbacl.swing.JdbaclGUI</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 
 		</plugins>
@@ -380,10 +367,13 @@
 	</profiles>
 
 	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
 		<repository>
-			<id>databene.repo</id>
-			<name>Databene Internal Repository</name>
-			<url>ftp://databene.org</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 
