@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Tests the {@link HSQL2Dialect}.<br/><br/>
+ * Tests the {@link HSQL2Dialect}.<br><br>
  * Created: 20.10.2011 21:01:00
  * @since 0.6.12
  * @author Volker Bergmann

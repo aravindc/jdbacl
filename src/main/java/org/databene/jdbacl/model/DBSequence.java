@@ -26,7 +26,7 @@ import java.math.BigInteger;
 import org.databene.commons.NullSafeComparator;
 
 /**
- * Represents a database sequence.<br/><br/>
+ * Represents a database sequence.<br><br>
  * Created: 31.05.2011 17:55:05
  * @since 0.6.8
  * @author Volker Bergmann

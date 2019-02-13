@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Tests the {@link DerbyDialect}.<br/><br/>
+ * Tests the {@link DerbyDialect}.<br><br>
  * Created: 09.04.2010 07:42:57
  * @since 0.6.0
  * @author Volker Bergmann

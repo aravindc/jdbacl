@@ -28,7 +28,7 @@ import java.util.List;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * Helper implementation for {@link TableHolder} and {@link SequenceHolder}.<br/><br/>
+ * Helper implementation for {@link TableHolder} and {@link SequenceHolder}.<br><br>
  * Created: 30.05.2011 09:34:30
  * @since 0.6.8
  * @author Volker Bergmann

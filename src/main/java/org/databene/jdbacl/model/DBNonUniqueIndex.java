@@ -32,7 +32,7 @@ import org.databene.commons.ArrayUtil;
 import org.databene.commons.NullSafeComparator;
 
 /**
- * Represents a non-unique database index.<br/><br/>
+ * Represents a non-unique database index.<br><br>
  * Created: 11.01.2007 00:32:53
  * @author Volker Bergmann
  */

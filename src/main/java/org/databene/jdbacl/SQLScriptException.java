@@ -27,8 +27,8 @@
 package org.databene.jdbacl;
 
 /**
- * Indicates an error in the execution of a SQL script.<br/>
- * <br/>
+ * Indicates an error in the execution of a SQL script.<br>
+ * <br>
  * Created at 31.07.2008 19:37:20
  * @since 0.4.5
  * @author Volker Bergmann

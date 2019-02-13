@@ -28,7 +28,7 @@ import javax.swing.JComboBox;
 import org.databene.jdbacl.DBUtil;
 
 /**
- * {@link JComboBox} which recognizes the configured environments and lets the user choose one.<br/><br/>
+ * {@link JComboBox} which recognizes the configured environments and lets the user choose one.<br><br>
  * Created: 06.11.2011 19:26:37
  * @since 0.7.0
  * @author Volker Bergmann

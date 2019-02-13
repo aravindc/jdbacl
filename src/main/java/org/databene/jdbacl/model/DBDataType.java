@@ -35,7 +35,7 @@ import org.databene.commons.CollectionUtil;
 import org.databene.commons.Named;
 
 /**
- * Represents a database column type.<br/><br/>
+ * Represents a database column type.<br><br>
  * Created: 06.01.2007 10:12:29
  * @author Volker Bergmann
  */

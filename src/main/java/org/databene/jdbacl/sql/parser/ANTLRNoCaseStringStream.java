@@ -27,7 +27,7 @@ import org.antlr.runtime.CharStream;
 
 /**
  * Helper class which provides the content of a string as {@link ANTLRInputStream} 
- * while transforming token characters to upper case.<br/><br/>
+ * while transforming token characters to upper case.<br><br>
  * Created: 07.06.2011 20:04:29
  * @since 0.1
  * @author Volker Bergmann

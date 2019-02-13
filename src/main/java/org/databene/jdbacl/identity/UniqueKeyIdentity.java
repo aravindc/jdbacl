@@ -33,7 +33,7 @@ import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
- * {@link IdentityModel} implementation based on a unique-key-constraint.<br/><br/>
+ * {@link IdentityModel} implementation based on a unique-key-constraint.<br><br>
  * Created: 06.12.2010 09:10:05
  * @since 0.6.4
  * @author Volker Bergmann

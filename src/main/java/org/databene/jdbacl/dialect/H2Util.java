@@ -28,7 +28,7 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.DBUtil;
 
 /**
- * Provides utility methods for the H2 database.<br/><br/>
+ * Provides utility methods for the H2 database.<br><br>
  * Created: 21.10.2011 20:40:23
  * @since 0.6.13
  * @author Volker Bergmann

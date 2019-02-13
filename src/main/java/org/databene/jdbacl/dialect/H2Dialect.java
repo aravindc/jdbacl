@@ -35,7 +35,7 @@ import org.databene.jdbacl.sql.Query;
 
 /**
  * {@link DatabaseDialect} implementation for the H2 database.
- * See <a href="http://www.h2database.com/html/grammar.html">H2 SQL grammar</a><br/><br/>
+ * See <a href="http://www.h2database.com/html/grammar.html">H2 SQL grammar</a><br><br>
  * Created: 28.03.2010 07:54:19
  * @since 0.6.0
  * @author Volker Bergmann

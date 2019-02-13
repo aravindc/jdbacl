@@ -36,7 +36,7 @@ import org.databene.jdbacl.sql.Query;
 import org.junit.Test;
 
 /**
- * Tests the {@link HSQLDialect}.<br/><br/>
+ * Tests the {@link HSQLDialect}.<br><br>
  * Created: 10.11.2009 18:55:15
  * @since 0.6.0
  * @author Volker Bergmann

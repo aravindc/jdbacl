@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a database container which may contain tables or other containers.<br/><br/>
+ * Represents a database container which may contain tables or other containers.<br><br>
  * Created: 05.12.2010 11:06:48
  * @since 0.6.4
  * @author Volker Bergmann

@@ -30,7 +30,7 @@ import org.databene.commons.Assert;
 import org.databene.commons.NullSafeComparator;
 
 /**
- * Represents a database not-null constraint.<br/><br/>
+ * Represents a database not-null constraint.<br><br>
  * Created: 06.01.2007 09:00:49
  * @author Volker Bergmann
  */

@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Tests the {@link SqlServerDialect}.<br/><br/>
+ * Tests the {@link SqlServerDialect}.<br><br>
  * Created: 09.04.2010 07:51:17
  * @since 0.6.0
  * @author Volker Bergmann

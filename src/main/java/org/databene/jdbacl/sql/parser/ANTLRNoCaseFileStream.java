@@ -30,7 +30,7 @@ import org.databene.commons.IOUtil;
 
 /**
  * Helper class which provides the content of a file as {@link ANTLRInputStream} 
- * while transforming token characters to upper case.<br/><br/>
+ * while transforming token characters to upper case.<br><br>
  * Created: 10.08.2010 15:44:57
  * @since 0.1
  * @author Volker Bergmann

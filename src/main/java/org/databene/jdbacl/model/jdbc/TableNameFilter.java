@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import org.databene.commons.Filter;
 
 /**
- * Filters.<br/><br/>
+ * Filters.<br><br>
  * Created: 29.01.2012 22:08:43
  * @since 0.8.0
  * @author Volker Bergmann

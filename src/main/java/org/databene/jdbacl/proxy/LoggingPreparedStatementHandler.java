@@ -48,8 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides database related utility methods.<br/>
- * <br/>
+ * Provides database related utility methods.<br>
+ * <br>
  * Created: 28.06.2007 12:30:02
  * @author Volker Bergmann
  */

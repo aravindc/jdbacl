@@ -33,7 +33,7 @@ import java.util.List;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * Represents a JDBC database schema.<br/><br/>
+ * Represents a JDBC database schema.<br><br>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */

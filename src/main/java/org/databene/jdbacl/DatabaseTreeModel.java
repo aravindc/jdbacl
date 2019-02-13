@@ -29,7 +29,7 @@ import org.databene.jdbacl.model.DBObject;
 import org.databene.jdbacl.model.Database;
 
 /**
- * {@link TreeModel} adapter for DBObject hierarchies.<br/><br/>
+ * {@link TreeModel} adapter for DBObject hierarchies.<br><br>
  * Created: 02.12.2010 06:56:28
  * @since 0.6.4
  * @author Volker Bergmann

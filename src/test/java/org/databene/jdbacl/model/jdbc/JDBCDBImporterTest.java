@@ -35,7 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the {@link JDBCDBImporter}.<br/><br/>
+ * Tests the {@link JDBCDBImporter}.<br><br>
  * Created: 31.01.2012 12:32:56
  * @since 0.8.0
  * @author Volker Bergmann

@@ -23,7 +23,7 @@ package org.databene.jdbacl;
 
 /**
  * Wrapper class for database results which tracks the information 
- * if the according command changed the database structure.<br/><br/>
+ * if the according command changed the database structure.<br><br>
  * Created: 21.04.2011 10:15:25
  * @since 0.6.8
  * @author Volker Bergmann

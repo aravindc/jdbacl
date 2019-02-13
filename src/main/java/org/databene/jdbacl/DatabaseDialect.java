@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides abstractions of concepts that are implemented differently 
- * by different database vendors.<br/><br/>
+ * by different database vendors.<br><br>
  * @since 0.4.0
  * @author Volker Bergmann
  */

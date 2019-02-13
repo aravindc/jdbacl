@@ -33,7 +33,7 @@ import org.databene.jdbacl.SQLUtil;
  * 		[selectConditions] SELECT selections 
  * 		FROM tablesWithAliases [[LEFT | RIGHT | OUTER | INNER] JOIN joins]
  * 		[WHERE whereClause] [options]
- * <br/><br/>
+ * <br><br>
  * Created: 09.04.2012 10:16:54
  * @since 0.8.1
  * @author Volker Bergmann

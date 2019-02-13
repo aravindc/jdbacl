@@ -30,7 +30,7 @@ import org.databene.commons.ArrayFormat;
 import org.databene.commons.ArrayUtil;
 
 /**
- * Represents a database index.<br/><br/>
+ * Represents a database index.<br><br>
  * Created: 13.01.2007 23:40:52
  * @author Volker Bergmann
  */

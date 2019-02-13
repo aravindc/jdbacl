@@ -34,7 +34,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
- * Tests the {@link DatabaseDialect} for CUBRID.<br/><br/>
+ * Tests the {@link DatabaseDialect} for CUBRID.<br><br>
  * Created: 16.04.2012 11:26:57
  * @since 0.8.2
  * @author Volker Bergmann

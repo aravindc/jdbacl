@@ -22,7 +22,7 @@
 package org.databene.jdbacl.sql.parser;
 
 /**
- * Interface for ANTL streams that can provide a text representation of the text they represent.<br/><br/>
+ * Interface for ANTL streams that can provide a text representation of the text they represent.<br><br>
  * Created: 13.06.2011 18:44:25
  * @since 0.6.8
  * @author Volker Bergmann

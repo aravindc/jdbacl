@@ -32,7 +32,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * Implements generic database concepts for DB2<br/><br/>
+ * Implements generic database concepts for DB2<br><br>
  * Created: 26.01.2008 07:09:34
  * @since 0.4.0
  * @author Volker Bergmann

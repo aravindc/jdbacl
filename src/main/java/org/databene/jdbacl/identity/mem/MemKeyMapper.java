@@ -32,7 +32,7 @@ import org.databene.jdbacl.identity.KeyMapper;
 import org.databene.jdbacl.model.Database;
 
 /**
- * In-memory implementation of a {@link KeyMapper}.<br/><br/>
+ * In-memory implementation of a {@link KeyMapper}.<br><br>
  * Created: 23.08.2010 16:55:53
  * @since 0.6.4
  * @author Volker Bergmann

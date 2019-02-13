@@ -39,8 +39,8 @@ import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * {@link DatabaseDialect} implementation for the Firebird database.<br/>
- * <br/>
+ * {@link DatabaseDialect} implementation for the Firebird database.<br>
+ * <br>
  * Created at 09.03.2009 07:13:35
  * @since 0.5.8
  * @author Volker Bergmann

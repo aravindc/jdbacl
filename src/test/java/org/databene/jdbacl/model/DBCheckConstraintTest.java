@@ -29,7 +29,7 @@ import org.databene.commons.CollectionUtil;
 import org.junit.Test;
 
 /**
- * Tests the {@link DBCheckConstraint}.<br/><br/>
+ * Tests the {@link DBCheckConstraint}.<br><br>
  * Created: 08.06.2011 14:04:49
  * @since 0.1
  * @author Volker Bergmann

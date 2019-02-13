@@ -31,7 +31,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
- * Tests the PostgreSQLDialect.<br/><br/>
+ * Tests the PostgreSQLDialect.<br><br>
  * Created: 10.11.2009 18:18:51
  * @since 0.6.0
  * @author Volker Bergmann

@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tests the {@link CachingDBImporter}.<br/><br/>
+ * Tests the {@link CachingDBImporter}.<br><br>
  * Created: 18.03.2012 12:57:24
  * @since 0.8.1
  * @author Volker Bergmann

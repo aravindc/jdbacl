@@ -32,7 +32,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
- * Tests the {@link Derby10_6Dialect}.<br/><br/>
+ * Tests the {@link Derby10_6Dialect}.<br><br>
  * Created: 24.10.2011 10:33:53
  * @since 0.6.13
  * @author Volker Bergmann

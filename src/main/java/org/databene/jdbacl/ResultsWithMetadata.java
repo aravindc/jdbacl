@@ -27,8 +27,8 @@
 package org.databene.jdbacl;
 
 /**
- * Wraps a tabular query result with its metadata.<br/>
- * <br/>
+ * Wraps a tabular query result with its metadata.<br>
+ * <br>
  * Created at 02.12.2008 13:11:46
  * @since 0.4.6
  * @author Volker Bergmann

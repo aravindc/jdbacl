@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Simple GUI for database browsing.<br/><br/>
+ * Simple GUI for database browsing.<br><br>
  * Created: 07.11.2011 16:28:47
  * @since 0.7.0
  * @author Volker Bergmann

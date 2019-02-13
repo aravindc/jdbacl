@@ -22,7 +22,7 @@
 package org.databene.jdbacl.identity;
 
 /**
- * Represents an error induced by a faulty table identity definition.<br/><br/>
+ * Represents an error induced by a faulty table identity definition.<br><br>
  * Created: 06.12.2010 23:02:43
  * @see IdentityModel
  * @since 0.4

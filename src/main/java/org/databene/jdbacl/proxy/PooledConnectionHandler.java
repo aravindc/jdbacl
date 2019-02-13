@@ -47,8 +47,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps a connection for logging of JDBC connection handling.<br/>
- * Created: 24.08.2008 18:47:44<br/>
+ * Wraps a connection for logging of JDBC connection handling.<br>
+ * Created: 24.08.2008 18:47:44<br>
  * @author Volker Bergmann
  * @since 0.5.5
  */

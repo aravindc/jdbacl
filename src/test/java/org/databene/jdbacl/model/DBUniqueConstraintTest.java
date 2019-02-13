@@ -32,8 +32,8 @@ import org.junit.Test;
 import static junit.framework.Assert.*;
 
 /**
- * Tests the DBUniqueConstraint<br/>
- * <br/>
+ * Tests the DBUniqueConstraint<br>
+ * <br>
  * Created: 31.08.2007 09:22:25
  * @author Volker Bergmann
  */

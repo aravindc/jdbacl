@@ -37,7 +37,7 @@ import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
 
 /**
- * Represents a foreign key constraint.<br/><br/>
+ * Represents a foreign key constraint.<br><br>
  * Created: 06.01.2007 09:00:59
  * @author Volker Bergmann
  */

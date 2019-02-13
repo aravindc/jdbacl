@@ -22,7 +22,7 @@
 package org.databene.jdbacl.model;
 
 /**
- * Enumeration of the table types defined in the JDBC spec.<br/><br/>
+ * Enumeration of the table types defined in the JDBC spec.<br><br>
  * Created: 28.01.2012 07:44:07
  * @since 0.8.0
  * @author Volker Bergmann

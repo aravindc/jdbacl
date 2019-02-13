@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parent class for testing concrete {@link DatabaseDialect} implementations.<br/><br/>
+ * Parent class for testing concrete {@link DatabaseDialect} implementations.<br><br>
  * Created: 10.11.2009 16:59:14
  * @since 0.6.0
  * @author Volker Bergmann

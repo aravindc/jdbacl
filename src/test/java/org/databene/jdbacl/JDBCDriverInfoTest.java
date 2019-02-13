@@ -32,8 +32,8 @@ import org.junit.Test;
 import static junit.framework.Assert.*;
 
 /**
- * Tests the {@link JDBCDriverInfo} class.<br/>
- * <br/>
+ * Tests the {@link JDBCDriverInfo} class.<br>
+ * <br>
  * Created at 23.02.2009 10:14:26
  * @since 0.4.8
  * @author Volker Bergmann

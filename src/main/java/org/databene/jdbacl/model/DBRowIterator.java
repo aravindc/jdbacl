@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Iterates through the rows of a database.<br/><br/>
+ * Iterates through the rows of a database.<br><br>
  * Created: 23.07.2010 07:29:47
  * @since 0.6.3
  * @author Volker Bergmann

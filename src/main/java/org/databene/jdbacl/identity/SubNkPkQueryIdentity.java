@@ -43,7 +43,7 @@ import org.databene.jdbacl.model.Database;
 /**
  * {@link IdentityModel} for tables which are owned by another table but have a sub identity 
  * (resulting in a one-to-many relationship between parent and child). 
- * Their natural key is composed from the owner row's natural key and a sub key for the row itself.<br/><br/>
+ * Their natural key is composed from the owner row's natural key and a sub key for the row itself.<br><br>
  * Created: 01.09.2010 09:24:26
  * @since 0.6.4
  * @author Volker Bergmann

@@ -26,7 +26,7 @@ import java.util.Map;
 import org.databene.commons.DatabeneTestUtil;
 
 /**
- * Reads a configuration file to check which databases are enabled or disabled for testing.<br/><br/>
+ * Reads a configuration file to check which databases are enabled or disabled for testing.<br><br>
  * Created: 02.11.2011 10:06:21
  * @since 0.6.14
  * @author Volker Bergmann

@@ -26,7 +26,7 @@ import org.databene.script.Expression;
 import org.databene.script.expression.CompositeExpression;
 
 /**
- * Represents the invocation of a function.<br/><br/>
+ * Represents the invocation of a function.<br><br>
  * Created: 08.06.2011 11:58:37
  * @since 0.1
  * @author Volker Bergmann

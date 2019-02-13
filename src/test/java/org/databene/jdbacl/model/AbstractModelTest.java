@@ -30,7 +30,7 @@ import org.databene.commons.TimeUtil;
 import org.databene.jdbacl.DBUtil;
 
 /**
- * Abstract parent class for testing XML in-/output of jdbacl models.<br/><br/>
+ * Abstract parent class for testing XML in-/output of jdbacl models.<br><br>
  * Created: 28.11.2010 09:58:56
  * @since 0.6.4
  * @author Volker Bergmann

@@ -28,7 +28,7 @@ import java.sql.Types;
 import org.junit.Test;
 
 /**
- * Tests the {@link DBDataType}.<br/><br/>
+ * Tests the {@link DBDataType}.<br><br>
  * Created: 14.06.2011 16:40:11
  * @since 0.6.8
  * @author Volker Bergmann

@@ -30,7 +30,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * Space holder for unknown databases.<br/><br/>
+ * Space holder for unknown databases.<br><br>
  * Created: 26.01.2008 07:13:59
  * @since 0.4.0
  * @author Volker Bergmann

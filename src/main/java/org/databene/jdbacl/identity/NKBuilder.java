@@ -23,7 +23,7 @@ package org.databene.jdbacl.identity;
 
 /**
  * Parent for classes that map between primary key and natural keys 
- * of table rows in different tables in one or more source databases and one target database.<br/><br/>
+ * of table rows in different tables in one or more source databases and one target database.<br><br>
  * Created: 08.13.2010 13:38:21
  * @since 0.6.4
  * @author Volker Bergmann

@@ -30,7 +30,7 @@ import org.databene.jdbacl.dialect.OracleDialect;
 import org.junit.Test;
 
 /**
- * Tests the {@link DatabaseDialectManager}.<br/><br/>
+ * Tests the {@link DatabaseDialectManager}.<br><br>
  * Created: 20.10.2011 14:16:04
  * @since 0.6.12
  * @author Volker Bergmann

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Parent for classes that map the primary key values of the rows of one table in one database 
- * to their natural keys.<br/><br/>
+ * to their natural keys.<br><br>
  * Created: 07.09.2010 14:11:16
  * @since 0.6.4
  * @author Volker Bergmann

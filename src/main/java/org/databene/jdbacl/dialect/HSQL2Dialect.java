@@ -24,7 +24,7 @@ package org.databene.jdbacl.dialect;
 import org.databene.jdbacl.DatabaseDialect;
 
 /**
- * {@link DatabaseDialect} for HSQL databases of major version 2.<br/><br/>
+ * {@link DatabaseDialect} for HSQL databases of major version 2.<br><br>
  * Created: 19.10.2011 15:09:03
  * @since 0.6.12
  * @author Volker Bergmann

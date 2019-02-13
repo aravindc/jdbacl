@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * Interface for classes that can export a meta data model.<br/><br/>
+ * Interface for classes that can export a meta data model.<br><br>
  * Created: 08.07.2010 06:39:28
  * @since 0.6.3
  * @author Volker Bergmann

@@ -27,7 +27,7 @@ import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
- * {@link IdentityModel} for a flat, non-recursive and independent table.<br/><br/>
+ * {@link IdentityModel} for a flat, non-recursive and independent table.<br><br>
  * Created: 01.09.2010 07:07:00
  * @since 0.6.4
  * @author Volker Bergmann

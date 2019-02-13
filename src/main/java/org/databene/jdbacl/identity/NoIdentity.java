@@ -27,7 +27,7 @@ import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
- * {@link IdentityModel} implementation that represents a missing identity definition.<br/><br/>
+ * {@link IdentityModel} implementation that represents a missing identity definition.<br><br>
  * Created: 20.01.2011 16:24:48
  * @since 0.6.8
  * @author Volker Bergmann

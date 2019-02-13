@@ -28,7 +28,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * Implements generic database concepts for SQL Server.<br/><br/>
+ * Implements generic database concepts for SQL Server.<br><br>
  * Created: 09.04.2010 07:29:32
  * @since 0.6.0
  * @author Volker Bergmann

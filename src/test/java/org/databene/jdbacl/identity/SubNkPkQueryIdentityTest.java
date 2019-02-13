@@ -32,7 +32,7 @@ import org.databene.jdbacl.model.Database;
 import org.junit.Test;
 
 /**
- * Tests the {@link SubNkPkQueryIdentity}.<br/><br/>
+ * Tests the {@link SubNkPkQueryIdentity}.<br><br>
  * Created: 06.12.2010 07:10:25
  * @since 0.4
  * @author Volker Bergmann

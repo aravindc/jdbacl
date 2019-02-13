@@ -32,7 +32,7 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.commons.ImportFailedException;
 
 /**
- * Interface for classes that can import a database.<br/><br/>
+ * Interface for classes that can import a database.<br><br>
  * Created: 06.01.2007 19:17:27
  * @author Volker Bergmann
  */

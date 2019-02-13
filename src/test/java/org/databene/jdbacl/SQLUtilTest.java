@@ -34,7 +34,7 @@ import org.databene.jdbacl.model.ForeignKeyPath;
 import org.junit.Test;
 
 /**
- * Tests the {@link SQLUtil} class.<br/><br/>
+ * Tests the {@link SQLUtil} class.<br><br>
  * Created: 28.11.2010 10:27:54
  * @since 0.6.4
  * @author Volker Bergmann

@@ -31,7 +31,7 @@ import org.databene.script.expression.LogicalComplementExpression;
 import org.junit.Test;
 
 /**
- * Tests the {@link SQLParserUtil}.<br/><br/>
+ * Tests the {@link SQLParserUtil}.<br><br>
  * Created: 07.06.2011 15:35:51
  * @since 0.1
  * @author Volker Bergmann

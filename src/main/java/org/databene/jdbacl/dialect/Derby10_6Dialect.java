@@ -32,7 +32,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.model.DBSequence;
 
 /**
- * {@link DatabaseDialect} for Derby 10.6+ which supports sequences.<br/><br/>
+ * {@link DatabaseDialect} for Derby 10.6+ which supports sequences.<br><br>
  * Created: 24.10.2011 10:09:04
  * @since 0.6.13
  * @author Volker Bergmann

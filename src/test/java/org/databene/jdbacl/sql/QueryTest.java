@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Tests the {@link Query} class.<br/><br/>
+ * Tests the {@link Query} class.<br><br>
  * Created: 09.04.2012 10:31:13
  * @since 0.8.1
  * @author Volker Bergmann

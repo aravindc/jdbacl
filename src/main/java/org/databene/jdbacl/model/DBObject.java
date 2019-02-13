@@ -27,7 +27,7 @@ import org.databene.commons.Named;
 
 /**
  * Abstract parent interface for assembling database objects in a tree using the Composite design pattern. 
- * The corresponding interface for Composite objects is {@link CompositeDBObject}.<br/><br/>
+ * The corresponding interface for Composite objects is {@link CompositeDBObject}.<br><br>
  * Created: 09.11.2010 11:41:09
  * @since 0.6.4
  * @author Volker Bergmann

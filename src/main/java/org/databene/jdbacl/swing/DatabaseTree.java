@@ -25,7 +25,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
 
 /**
- * GUI component which renders a database tree.<br/><br/>
+ * GUI component which renders a database tree.<br><br>
  * Created: 07.11.2011 16:37:37
  * @since 0.7.0
  * @author Volker Bergmann

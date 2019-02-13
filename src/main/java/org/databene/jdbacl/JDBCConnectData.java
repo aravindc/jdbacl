@@ -29,7 +29,7 @@ import org.databene.commons.ParseUtil;
 import org.databene.commons.StringUtil;
 
 /**
- * Data Object that contains the typical data required for a JDBC database login.<br/><br/>
+ * Data Object that contains the typical data required for a JDBC database login.<br><br>
  * Created: 10.02.2010 22:59:02
  * @since 0.5.0
  * @author Volker Bergmann

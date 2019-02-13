@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Tests the {@link MySQLDialect}.<br/><br/>
+ * Tests the {@link MySQLDialect}.<br><br>
  * Created: 10.07.2011 10:06:28
  * @since 0.6.10
  * @author Volker Bergmann

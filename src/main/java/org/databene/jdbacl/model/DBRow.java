@@ -28,7 +28,7 @@ import org.databene.commons.Assert;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * Represents a row in a database table.<br/><br/>
+ * Represents a row in a database table.<br><br>
  * Created: 23.07.2010 07:29:14
  * @since 0.6.3
  * @author Volker Bergmann

@@ -35,7 +35,7 @@ import org.databene.jdbacl.model.Database;
 import org.junit.Test;
 
 /**
- * Tests the {@link SimpleTranscoder}.<br/><br/>
+ * Tests the {@link SimpleTranscoder}.<br><br>
  * Created: 03.12.2010 11:39:45
  * @since 0.4
  * @author Volker Bergmann

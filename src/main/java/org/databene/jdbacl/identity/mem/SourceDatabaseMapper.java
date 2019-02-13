@@ -30,7 +30,7 @@ import org.databene.jdbacl.identity.KeyMapper;
 import org.databene.jdbacl.model.Database;
 
 /**
- * In-memory implementation of the mapping functionality needed for source databases.<br/><br/>
+ * In-memory implementation of the mapping functionality needed for source databases.<br><br>
  * Created: 24.08.2010 11:28:44
  * @since 0.6.4
  * @author Volker Bergmann

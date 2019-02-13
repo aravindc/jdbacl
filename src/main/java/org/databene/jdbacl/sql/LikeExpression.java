@@ -29,7 +29,7 @@ import org.databene.script.Expression;
 import org.databene.script.expression.BinaryExpression;
 
 /**
- * {@link Expression} which evaluates a SQL 'LIKE' operation.<br/><br/>
+ * {@link Expression} which evaluates a SQL 'LIKE' operation.<br><br>
  * Created: 05.06.2012 11:45:34
  * @since 0.8.3
  * @author Volker Bergmann

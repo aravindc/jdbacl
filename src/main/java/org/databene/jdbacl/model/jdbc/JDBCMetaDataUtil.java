@@ -33,7 +33,7 @@ import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.cache.CachingDBImporter;
 
 /**
- * Utility class for JDBC meta data retrieval.<br/><br/>
+ * Utility class for JDBC meta data retrieval.<br><br>
  * Created: 02.02.2012 13:20:12
  * @since 0.8.0
  * @author Volker Bergmann

@@ -55,7 +55,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import static org.databene.commons.xml.SimpleXMLWriter.*;
 
 /**
- * Saves a database meta data model as XML file.<br/><br/>
+ * Saves a database meta data model as XML file.<br><br>
  * Created: 28.11.2010 06:30:25
  * @since 0.6.4
  * @author Volker Bergmann

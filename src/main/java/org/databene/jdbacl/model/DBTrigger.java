@@ -24,7 +24,7 @@ package org.databene.jdbacl.model;
 import org.databene.commons.NullSafeComparator;
 
 /**
- * Represents a database trigger.<br/><br/>
+ * Represents a database trigger.<br><br>
  * Created: 07.11.2011 14:46:14
  * @since 0.7.0
  * @author Volker Bergmann

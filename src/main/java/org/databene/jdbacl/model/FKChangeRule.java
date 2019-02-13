@@ -23,8 +23,8 @@ package org.databene.jdbacl.model;
 
 /**
  * Represents a rule to apply when a referenced database row 
- * has been deleted or undergone a primary key value change.<br/>
- * <br/>
+ * has been deleted or undergone a primary key value change.<br>
+ * <br>
  * Created: 25.06.2011 08:26:41
  * @since 0.6.9
  * @author Volker Bergmann

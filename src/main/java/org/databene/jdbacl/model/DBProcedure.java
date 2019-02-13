@@ -22,7 +22,7 @@
 package org.databene.jdbacl.model;
 
 /**
- * Represents a database procedure.<br/><br/>
+ * Represents a database procedure.<br><br>
  * Created: 07.11.2011 16:06:00
  * @since 0.7.0
  * @author Volker Bergmann

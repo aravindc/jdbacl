@@ -28,7 +28,7 @@ import org.databene.commons.iterator.ConvertingIterator;
 import org.databene.commons.iterator.TabularIterator;
 
 /**
- * Provides a {@link ResultSet}'s rows as {@link Object} arrays.<br/><br/>
+ * Provides a {@link ResultSet}'s rows as {@link Object} arrays.<br><br>
  * Created: 13.10.2010 13:38:19
  * @since 0.6.4
  * @author Volker Bergmann

@@ -34,8 +34,8 @@ import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
 
 /**
- * Represents a unique constraint on one or the combination of several columns of one table.<br/>
- * <br/>
+ * Represents a unique constraint on one or the combination of several columns of one table.<br>
+ * <br>
  * Created: 06.01.2007 09:00:37
  * @author Volker Bergmann
  */

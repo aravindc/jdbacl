@@ -39,8 +39,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Represents a JDBC driver and related information.<br/>
- * <br/>
+ * Represents a JDBC driver and related information.<br>
+ * <br>
  * Created at 23.02.2009 09:40:31
  * @since 0.4.8
  * @author Volker Bergmann

@@ -25,7 +25,7 @@ import org.databene.script.Expression;
 import org.databene.script.expression.InRangeExpression;
 
 /**
- * {@link Expression} implementation for the SQL BETWEEN function.<br/><br/>
+ * {@link Expression} implementation for the SQL BETWEEN function.<br><br>
  * Created: 07.06.2011 22:15:34
  * @since 0.1
  * @author Volker Bergmann

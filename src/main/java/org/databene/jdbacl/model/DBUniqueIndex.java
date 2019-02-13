@@ -31,7 +31,7 @@ import java.util.Arrays;
 import org.databene.commons.NullSafeComparator;
 
 /**
- * Represents a unique database index.<br/><br/>
+ * Represents a unique database index.<br><br>
  * Created: 11.01.2007 00:32:42
  * @author Volker Bergmann
  */

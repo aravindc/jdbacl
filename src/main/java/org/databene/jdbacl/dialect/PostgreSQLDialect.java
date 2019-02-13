@@ -39,7 +39,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * Implements generic database concepts for PostgreSQL.<br/><br/>
+ * Implements generic database concepts for PostgreSQL.<br><br>
  * Created: 26.01.2008 07:11:06
  * @since 0.4.0
  * @author Volker Bergmann

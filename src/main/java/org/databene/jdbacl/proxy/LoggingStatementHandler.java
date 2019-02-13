@@ -48,8 +48,8 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link InvocationHandler} implementation for a proxy to the {@link Statement} interface
  * which logs relevant JDBC or SQL calls to the log categories <code>org.databene.JDBC</code> 
- * and <code>org.databene.SQL</code>.<br/>
- * <br/>
+ * and <code>org.databene.SQL</code>.<br>
+ * <br>
  * Created at 26.12.2008 04:48:38
  * @since 0.5.7
  * @author Volker Bergmann

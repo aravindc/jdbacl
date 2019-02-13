@@ -33,7 +33,7 @@ import org.databene.jdbacl.sql.Query;
 import org.junit.Test;
 
 /**
- * Tests the {@link OracleDialect}.<br/><br/>
+ * Tests the {@link OracleDialect}.<br><br>
  * Created: 10.11.2009 17:22:59
  * @since 0.6.0
  * @author Volker Bergmann

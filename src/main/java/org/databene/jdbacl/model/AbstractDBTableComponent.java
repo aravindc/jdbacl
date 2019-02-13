@@ -22,7 +22,7 @@
 package org.databene.jdbacl.model;
 
 /**
- * Parent class for classes that represent a sub {@link DBObject} of a {@link DBTable}.<br/><br/>
+ * Parent class for classes that represent a sub {@link DBObject} of a {@link DBTable}.<br><br>
  * Created: 28.11.2010 11:58:44
  * @since 0.6.4
  * @author Volker Bergmann

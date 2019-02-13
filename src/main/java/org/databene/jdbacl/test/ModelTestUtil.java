@@ -31,7 +31,7 @@ import org.databene.jdbacl.model.DBPrimaryKeyConstraint;
 import org.databene.jdbacl.model.DBTable;
 
 /**
- * Helper class which provides typical models for testing.<br/><br/>
+ * Helper class which provides typical models for testing.<br><br>
  * Created: 07.06.2012 21:39:08
  * @since 0.8.3
  * @author Volker Bergmann

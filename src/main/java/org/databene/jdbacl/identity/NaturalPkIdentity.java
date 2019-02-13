@@ -29,7 +29,7 @@ import org.databene.commons.iterator.TabularIterator;
 import org.databene.jdbacl.model.Database;
 
 /**
- * {@link IdentityModel} implementation for tables which have a natural key as primary key.<br/><br/>
+ * {@link IdentityModel} implementation for tables which have a natural key as primary key.<br><br>
  * Created: 12.12.2010 12:23:14
  * @since 0.6.4
  * @author Volker Bergmann

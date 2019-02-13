@@ -29,7 +29,7 @@ import org.databene.commons.version.VersionInfo;
 import org.junit.Test;
 
 /**
- * Tests the {@link VersionInfo}.<br/><br/>
+ * Tests the {@link VersionInfo}.<br><br>
  * Created: 23.03.2011 11:34:32
  * @since 0.6.8
  * @author Volker Bergmann

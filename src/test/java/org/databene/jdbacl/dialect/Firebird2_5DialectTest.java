@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Tests the {@link Firebird2_5Dialect}.<br/><br/>
+ * Tests the {@link Firebird2_5Dialect}.<br><br>
  * Created: 20.10.2011 19:54:11
  * @since 0.6.12
  * @author Volker Bergmann

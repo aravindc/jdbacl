@@ -47,7 +47,7 @@ import org.databene.jdbacl.model.FKChangeRule;
 /**
  * Exports a {@link Database} meta data structure into a group of CSV files:
  * columns.csv, primary_keys.csv, unique_keys.csv, foreign_keys.csv, indexes.csv, 
- * checks.csv and sequences.csv.<br/><br/>
+ * checks.csv and sequences.csv.<br><br>
  * Created: 25.10.2011 14:40:37
  * @since 0.6.13
  * @author Volker Bergmann

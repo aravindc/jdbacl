@@ -26,7 +26,7 @@ import org.databene.formats.xml.XMLElementParserFactory;
 import org.databene.jdbacl.identity.IdentityProvider;
 
 /**
- * {@link ParseContext} implementation for identity definition files.<br/><br/>
+ * {@link ParseContext} implementation for identity definition files.<br><br>
  * Created: 07.12.2011 15:45:13
  * @since 0.7.1
  * @author Volker Bergmann

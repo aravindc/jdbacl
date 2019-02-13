@@ -30,7 +30,7 @@ import org.databene.formats.DataIterator;
 import org.databene.formats.util.DataIteratorProxy;
 
 /**
- * {@link DataIterator} which provides the results of a SQL query.<br/><br/>
+ * {@link DataIterator} which provides the results of a SQL query.<br><br>
  * Created: 03.08.2011 19:25:54
  * @since 0.6.10
  * @author Volker Bergmann

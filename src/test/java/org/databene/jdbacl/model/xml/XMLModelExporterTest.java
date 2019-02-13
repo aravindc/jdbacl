@@ -32,7 +32,7 @@ import org.databene.jdbacl.model.Database;
 import org.junit.Test;
 
 /**
- * Tests the {@link XMLModelExporter}.<br/><br/>
+ * Tests the {@link XMLModelExporter}.<br><br>
  * Created: 28.11.2010 09:55:52
  * @since 0.6.4
  * @author Volker Bergmann

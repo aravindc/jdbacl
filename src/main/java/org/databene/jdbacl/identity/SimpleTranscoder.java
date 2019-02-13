@@ -28,7 +28,7 @@ import org.databene.jdbacl.model.DBRow;
 import org.databene.jdbacl.model.DBTable;
 
 /**
- * Simple implementation of a transcoding mechanism.<br/><br/>
+ * Simple implementation of a transcoding mechanism.<br><br>
  * Created: 08.12.2010 18:45:49
  * @since 0.6.4
  * @author Volker Bergmann

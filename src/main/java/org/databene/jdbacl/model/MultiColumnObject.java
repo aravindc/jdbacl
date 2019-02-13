@@ -22,7 +22,7 @@
 package org.databene.jdbacl.model;
 
 /**
- * Interface for database objects that have multiple columns..<br/><br/>
+ * Interface for database objects that have multiple columns..<br><br>
  * Created: 25.05.2011 05:36:05
  * @since 0.6.8
  * @author Volker Bergmann

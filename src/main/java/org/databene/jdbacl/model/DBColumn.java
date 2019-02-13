@@ -35,7 +35,7 @@ import org.databene.commons.bean.HashCodeBuilder;
 import org.databene.jdbacl.SQLUtil;
 
 /**
- * Represents a database column.<br/><br/>
+ * Represents a database column.<br><br>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */

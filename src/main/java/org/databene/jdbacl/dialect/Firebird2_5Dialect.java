@@ -24,7 +24,7 @@ package org.databene.jdbacl.dialect;
 import org.databene.jdbacl.DatabaseDialect;
 
 /**
- * {@link DatabaseDialect} for versions since 2.5.<br/><br/>
+ * {@link DatabaseDialect} for versions since 2.5.<br><br>
  * Created: 20.10.2011 19:47:51
  * @since 0.6.12
  * @author Volker Bergmann

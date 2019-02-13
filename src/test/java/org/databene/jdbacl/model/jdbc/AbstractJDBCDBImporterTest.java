@@ -43,7 +43,7 @@ import org.databene.jdbacl.model.DBUniqueIndex;
 import org.databene.jdbacl.model.Database;
 
 /**
- * Abstract parent class for tests that relate to child classes of {@link JDBCDBImporter}.<br/><br/>
+ * Abstract parent class for tests that relate to child classes of {@link JDBCDBImporter}.<br><br>
  * Created: 02.02.2012 14:02:05
  * @since 0.8.0
  * @author Volker Bergmann

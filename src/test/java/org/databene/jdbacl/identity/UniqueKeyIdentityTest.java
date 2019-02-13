@@ -33,7 +33,7 @@ import org.databene.jdbacl.model.Database;
 import org.junit.Test;
 
 /**
- * Tests the {@link UniqueKeyIdentity} class.<br/><br/>
+ * Tests the {@link UniqueKeyIdentity} class.<br><br>
  * Created: 06.12.2010 10:18:49
  * @since 0.4
  * @author Volker Bergmann

@@ -46,7 +46,7 @@ import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.databene.jdbacl.model.ForeignKeyPath;
 
 /**
- * Provides utility methods for creating SQL queries and commands.<br/><br/>
+ * Provides utility methods for creating SQL queries and commands.<br><br>
  * Created: 01.09.2010 09:38:46
  * @since 0.6.4
  * @author Volker Bergmann

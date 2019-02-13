@@ -22,7 +22,7 @@
 package org.databene.jdbacl.identity.mem;
 
 /**
- * Represents the state of a key mapper.<br/><br/>
+ * Represents the state of a key mapper.<br><br>
  * Created: 07.09.2010 10:30:06
  * @since 0.6.4
  * @author Volker Bergmann

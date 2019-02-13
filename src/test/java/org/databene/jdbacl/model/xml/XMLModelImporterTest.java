@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the {@link XMLModelImporter}.<br/><br/>
+ * Tests the {@link XMLModelImporter}.<br><br>
  * Created: 28.11.2010 18:23:12
  * @since 0.6.4
  * @author Volker Bergmann

@@ -25,7 +25,7 @@ import org.databene.commons.NullSafeComparator;
 
 /**
  * Abstract implementation of the {@link DBObject} interface which serves as 
- * parent class for concrete implementations.<br/><br/>
+ * parent class for concrete implementations.<br><br>
  * Created: 09.11.2010 11:45:20
  * @since 0.6.4
  * @author Volker Bergmann

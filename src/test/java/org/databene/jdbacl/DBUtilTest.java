@@ -38,7 +38,7 @@ import org.junit.Test;
 import static junit.framework.Assert.*;
 
 /**
- * Tests the {@link DBUtil} class.<br/><br/>
+ * Tests the {@link DBUtil} class.<br><br>
  * Created at 03.05.2008 15:53:49
  * @since 0.5.3
  * @author Volker Bergmann

@@ -27,7 +27,7 @@
 package org.databene.jdbacl;
 
 /**
- * Holds name and type information of a database column.<br/><br/>
+ * Holds name and type information of a database column.<br><br>
  * @since 0.3.04
  * @author Volker Bergmann
  */

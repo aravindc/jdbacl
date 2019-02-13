@@ -37,7 +37,7 @@ import org.databene.jdbacl.model.DBTrigger;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * {@link DatabaseDialect} implementation for the CUBRID database.<br/><br/>
+ * {@link DatabaseDialect} implementation for the CUBRID database.<br><br>
  * Created: 13.04.2012 06:53:40
  * @since 0.8.2
  * @author Volker Bergmann

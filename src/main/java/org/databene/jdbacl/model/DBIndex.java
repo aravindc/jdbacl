@@ -33,7 +33,7 @@ import org.databene.commons.NullSafeComparator;
 import org.databene.commons.bean.HashCodeBuilder;
 
 /**
- * Represents a database index.<br/><br/>
+ * Represents a database index.<br><br>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */

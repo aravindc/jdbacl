@@ -41,7 +41,7 @@ import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.Database;
 
 /**
- * Exports database meta data to a DDL file with CREATE TABLE commands.<br/><br/>
+ * Exports database meta data to a DDL file with CREATE TABLE commands.<br><br>
  * Created: 11.08.2010 16:23:59
  * @since 0.6.10
  * @author Volker Bergmann

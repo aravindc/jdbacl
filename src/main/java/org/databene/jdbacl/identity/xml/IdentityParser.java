@@ -38,7 +38,7 @@ import org.databene.jdbacl.identity.UniqueKeyIdentity;
 import org.w3c.dom.Element;
 
 /**
- * Parses an &lt;identity&gt; element in a DB Sanity XML file.<br/><br/>
+ * Parses an &lt;identity&gt; element in a DB Sanity XML file.<br><br>
  * Created: 05.12.2010 14:39:48
  * @since 0.7.1
  * @author Volker Bergmann

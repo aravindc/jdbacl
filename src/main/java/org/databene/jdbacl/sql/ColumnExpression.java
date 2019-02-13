@@ -25,7 +25,7 @@ import org.databene.script.Expression;
 import org.databene.script.expression.ConstantExpression;
 
 /**
- * {@link Expression} which represents a database column.<br/><br/>
+ * {@link Expression} which represents a database column.<br><br>
  * Created: 08.06.2011 13:37:59
  * @since 0.1
  * @author Volker Bergmann

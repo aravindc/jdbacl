@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link JPanel} which displays database information and the hierarchy tree.<br/><br/>
+ * {@link JPanel} which displays database information and the hierarchy tree.<br><br>
  * Created: 07.11.2011 16:46:33
  * @since 0.7.0
  * @author Volker Bergmann

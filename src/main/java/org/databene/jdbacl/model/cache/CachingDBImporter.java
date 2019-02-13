@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link DBMetaDataImporter} that acts as a proxy to another DBMetaDataImporter, 
  * adding the feature of caching its output. The data file is named '&lt;environment&gt;.meta.xml'
- * and expires after 12 hrs.<br/><br/>
+ * and expires after 12 hrs.<br><br>
  * Created: 10.01.2011 14:48:00
  * @since 0.6.5
  * @author Volker Bergmann

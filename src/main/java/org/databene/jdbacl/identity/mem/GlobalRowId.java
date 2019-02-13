@@ -27,7 +27,7 @@ import org.databene.commons.bean.ObjectOrArray;
 
 /**
  * Global technical identifier for a database table rows 
- * which aggregates database id, table name and primary key.<br/><br/>
+ * which aggregates database id, table name and primary key.<br><br>
  * Created: 31.08.2010 16:19:41
  * @since 1.0
  * @author Volker Bergmann

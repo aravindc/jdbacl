@@ -82,8 +82,8 @@ import java.util.Map;
 import javax.sql.PooledConnection;
 
 /**
- * Provides database related utility methods.<br/>
- * <br/>
+ * Provides database related utility methods.<br>
+ * <br>
  * Created: 06.01.2007 19:27:02
  * @author Volker Bergmann
  */

@@ -41,7 +41,7 @@ import org.databene.jdbacl.model.Database;
 import org.databene.jdbacl.model.jdbc.JDBCMetaDataUtil;
 
 /**
- * Parent class for {@link IdentityModel} tests.<br/><br/>
+ * Parent class for {@link IdentityModel} tests.<br><br>
  * Created: 06.12.2010 06:45:34
  * @since 0.4
  * @author Volker Bergmann

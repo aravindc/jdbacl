@@ -30,7 +30,7 @@ import java.util.Iterator;
 import org.databene.commons.iterator.IteratorProxy;
 
 /**
- * Performs a query and wraps the result set with an {@link Iterator} interface.<br/><br/>
+ * Performs a query and wraps the result set with an {@link Iterator} interface.<br><br>
  * Created: 13.10.2010 13:17:42
  * @since 0.6.4
  * @author Volker Bergmann

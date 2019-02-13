@@ -25,7 +25,7 @@ import java.sql.Connection;
 
 /**
  * Parent for classes that map between primary key and natural keys 
- * of table rows in different tables in one or more source databases and one target database.<br/><br/>
+ * of table rows in different tables in one or more source databases and one target database.<br><br>
  * Created: 23.08.2010 16:48:21
  * @since 0.6.4
  * @author Volker Bergmann

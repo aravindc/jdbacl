@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a JDBC catalog.<br/><br/>
+ * Represents a JDBC catalog.<br><br>
  * Created: 06.01.2007 08:57:57
  * @author Volker Bergmann
  */

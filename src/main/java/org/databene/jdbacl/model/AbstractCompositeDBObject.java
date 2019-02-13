@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * Abstract implementation of the {@link CompositeDBObject} interface which serves as parent class
- * for individual implementations.<br/><br/>
+ * for individual implementations.<br><br>
  * Created: 09.11.2010 11:47:43
  * @since 0.6.4
  * @author Volker Bergmann

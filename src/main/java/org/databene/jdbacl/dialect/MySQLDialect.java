@@ -25,7 +25,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * {@link DatabaseDialect} implementation for the MySQL database.<br/><br/>
+ * {@link DatabaseDialect} implementation for the MySQL database.<br><br>
  * Created: 24.06.2011 07:29:20
  * @since 0.6.9
  * @author Volker Bergmann

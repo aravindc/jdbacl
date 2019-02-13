@@ -33,7 +33,7 @@ import org.databene.script.Expression;
 import org.databene.script.expression.WrapperExpression;
 
 /**
- * Represents a database check constraint.<br/><br/>
+ * Represents a database check constraint.<br><br>
  * Created: 01.06.2011 12:40:30
  * @since 0.6.8
  * @author Volker Bergmann

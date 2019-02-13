@@ -33,7 +33,7 @@ import org.databene.jdbacl.sql.Query;
 import org.junit.Test;
 
 /**
- * Tests the {@link H2Dialect}.<br/><br/>
+ * Tests the {@link H2Dialect}.<br><br>
  * Created: 28.03.2010 11:44:38
  * @since 0.6.0
  * @author Volker Bergmann

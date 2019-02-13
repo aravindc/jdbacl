@@ -25,7 +25,7 @@ import org.databene.commons.ObjectNotFoundException;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * Manages {@link IdentityModel}s.<br/><br/>
+ * Manages {@link IdentityModel}s.<br><br>
  * Created: 10.12.2010 20:10:15
  * @since 0.6.8
  * @author Volker Bergmann

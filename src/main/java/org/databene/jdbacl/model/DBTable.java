@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Represents a database table.<br/><br/>
+ * Represents a database table.<br><br>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */

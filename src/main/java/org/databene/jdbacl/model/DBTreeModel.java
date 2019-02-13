@@ -25,7 +25,7 @@ import org.databene.commons.TreeModel;
 
 /**
  * {@link TreeModel} adapter for the hierarchy formed by the Composite pattern of
- * {@link DBObject} and {@link CompositeDBObject}.<br/><br/>
+ * {@link DBObject} and {@link CompositeDBObject}.<br><br>
  * Created: 10.11.2010 10:17:14
  * @since 0.6.4
  * @author Volker Bergmann

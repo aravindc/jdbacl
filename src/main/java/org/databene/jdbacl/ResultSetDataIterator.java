@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides {@link DataIterator}-style access to a {@link ResultSet}.<br/><br/>
+ * Provides {@link DataIterator}-style access to a {@link ResultSet}.<br><br>
  * Created: 03.08.2011 19:24:35
  * @since 0.6.10
  * @author Volker Bergmann

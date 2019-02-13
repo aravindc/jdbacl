@@ -32,7 +32,7 @@ import org.databene.commons.StringUtil;
 import org.databene.jdbacl.SQLUtil;
 
 /**
- * Represents a sequence of consecutively navigable foreign key references.<br/><br/>
+ * Represents a sequence of consecutively navigable foreign key references.<br><br>
  * Created: 22.03.2012 21:00:34
  * @since 0.8.1
  * @author Volker Bergmann

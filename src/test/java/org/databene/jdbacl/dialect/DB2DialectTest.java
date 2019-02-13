@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Tests the {@link DB2Dialect}.<br/><br/>
+ * Tests the {@link DB2Dialect}.<br><br>
  * Created: 10.11.2009 17:33:48
  * @since 0.6.0
  * @author Volker Bergmann

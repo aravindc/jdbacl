@@ -66,7 +66,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract parent class for JDBC meta data importers.<br/><br/>
+ * Abstract parent class for JDBC meta data importers.<br><br>
  * Created: 29.01.2012 21:52:06
  * @since 0.8.0
  * @author Volker Bergmann

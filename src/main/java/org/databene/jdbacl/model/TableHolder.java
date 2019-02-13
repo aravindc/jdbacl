@@ -24,7 +24,7 @@ package org.databene.jdbacl.model;
 import java.util.List;
 
 /**
- * Common interface for {@link DBObject}s which can hold {@link DBTable}s.<br/><br/>
+ * Common interface for {@link DBObject}s which can hold {@link DBTable}s.<br><br>
  * Created: 05.06.2011 16:55:37
  * @since 0.6.8
  * @author Volker Bergmann

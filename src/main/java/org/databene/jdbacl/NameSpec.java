@@ -22,8 +22,8 @@
 package org.databene.jdbacl;
 
 /**
- * Enumerates name specification options for database objects.<br/>
- * <br/>
+ * Enumerates name specification options for database objects.<br>
+ * <br>
  * Created: 02.07.2011 15:32:35
  * @since 0.6.10
  * @author Volker Bergmann

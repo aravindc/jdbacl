@@ -36,7 +36,7 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.DBUtil;
 
 /**
- * Provides utility methods for using HSQLDB.<br/><br/>
+ * Provides utility methods for using HSQLDB.<br><br>
  * Created at 02.05.2008 19:56:35
  * @since 0.4.3
  * @author Volker Bergmann

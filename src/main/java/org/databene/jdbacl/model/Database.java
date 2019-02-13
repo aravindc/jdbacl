@@ -42,7 +42,7 @@ import org.databene.jdbacl.DatabaseDialectManager;
 import org.databene.jdbacl.model.jdbc.JDBCDBImporter;
 
 /**
- * Represents a database.<br/><br/>
+ * Represents a database.<br><br>
  * Created: 06.01.2007 18:34:20
  * @author Volker Bergmann
  */

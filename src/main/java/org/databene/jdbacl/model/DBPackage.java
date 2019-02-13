@@ -28,7 +28,7 @@ import org.databene.commons.anno.Nullable;
 import org.databene.commons.collection.OrderedNameMap;
 
 /**
- * Represents a database packet which can hold {@link DBProcedure}s.<br/><br/>
+ * Represents a database packet which can hold {@link DBProcedure}s.<br><br>
  * Created: 07.11.2011 15:42:47
  * @since 0.7.0
  * @author Volker Bergmann

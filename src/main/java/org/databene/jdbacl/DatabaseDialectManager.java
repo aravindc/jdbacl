@@ -31,7 +31,7 @@ import org.databene.commons.version.VersionNumber;
 import org.databene.jdbacl.dialect.UnknownDialect;
 
 /**
- * Manages {@link DatabaseDialect}s.<br/><br/>
+ * Manages {@link DatabaseDialect}s.<br><br>
  * Created: 18.02.2010 16:32:55
  * @since 0.6.0
  * @author Volker Bergmann

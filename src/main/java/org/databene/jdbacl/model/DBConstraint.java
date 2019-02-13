@@ -32,7 +32,7 @@ import org.databene.commons.bean.HashCodeBuilder;
 import java.util.Arrays;
 
 /**
- * Parent class for all database constraints.<br/><br/>
+ * Parent class for all database constraints.<br><br>
  * Created: 06.01.2007 08:58:49
  * @author Volker Bergmann
  */

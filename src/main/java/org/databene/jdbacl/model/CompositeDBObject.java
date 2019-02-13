@@ -24,7 +24,7 @@ package org.databene.jdbacl.model;
 import java.util.List;
 
 /**
- * {@link DBObject} implementation that aggregates sub objects of a DBObject sub type C.<br/><br/>
+ * {@link DBObject} implementation that aggregates sub objects of a DBObject sub type C.<br><br>
  * Created: 09.11.2010 11:26:08
  * @since 0.6.4
  * @author Volker Bergmann

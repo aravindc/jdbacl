@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract parent for classes which provide information about tables
- * and features for processing the tables.<br/><br/>
+ * and features for processing the tables.<br><br>
  * Created: 01.09.2010 08:53:02
  * @since 0.6.4
  * @author Volker Bergmann

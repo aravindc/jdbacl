@@ -31,7 +31,7 @@ import org.databene.jdbacl.model.DBSequence;
 import org.junit.Test;
 
 /**
- * Tests the {@link FirebirdDialect}.<br/><br/>
+ * Tests the {@link FirebirdDialect}.<br><br>
  * Created: 10.11.2009 18:18:04
  * @since 0.6.0
  * @author Volker Bergmann

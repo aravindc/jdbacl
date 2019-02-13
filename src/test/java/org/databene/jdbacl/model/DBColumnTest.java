@@ -34,7 +34,7 @@ import org.junit.Test;
 import static junit.framework.Assert.*;
 
 /**
- * Tests the {@link DBColumn}.<br/><br/>
+ * Tests the {@link DBColumn}.<br><br>
  * Created: 06.01.2007 10:41:46
  * @author Volker Bergmann
  */

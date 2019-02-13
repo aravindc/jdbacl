@@ -36,8 +36,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Converts a ResultSet's current cursor position to an array of objects or, if it is of size 1, to a single object.<br/>
- * <br/>
+ * Converts a ResultSet's current cursor position to an array of objects or, if it is of size 1, to a single object.<br>
+ * <br>
  * Created: 15.08.2007 18:19:25
  * @author Volker Bergmann
  */

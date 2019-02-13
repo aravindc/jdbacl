@@ -27,7 +27,7 @@ import org.databene.script.expression.ConstantExpression;
 import org.junit.Test;
 
 /**
- * Tests the {@link LikeExpression}.<br/><br/>
+ * Tests the {@link LikeExpression}.<br><br>
  * Created: 06.06.2012 21:46:32
  * @since 0.8.3
  * @author Volker Bergmann

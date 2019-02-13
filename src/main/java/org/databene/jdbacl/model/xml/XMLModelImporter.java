@@ -62,7 +62,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * Imports a meta data model from an XML file.<br/><br/>
+ * Imports a meta data model from an XML file.<br><br>
  * Created: 28.11.2010 15:18:55
  * @since 0.6.4
  * @author Volker Bergmann

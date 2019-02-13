@@ -56,7 +56,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implements generic database concepts for Oracle.<br/><br/>
+ * Implements generic database concepts for Oracle.<br><br>
  * Created: 26.01.2008 07:05:28
  * @since 0.4.0
  * @author Volker Bergmann

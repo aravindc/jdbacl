@@ -32,7 +32,7 @@ import org.databene.jdbacl.DatabaseDialect;
 import org.databene.jdbacl.sql.Query;
 
 /**
- * Implements generic database concepts for Derby.<br/><br/>
+ * Implements generic database concepts for Derby.<br><br>
  * Created: 26.01.2010 07:14:34
  * @since 0.6.0
  * @author Volker Bergmann

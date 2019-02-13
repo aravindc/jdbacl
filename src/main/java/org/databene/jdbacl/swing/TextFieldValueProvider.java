@@ -24,7 +24,7 @@ package org.databene.jdbacl.swing;
 import javax.swing.JTextField;
 
 /**
- * Provides the content of a {@link JTextField}.<br/><br/>
+ * Provides the content of a {@link JTextField}.<br><br>
  * Created: 08.11.2011 16:42:28
  * @since 0.7.0
  * @author Volker Bergmann

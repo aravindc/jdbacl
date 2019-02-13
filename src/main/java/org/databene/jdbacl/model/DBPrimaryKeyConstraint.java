@@ -30,7 +30,7 @@ import org.databene.jdbacl.NameSpec;
 import org.databene.jdbacl.SQLUtil;
 
 /**
- * Represents a primary key constraint in a database.<br/><br/>
+ * Represents a primary key constraint in a database.<br><br>
  * Created: 08.01.2007 23:53:56
  * @author Volker Bergmann
  */
