@@ -29,7 +29,7 @@ package org.databene.jdbacl;
 import java.util.Arrays;
 
 import org.junit.Test;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link JDBCDriverInfo} class.<br>

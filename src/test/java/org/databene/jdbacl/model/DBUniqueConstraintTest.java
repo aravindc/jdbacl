@@ -29,7 +29,7 @@ package org.databene.jdbacl.model;
 import org.databene.jdbacl.model.DBTable;
 import org.databene.jdbacl.model.DBUniqueConstraint;
 import org.junit.Test;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests the DBUniqueConstraint<br>

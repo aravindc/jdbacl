@@ -579,8 +579,10 @@ public class DBTable extends AbstractCompositeDBObject<DBTableComponent>
     	Object[] pkComponents = (pk.getClass().isArray() ? (Object[]) pk : new Object[] { pk });
 		String whereClause = SQLUtil.renderWhereClause(pkColumnNames, pkComponents, dialect);
         DBRowIterator iterator = new DBRowIterator(this, connection, whereClause);
-        if (!iterator.hasNext())
+        if (!iterator.hasNext()){
+        	iterator.close();
         	throw new ObjectNotFoundException("No " + name + " row with id (" + pkComponents + ")");
+        }
 		DBRow result = iterator.next();
 		iterator.close();
 		return result;

@@ -109,9 +109,9 @@ public class CachingDBImporter implements DBMetaDataImporter, Closeable {
 	}
 	
 	protected Database readCachedData(File cacheFile) throws ConnectFailedException, ImportFailedException {
-		try {
+		try(XMLModelImporter xmlModelImporter = new XMLModelImporter(cacheFile, realImporter)) {
 			LOGGER.info("Importing database meta data from cache file " + cacheFile.getPath());
-			Database database = new XMLModelImporter(cacheFile, realImporter).importDatabase();
+			Database database = xmlModelImporter.importDatabase();
 			LOGGER.info("Database meta data import completed");
 			return database;
 		} catch (Exception e) {

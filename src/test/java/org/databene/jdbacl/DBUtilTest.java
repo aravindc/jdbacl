@@ -35,7 +35,7 @@ import org.databene.commons.ErrorHandler;
 import org.databene.jdbacl.dialect.HSQLUtil;
 
 import org.junit.Test;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link DBUtil} class.<br><br>

@@ -31,7 +31,7 @@ import java.sql.Types;
 import org.databene.jdbacl.model.DBColumn;
 import org.databene.jdbacl.model.DBDataType;
 import org.junit.Test;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link DBColumn}.<br><br>

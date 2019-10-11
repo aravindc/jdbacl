@@ -33,13 +33,14 @@ import org.databene.jdbacl.DBUtil;
  * @since 0.7.0
  * @author Volker Bergmann
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class EnvironmentSelector extends JComboBox {
 
 	public EnvironmentSelector() {
 		this(null);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public EnvironmentSelector(String selection) {
 		super(new EnvironmentModel());
 		if (selection != null)

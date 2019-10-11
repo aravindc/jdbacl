@@ -32,7 +32,7 @@ import org.databene.commons.ConnectFailedException;
 import org.databene.jdbacl.DBUtil;
 import org.databene.jdbacl.dialect.HSQLUtil;
 import org.junit.Test;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * Tests the {@link HSQLUtil} class.<br><br>

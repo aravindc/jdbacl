@@ -687,7 +687,9 @@ public class JDBCDBImporter implements DBMetaDataImporter {
 	            String fktable_schem = resultSet.getString(6);
 	            String fktable_name = resultSet.getString(7);
 	            if (tableSupported(fktable_name)) {
-	        		LOGGER.debug("Importing referrer: {}", fktable_name);
+	        		LOGGER.debug("Importing table referrer: {}", fktable_name);
+	        		LOGGER.debug("Importing schema referrer: {}", fktable_schem);
+	        		LOGGER.debug("Importing catalog referrer: {}", fktable_cat);
 	            	receiver.receiveReferrer(fktable_name, table);
 	            }
 	        }
