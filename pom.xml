@@ -18,7 +18,7 @@
 	<inceptionYear>2006</inceptionYear>
 
 	<properties>
-		<formats_version>1.0.0</formats_version>
+		<formats_version>1.0.14</formats_version>
 		<script_version>1.0.0</script_version>
 		<contiperf_version>2.3.4</contiperf_version>
 		<commons_version>1.0.0</commons_version>
