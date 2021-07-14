@@ -21,7 +21,7 @@
 		<formats_version>1.0.14</formats_version>
 		<script_version>1.0.0</script_version>
 		<contiperf_version>2.3.4</contiperf_version>
-		<commons_version>1.0.0</commons_version>
+		<commons_version>1.0.11</commons_version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
